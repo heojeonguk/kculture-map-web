@@ -5,8 +5,7 @@ interface Post {
   title: string
   category?: string
   city?: string
-  post_likes?: { count: number }[]
-  post_comments?: { count: number }[]
+  likes?: number
 }
 
 interface CommunityGridProps {
@@ -44,8 +43,7 @@ export default function CommunityGrid({ posts, locale }: CommunityGridProps) {
 
       <div className="grid grid-cols-2 gap-3">
         {posts.map((post) => {
-          const likeCount = post.post_likes?.[0]?.count ?? 0
-          const commentCount = post.post_comments?.[0]?.count ?? 0
+          const likeCount = post.likes ?? 0
           const cat = categoryLabel[post.category ?? 'free'] ?? categoryLabel.free
 
           return (
@@ -62,7 +60,6 @@ export default function CommunityGrid({ posts, locale }: CommunityGridProps) {
               </p>
               <div className="flex gap-3 mt-2 text-xs text-gray-400">
                 <span>👍 {likeCount}</span>
-                <span>💬 {commentCount}</span>
                 {post.city && <span>{post.city}</span>}
               </div>
             </Link>

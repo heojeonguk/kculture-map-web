@@ -5,8 +5,7 @@ interface Post {
   title: string
   category?: string
   city?: string
-  post_likes?: { count: number }[]
-  post_comments?: { count: number }[]
+  likes?: number
 }
 
 interface BestReviewsProps {
@@ -35,8 +34,7 @@ export default function BestReviews({ posts, locale }: BestReviewsProps) {
 
       <div className="flex flex-col gap-2">
         {posts.map((post, idx) => {
-          const likeCount = post.post_likes?.[0]?.count ?? 0
-          const commentCount = post.post_comments?.[0]?.count ?? 0
+          const likeCount = post.likes ?? 0
           const isTop = idx < 2
 
           return (
@@ -55,7 +53,7 @@ export default function BestReviews({ posts, locale }: BestReviewsProps) {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-800 truncate">{post.title}</p>
                 <p className="text-xs text-gray-400 mt-0.5">
-                  👍 {likeCount} · 💬 {commentCount}
+                  👍 {likeCount}
                   {post.city && ` · ${post.city}`}
                 </p>
               </div>

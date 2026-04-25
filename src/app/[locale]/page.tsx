@@ -22,17 +22,17 @@ export default async function HomePage({
     .limit(4)
     .order('created_at', { ascending: false })
 
-  // 베스트 후기 5개
+  // 베스트 후기 5개 - 조인 제거, likes 컬럼 직접 사용
   const { data: bestPosts } = await supabase
     .from('posts')
-    .select('id, title, category, city, post_likes(count), post_comments(count)')
-    .order('created_at', { ascending: false })
+    .select('id, title, category, city, likes')
+    .order('likes', { ascending: false })
     .limit(5)
 
-  // 커뮤니티 최신글 4개
+  // 커뮤니티 최신글 4개 - 조인 제거
   const { data: latestPosts } = await supabase
     .from('posts')
-    .select('id, title, category, city, post_likes(count), post_comments(count)')
+    .select('id, title, category, city, likes')
     .order('created_at', { ascending: false })
     .limit(4)
 
