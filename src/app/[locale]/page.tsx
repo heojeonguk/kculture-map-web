@@ -15,19 +15,23 @@ export default async function HomePage({
   const { locale } = await params
   const supabase = await createClient()
 
-  // 인기 장소 4개
-  const { data: popularPlaces } = await supabase
+  const { data: popularPlaces, error: placesError } = await supabase
     .from('places')
     .select('id, name, category, city, district, photo_url, emoji')
     .limit(4)
     .order('created_at', { ascending: false })
 
-  // 베스트 후기 5개 - 조인 제거, likes 컬럼 직접 사용
-  const { data: bestPosts } = await supabase
+  console.log('places data:', popularPlaces)
+  console.log('places error:', placesError)
+
+  const { data: bestPosts, error: postsError } = await supabase
     .from('posts')
     .select('id, title, category, city, likes')
     .order('likes', { ascending: false })
     .limit(5)
+
+  console.log('posts data:', bestPosts)
+  console.log('posts error:', postsError)
 
   // 커뮤니티 최신글 4개 - 조인 제거
   const { data: latestPosts } = await supabase

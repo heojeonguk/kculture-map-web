@@ -24,7 +24,7 @@ export default function BestReviews({ posts, locale }: BestReviewsProps) {
         </h2>
         <Link
           href={`/${locale}/community?category=review`}
-          className="text-xs text-gray-400 hover:text-emerald-600 transition-colors"
+          className="text-xs text-gray-400 hover:text-sky-600 transition-colors"
         >
           {isKo ? '더보기 →' : 'View all →'}
         </Link>
@@ -39,11 +39,11 @@ export default function BestReviews({ posts, locale }: BestReviewsProps) {
             <Link
               key={post.id}
               href={`/${locale}/community/${post.id}`}
-              className="flex items-center gap-3 bg-white border border-gray-100 rounded-xl px-4 py-3 hover:border-emerald-200 hover:shadow-sm transition-all"
+              className="flex items-center gap-3 bg-white border border-gray-100 rounded-xl px-4 py-3 hover:border-sky-200 hover:shadow-sm transition-all"
             >
               <span
                 className={`text-lg font-bold min-w-[24px] text-center ${
-                  isTop ? 'text-red-500' : 'text-emerald-600'
+                  isTop ? 'text-red-500' : 'text-sky-600'
                 }`}
               >
                 {idx + 1}

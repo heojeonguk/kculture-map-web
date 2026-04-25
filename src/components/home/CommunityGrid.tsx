@@ -33,7 +33,7 @@ export default function CommunityGrid({ posts, locale }: CommunityGridProps) {
         </h2>
         <Link
           href={`/${locale}/community`}
-          className="text-xs text-gray-400 hover:text-emerald-600 transition-colors"
+          className="text-xs text-gray-400 hover:text-sky-600 transition-colors"
         >
           {isKo ? '더보기 →' : 'View all →'}
         </Link>
@@ -48,7 +48,7 @@ export default function CommunityGrid({ posts, locale }: CommunityGridProps) {
             <Link
               key={post.id}
               href={`/${locale}/community/${post.id}`}
-              className="bg-white border border-gray-100 rounded-xl p-3.5 hover:border-emerald-200 hover:shadow-sm transition-all"
+              className="bg-white border border-gray-100 rounded-xl p-3.5 hover:border-sky-200 hover:shadow-sm transition-all"
             >
               <p className={`text-xs font-semibold mb-1.5 ${cat.color}`}>
                 {isKo ? cat.ko : cat.en}

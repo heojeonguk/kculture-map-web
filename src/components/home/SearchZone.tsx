@@ -35,11 +35,11 @@ export default function SearchZone({ locale }: SearchZoneProps) {
   }
 
   return (
-    <section className="bg-gradient-to-br from-emerald-800 to-emerald-500 rounded-2xl p-6 text-white">
-      <h1 className="text-xl font-bold mb-1">
+    <section className="bg-white border border-sky-200 rounded-2xl p-6">
+      <h1 className="text-xl font-bold mb-1 text-gray-800">
         {isKo ? '한국 여행의 모든 것' : 'Discover Korea'}
       </h1>
-      <p className="text-emerald-100 text-sm mb-4">
+      <p className="text-gray-500 text-sm mb-4">
         {isKo
           ? '맛집, 명소, 카페, 쇼핑, 액티비티를 한 곳에서'
           : "Korea's ultimate culture travel guide for global travelers"}
@@ -53,11 +53,11 @@ export default function SearchZone({ locale }: SearchZoneProps) {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={isKo ? '장소, 음식, 지역 검색...' : 'Search places, food, city...'}
-          className="flex-1 px-4 py-2.5 rounded-xl text-sm text-gray-800 placeholder:text-gray-400 outline-none focus:ring-2 focus:ring-white/50"
+          className="flex-1 px-4 py-2.5 rounded-xl text-sm text-gray-800 placeholder:text-gray-400 outline-none border border-gray-200 focus:ring-2 focus:ring-sky-200"
         />
         <button
           onClick={handleSearch}
-          className="bg-white text-emerald-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-emerald-50 transition-colors"
+          className="bg-sky-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-sky-600 transition-colors"
         >
           {isKo ? '검색' : 'Search'}
         </button>
@@ -73,8 +73,8 @@ export default function SearchZone({ locale }: SearchZoneProps) {
             }
             className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
               activeCategory === cat.key
-                ? 'bg-white text-emerald-700 border-white'
-                : 'bg-white/20 text-white border-white/30 hover:bg-white/30'
+                ? 'bg-sky-500 text-white border-sky-500'
+                : 'bg-sky-50 text-sky-600 border-sky-200 hover:bg-sky-100'
             }`}
           >
             {cat.emoji} {isKo ? cat.ko : cat.en}

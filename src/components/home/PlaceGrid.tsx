@@ -39,7 +39,7 @@ export default function PlaceGrid({ places, locale }: PlaceGridProps) {
         </h2>
         <Link
           href={`/${locale}/places`}
-          className="text-xs text-gray-400 hover:text-emerald-600 transition-colors"
+          className="text-xs text-gray-400 hover:text-sky-600 transition-colors"
         >
           {isKo ? '더보기 →' : 'View all →'}
         </Link>
@@ -52,7 +52,7 @@ export default function PlaceGrid({ places, locale }: PlaceGridProps) {
             <Link
               key={place.id}
               href={`/${locale}/places/${place.id}`}
-              className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-emerald-300 hover:shadow-md transition-all"
+              className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-sky-300 hover:shadow-md transition-all"
             >
               {/* 이미지 영역 */}
               <div className={`h-24 ${config.bg} flex items-center justify-center relative`}>
@@ -72,7 +72,7 @@ export default function PlaceGrid({ places, locale }: PlaceGridProps) {
               <div className="p-2.5">
                 <p className="text-xs font-semibold text-gray-800 truncate">{place.name}</p>
                 <div className="flex items-center justify-between mt-1">
-                  <span className="text-[10px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded-full">
+                  <span className="text-[10px] bg-sky-50 text-sky-700 px-1.5 py-0.5 rounded-full">
                     {isKo ? config.ko : config.en}
                   </span>
                   <span className="text-[10px] text-gray-400">{place.city}</span>

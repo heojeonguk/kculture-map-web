@@ -20,9 +20,9 @@ export default function Header({ locale }: HeaderProps) {
       <div className="max-w-[1200px] mx-auto px-4 h-14 flex items-center gap-6">
         <Link
           href={`/${locale}`}
-          className="text-emerald-600 font-bold text-lg flex items-center gap-1 shrink-0"
+          className="text-sky-600 font-bold text-lg flex items-center gap-1 shrink-0"
         >
-          🗺 <span>K컬처MAP</span>
+          🇰🇷 <span>K컬처MAP</span>
         </Link>
 
         <nav className="flex gap-5 flex-1">
@@ -30,7 +30,7 @@ export default function Header({ locale }: HeaderProps) {
             <Link
               key={item.href}
               href={`/${locale}${item.href}`}
-              className="text-sm text-gray-600 hover:text-emerald-600 transition-colors font-medium"
+              className="text-sm text-gray-600 hover:text-sky-600 transition-colors font-medium"
             >
               {isKo ? item.ko : item.en}
             </Link>
@@ -39,7 +39,7 @@ export default function Header({ locale }: HeaderProps) {
 
         <Link
           href={`/${locale}/auth/login`}
-          className="text-sm bg-emerald-600 text-white px-4 py-1.5 rounded-lg hover:bg-emerald-700 transition-colors shrink-0"
+          className="text-sm bg-sky-600 text-white px-4 py-1.5 rounded-lg hover:bg-sky-700 transition-colors shrink-0"
         >
           {isKo ? '로그인' : 'Login'}
         </Link>
