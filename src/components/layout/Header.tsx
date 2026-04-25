@@ -22,7 +22,18 @@ export default function Header({ locale }: HeaderProps) {
           href={`/${locale}`}
           className="text-sky-600 font-bold text-lg flex items-center gap-1 shrink-0"
         >
-          🇰🇷 <span>K컬처MAP</span>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="11" fill="white" stroke="#ddd" strokeWidth="0.5"/>
+            <path d="M12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12" fill="#CD2E3A"/>
+            <path d="M12 7C14.76 7 17 9.24 17 12C17 14.76 14.76 17 12 17" fill="#003478"/>
+            <line x1="5" y1="7.5" x2="8.5" y2="11" stroke="black" strokeWidth="1"/>
+            <line x1="6.5" y1="6" x2="10" y2="9.5" stroke="black" strokeWidth="1"/>
+            <line x1="5.75" y1="6.75" x2="9.25" y2="10.25" stroke="black" strokeWidth="1"/>
+            <line x1="15.5" y1="13" x2="19" y2="16.5" stroke="black" strokeWidth="1"/>
+            <line x1="14" y1="14.5" x2="17.5" y2="18" stroke="black" strokeWidth="1"/>
+            <line x1="14.75" y1="13.75" x2="18.25" y2="17.25" stroke="black" strokeWidth="1"/>
+          </svg>
+          <span>K컬처MAP</span>
         </Link>
 
         <nav className="flex gap-5 flex-1">
