@@ -25,8 +25,6 @@ const categoryLabel: Record<string, { ko: string; en: string; color: string }> =
 export default function CommunityGrid({ posts, locale }: CommunityGridProps) {
   const isKo = locale === 'ko'
 
-  if (!posts || posts.length === 0) return null
-
   return (
     <section>
       <div className="flex items-center justify-between mb-3">
