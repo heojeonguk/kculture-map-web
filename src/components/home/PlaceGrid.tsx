@@ -9,7 +9,8 @@ interface Place {
   category: Category
   city: string
   district?: string
-  image_url?: string
+  photo_url?: string
+  emoji?: string
 }
 
 interface PlaceGridProps {
@@ -55,15 +56,15 @@ export default function PlaceGrid({ places, locale }: PlaceGridProps) {
             >
               {/* 이미지 영역 */}
               <div className={`h-24 ${config.bg} flex items-center justify-center relative`}>
-                {place.image_url ? (
+                {place.photo_url ? (
                   <Image
-                    src={place.image_url}
+                    src={place.photo_url}
                     alt={place.name}
                     fill
                     className="object-cover"
                   />
                 ) : (
-                  <span className="text-3xl">{config.emoji}</span>
+                  <span className="text-3xl">{place.emoji ?? config.emoji}</span>
                 )}
               </div>
 

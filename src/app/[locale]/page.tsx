@@ -18,7 +18,7 @@ export default async function HomePage({
   // 인기 장소 4개
   const { data: popularPlaces } = await supabase
     .from('places')
-    .select('id, name, category, city, district, image_url')
+    .select('id, name, category, city, district, photo_url, emoji')
     .limit(4)
     .order('created_at', { ascending: false })
 
