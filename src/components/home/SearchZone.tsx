@@ -24,10 +24,11 @@ export default function SearchZone({ locale }: SearchZoneProps) {
   const isKo = locale === 'ko'
 
   const handleSearch = () => {
+    if (!query.trim() && !activeCategory) return
     const params = new URLSearchParams()
-    if (query) params.set('q', query)
+    if (query.trim()) params.set('q', query.trim())
     if (activeCategory) params.set('category', activeCategory)
-    router.push(`/${locale}/places?${params.toString()}`)
+    router.push(`/${locale}/search?${params.toString()}`)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

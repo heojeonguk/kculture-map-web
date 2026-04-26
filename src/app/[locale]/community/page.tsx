@@ -11,6 +11,7 @@ interface CommunityPageProps {
     category?: string
     sort?: string
     page?: string
+    q?: string
   }>
 }
 
@@ -18,7 +19,7 @@ const PAGE_SIZE = 10
 
 export default async function CommunityPage({ params, searchParams }: CommunityPageProps) {
   const { locale } = await params
-  const { category, sort = 'latest', page } = await searchParams
+  const { category, sort = 'latest', page, q } = await searchParams
   const currentPage = Number(page ?? 1)
   const offset = (currentPage - 1) * PAGE_SIZE
 
@@ -30,6 +31,10 @@ export default async function CommunityPage({ params, searchParams }: CommunityP
 
   if (category && category !== 'all') {
     query = query.eq('category', category)
+  }
+
+  if (q) {
+    query = query.or(`title.ilike.%${q}%,content.ilike.%${q}%`)
   }
 
   if (sort === 'best') {

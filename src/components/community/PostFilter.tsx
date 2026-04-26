@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -27,6 +28,15 @@ export default function PostFilter({ locale, activeCategory, activeSort }: PostF
   const router = useRouter()
   const isKo = locale === 'ko'
   const currentCategory = activeCategory ?? 'all'
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const handleSearch = () => {
+    const params = new URLSearchParams()
+    if (searchQuery.trim()) params.set('q', searchQuery.trim())
+    if (currentCategory !== 'all') params.set('category', currentCategory)
+    params.set('sort', activeSort)
+    router.push(`/${locale}/community?${params.toString()}`)
+  }
 
   const updateFilter = (key: string, value: string) => {
     const params = new URLSearchParams()
@@ -64,6 +74,24 @@ export default function PostFilter({ locale, activeCategory, activeSort }: PostF
         >
           ✏️ {isKo ? '글쓰기' : 'Write'}
         </Link>
+      </div>
+
+      {/* 검색바 */}
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+          placeholder={isKo ? '게시글 검색...' : 'Search posts...'}
+          className="flex-1 px-3 py-1.5 border border-gray-200 rounded-xl text-xs outline-none focus:border-sky-400 transition-colors"
+        />
+        <button
+          onClick={handleSearch}
+          className="px-3 py-1.5 bg-sky-500 text-white rounded-xl text-xs font-medium hover:bg-sky-600 transition-colors"
+        >
+          {isKo ? '검색' : 'Search'}
+        </button>
       </div>
 
       {/* 정렬 */}
