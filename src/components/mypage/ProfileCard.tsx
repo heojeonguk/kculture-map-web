@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
@@ -13,72 +12,10 @@ export default function ProfileCard({ user, locale }: ProfileCardProps) {
   const isKo = locale === 'ko'
   const router = useRouter()
   const nickname = user.user_metadata?.nickname ?? user.email?.split('@')[0] ?? '익명'
-
   const joinDate = new Date(user.created_at).toLocaleDateString(
     isKo ? 'ko-KR' : 'en-US',
     { year: 'numeric', month: 'long', day: 'numeric' }
   )
-
-  const [editing, setEditing] = useState(false)
-  const [newNickname, setNewNickname] = useState(nickname)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
-  const [nicknameCheck, setNicknameCheck] = useState<'available' | 'taken' | null>(null)
-  const [checkingNickname, setCheckingNickname] = useState(false)
-
-  const handleNicknameCheck = async () => {
-    if (newNickname.trim().length < 2) {
-      setError(isKo ? '닉네임은 2자 이상이어야 합니다' : 'Nickname must be at least 2 characters')
-      return
-    }
-    setCheckingNickname(true)
-    const supabase = createClient()
-    const { data } = await supabase
-      .from('nicknames')
-      .select('nickname')
-      .eq('nickname', newNickname.trim())
-      .single()
-    setNicknameCheck(data ? 'taken' : 'available')
-    setCheckingNickname(false)
-  }
-
-  const handleSave = async () => {
-    if (nicknameCheck !== 'available') {
-      setError(isKo ? '닉네임 중복확인을 해주세요' : 'Please check nickname availability')
-      return
-    }
-
-    setSaving(true)
-    setError('')
-    const supabase = createClient()
-    const trimmed = newNickname.trim()
-
-    const { error: updateError } = await supabase.auth.updateUser({
-      data: { nickname: trimmed }
-    })
-
-    if (updateError) {
-      setError(isKo ? '저장에 실패했습니다' : 'Failed to save')
-      setSaving(false)
-      return
-    }
-
-    await supabase
-      .from('nicknames')
-      .upsert({ user_id: user.id, nickname: trimmed }, { onConflict: 'user_id' })
-
-    setSaving(false)
-    setEditing(false)
-    setNicknameCheck(null)
-    router.refresh()
-  }
-
-  const handleCancel = () => {
-    setEditing(false)
-    setNewNickname(nickname)
-    setError('')
-    setNicknameCheck(null)
-  }
 
   const handleLogout = async () => {
     const supabase = createClient()
@@ -93,61 +30,8 @@ export default function ProfileCard({ user, locale }: ProfileCardProps) {
         <div className="w-16 h-16 rounded-full bg-sky-100 flex items-center justify-center text-2xl font-bold text-sky-600 shrink-0">
           {nickname.charAt(0).toUpperCase()}
         </div>
-        <div className="flex-1">
-          {editing ? (
-            <div className="flex flex-col gap-2">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={newNickname}
-                  onChange={(e) => { setNewNickname(e.target.value); setNicknameCheck(null); setError('') }}
-                  maxLength={10}
-                  placeholder={isKo ? '2~10자' : '2~10 chars'}
-                  className="flex-1 px-3 py-1.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-sky-400"
-                  autoFocus
-                />
-                <button
-                  onClick={handleNicknameCheck}
-                  disabled={checkingNickname}
-                  className="px-3 py-1.5 border border-sky-400 text-sky-500 rounded-lg text-xs font-medium hover:bg-sky-50 transition-colors disabled:opacity-50"
-                >
-                  {checkingNickname ? '...' : (isKo ? '중복확인' : 'Check')}
-                </button>
-              </div>
-              {nicknameCheck === 'available' && (
-                <p className="text-xs text-green-500">✅ {isKo ? '사용 가능합니다' : 'Available'}</p>
-              )}
-              {nicknameCheck === 'taken' && (
-                <p className="text-xs text-red-500">❌ {isKo ? '이미 사용 중입니다' : 'Already taken'}</p>
-              )}
-              {error && <p className="text-xs text-red-500">{error}</p>}
-              <div className="flex gap-2">
-                <button
-                  onClick={handleSave}
-                  disabled={saving || nicknameCheck !== 'available'}
-                  className="flex-1 py-1.5 bg-sky-500 text-white rounded-lg text-xs font-medium hover:bg-sky-600 transition-colors disabled:opacity-40"
-                >
-                  {saving ? '...' : (isKo ? '저장' : 'Save')}
-                </button>
-                <button
-                  onClick={handleCancel}
-                  className="flex-1 py-1.5 border border-gray-200 rounded-lg text-xs text-gray-500 hover:bg-gray-50 transition-colors"
-                >
-                  {isKo ? '취소' : 'Cancel'}
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-gray-800">{nickname}</h2>
-              <button
-                onClick={() => setEditing(true)}
-                className="text-xs text-sky-500 hover:text-sky-600 transition-colors"
-              >
-                ✏️ {isKo ? '수정' : 'Edit'}
-              </button>
-            </div>
-          )}
+        <div>
+          <h2 className="text-lg font-bold text-gray-800">{nickname}</h2>
           <p className="text-sm text-gray-400 mt-0.5">{user.email}</p>
         </div>
       </div>
