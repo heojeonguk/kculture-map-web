@@ -1,4 +1,8 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
+import ImageModal from '@/components/common/ImageModal'
 
 interface Post {
   id: string
@@ -30,6 +34,7 @@ const categoryLabel: Record<string, { ko: string; en: string; color: string }> =
 }
 
 export default function PostDetail({ post, locale }: PostDetailProps) {
+  const [modalSrc, setModalSrc] = useState<string | null>(null)
   const isKo = locale === 'ko'
   const cat = categoryLabel[post.category ?? 'free'] ?? categoryLabel.free
   const date = new Date(post.created_at).toLocaleDateString(
@@ -87,13 +92,25 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
 
         {/* 사진 */}
         {post.photo_url && (
-          <div className="w-full rounded-xl overflow-hidden mt-2">
-            <img
-              src={post.photo_url}
-              alt={post.title}
-              className="w-full max-h-96 object-cover rounded-xl"
-            />
-          </div>
+          <>
+            <div
+              className="w-full rounded-xl overflow-hidden mt-2 cursor-zoom-in"
+              onClick={() => setModalSrc(post.photo_url!)}
+            >
+              <img
+                src={post.photo_url}
+                alt={post.title}
+                className="w-full max-h-96 object-cover rounded-xl hover:opacity-95 transition-opacity"
+              />
+            </div>
+            {modalSrc && (
+              <ImageModal
+                src={modalSrc}
+                alt={post.title}
+                onClose={() => setModalSrc(null)}
+              />
+            )}
+          </>
         )}
 
         {/* 좋아요 */}
