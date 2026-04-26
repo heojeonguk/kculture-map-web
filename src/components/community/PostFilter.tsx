@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 interface PostFilterProps {
   locale: string
@@ -38,21 +39,31 @@ export default function PostFilter({ locale, activeCategory, activeSort }: PostF
 
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-4 flex flex-col gap-3">
-      {/* 카테고리 탭 */}
-      <div className="flex gap-1.5 flex-wrap">
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => updateFilter('category', tab.key)}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors ${
-              currentCategory === tab.key
-                ? 'bg-sky-500 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            {isKo ? tab.ko : tab.en}
-          </button>
-        ))}
+      {/* 상단: 카테고리 탭 + 글쓰기 버튼 */}
+      <div className="flex items-center gap-2">
+        <div className="flex gap-1.5 flex-wrap flex-1">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => updateFilter('category', tab.key)}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                currentCategory === tab.key
+                  ? 'bg-sky-500 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {isKo ? tab.ko : tab.en}
+            </button>
+          ))}
+        </div>
+
+        {/* 글쓰기 버튼 */}
+        <Link
+          href={`/${locale}/community/write`}
+          className="shrink-0 flex items-center gap-1.5 bg-sky-500 text-white px-3.5 py-1.5 rounded-full text-xs font-medium hover:bg-sky-600 transition-colors"
+        >
+          ✏️ {isKo ? '글쓰기' : 'Write'}
+        </Link>
       </div>
 
       {/* 정렬 */}
