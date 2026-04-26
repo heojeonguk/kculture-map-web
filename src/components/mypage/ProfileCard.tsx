@@ -22,11 +22,9 @@ export default function ProfileCard({ user, locale }: ProfileCardProps) {
   const [editing, setEditing] = useState(false)
   const [newNickname, setNewNickname] = useState(nickname)
   const [saving, setSaving] = useState(false)
-  const [checking, setChecking] = useState(false)
-  const [checkResult, setCheckResult] = useState<'available' | 'taken' | null>(null)
   const [error, setError] = useState('')
 
-  const handleCheck = async () => {
+  const handleSave = async () => {
     const trimmed = newNickname.trim()
     if (trimmed.length < 2) {
       setError(isKo ? '닉네임은 2자 이상이어야 합니다' : 'Nickname must be at least 2 characters')
@@ -37,34 +35,9 @@ export default function ProfileCard({ user, locale }: ProfileCardProps) {
       return
     }
 
-    setChecking(true)
-    setError('')
-    setCheckResult(null)
-
-    const supabase = createClient()
-    const { data } = await supabase
-      .from('nicknames')
-      .select('nickname')
-      .eq('nickname', trimmed)
-      .single()
-
-    setChecking(false)
-    setCheckResult(data ? 'taken' : 'available')
-  }
-
-  const handleSave = async () => {
-    if (checkResult !== 'available') {
-      setError(isKo ? '중복 확인을 먼저 해주세요' : 'Please check nickname availability first')
-      return
-    }
-
     setSaving(true)
     setError('')
-
     const supabase = createClient()
-    const trimmed = newNickname.trim()
-
-    // user_metadata 업데이트
     const { error: updateError } = await supabase.auth.updateUser({
       data: { nickname: trimmed }
     })
@@ -75,14 +48,8 @@ export default function ProfileCard({ user, locale }: ProfileCardProps) {
       return
     }
 
-    // nicknames 테이블 upsert
-    await supabase
-      .from('nicknames')
-      .upsert({ user_id: user.id, nickname: trimmed }, { onConflict: 'user_id' })
-
     setSaving(false)
     setEditing(false)
-    setCheckResult(null)
     router.refresh()
   }
 
@@ -90,7 +57,6 @@ export default function ProfileCard({ user, locale }: ProfileCardProps) {
     setEditing(false)
     setNewNickname(nickname)
     setError('')
-    setCheckResult(null)
   }
 
   const handleLogout = async () => {
@@ -115,43 +81,20 @@ export default function ProfileCard({ user, locale }: ProfileCardProps) {
                 <input
                   type="text"
                   value={newNickname}
-                  onChange={(e) => {
-                    setNewNickname(e.target.value)
-                    setCheckResult(null)
-                    setError('')
-                  }}
+                  onChange={(e) => { setNewNickname(e.target.value); setError('') }}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSave()}
                   maxLength={10}
                   placeholder={isKo ? '2~10자' : '2~10 chars'}
                   className="flex-1 px-3 py-1.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-sky-400"
                   autoFocus
                 />
-                <button
-                  onClick={handleCheck}
-                  disabled={checking}
-                  className="px-3 py-1.5 border border-sky-400 text-sky-500 rounded-lg text-xs font-medium hover:bg-sky-50 transition-colors disabled:opacity-50"
-                >
-                  {checking ? '...' : (isKo ? '중복확인' : 'Check')}
-                </button>
               </div>
-
-              {/* 중복 확인 결과 */}
-              {checkResult === 'available' && (
-                <p className="text-xs text-green-500">
-                  ✅ {isKo ? '사용 가능한 닉네임입니다' : 'Nickname is available'}
-                </p>
-              )}
-              {checkResult === 'taken' && (
-                <p className="text-xs text-red-500">
-                  ❌ {isKo ? '이미 사용 중인 닉네임입니다' : 'Nickname is already taken'}
-                </p>
-              )}
               {error && <p className="text-xs text-red-500">{error}</p>}
-
               <div className="flex gap-2">
                 <button
                   onClick={handleSave}
-                  disabled={saving || checkResult !== 'available'}
-                  className="flex-1 py-1.5 bg-sky-500 text-white rounded-lg text-xs font-medium hover:bg-sky-600 transition-colors disabled:opacity-40"
+                  disabled={saving}
+                  className="flex-1 py-1.5 bg-sky-500 text-white rounded-lg text-xs font-medium hover:bg-sky-600 transition-colors disabled:opacity-50"
                 >
                   {saving ? '...' : (isKo ? '저장' : 'Save')}
                 </button>

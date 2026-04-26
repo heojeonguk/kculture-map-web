@@ -18,10 +18,29 @@ export default function SignupForm({ locale }: SignupFormProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [nicknameCheck, setNicknameCheck] = useState<'available' | 'taken' | null>(null)
+  const [checkingNickname, setCheckingNickname] = useState(false)
+
+  const handleNicknameCheck = async () => {
+    if (nickname.trim().length < 2) return
+    setCheckingNickname(true)
+    const supabase = createClient()
+    const { data } = await supabase
+      .from('nicknames')
+      .select('nickname')
+      .eq('nickname', nickname.trim())
+      .single()
+    setNicknameCheck(data ? 'taken' : 'available')
+    setCheckingNickname(false)
+  }
 
   const handleSignup = async () => {
     if (!email || !password || !nickname) {
       setError(isKo ? '모든 항목을 입력해주세요' : 'Please fill in all fields')
+      return
+    }
+    if (nicknameCheck !== 'available') {
+      setError(isKo ? '닉네임 중복확인을 해주세요' : 'Please check nickname availability')
       return
     }
     if (password.length < 6) {
@@ -33,7 +52,7 @@ export default function SignupForm({ locale }: SignupFormProps) {
     setError('')
 
     const supabase = createClient()
-    const { error: authError } = await supabase.auth.signUp({
+    const { data, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -46,6 +65,13 @@ export default function SignupForm({ locale }: SignupFormProps) {
       setError(authError.message)
       setLoading(false)
       return
+    }
+
+    if (data.user) {
+      await supabase.from('nicknames').insert({
+        user_id: data.user.id,
+        nickname: nickname.trim(),
+      })
     }
 
     setSuccess(true)
@@ -104,15 +130,32 @@ export default function SignupForm({ locale }: SignupFormProps) {
         {/* 닉네임 */}
         <div className="mb-3">
           <label className="text-xs font-medium text-gray-600 mb-1.5 block">
-            {isKo ? '닉네임' : 'Nickname'}
+            {isKo ? '닉네임' : 'Nickname'} *
           </label>
-          <input
-            type="text"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            placeholder={isKo ? '닉네임 (2-10자)' : 'Nickname (2-10 chars)'}
-            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-sky-400 transition-colors"
-          />
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={nickname}
+              onChange={(e) => { setNickname(e.target.value); setNicknameCheck(null) }}
+              placeholder={isKo ? '2~10자' : '2~10 chars'}
+              maxLength={10}
+              className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-sky-400 transition-colors"
+            />
+            <button
+              type="button"
+              onClick={handleNicknameCheck}
+              disabled={checkingNickname}
+              className="px-3 py-2.5 border border-sky-400 text-sky-500 rounded-xl text-xs font-medium hover:bg-sky-50 transition-colors disabled:opacity-50 shrink-0"
+            >
+              {checkingNickname ? '...' : (isKo ? '중복확인' : 'Check')}
+            </button>
+          </div>
+          {nicknameCheck === 'available' && (
+            <p className="text-xs text-green-500 mt-1">✅ {isKo ? '사용 가능합니다' : 'Available'}</p>
+          )}
+          {nicknameCheck === 'taken' && (
+            <p className="text-xs text-red-500 mt-1">❌ {isKo ? '이미 사용 중입니다' : 'Already taken'}</p>
+          )}
         </div>
 
         {/* 이메일 */}
