@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import Header from '@/components/layout/Header'
+import Footer from '@/components/layout/Footer'
 import Sidebar from '@/components/layout/Sidebar'
 import SearchZone from '@/components/home/SearchZone'
 import PlaceGrid from '@/components/home/PlaceGrid'
@@ -58,6 +59,7 @@ export default async function HomePage({
           <Sidebar position="right" />
         </div>
       </main>
+      <Footer locale={locale} />
     </>
   )
 }

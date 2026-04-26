@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Header from '@/components/layout/Header'
+import Footer from '@/components/layout/Footer'
 import Sidebar from '@/components/layout/Sidebar'
 import ProfileCard from '@/components/mypage/ProfileCard'
 import MyPosts from '@/components/mypage/MyPosts'
@@ -39,6 +40,7 @@ export default async function MyPage({ params }: MypageProps) {
           <Sidebar position="right" />
         </div>
       </main>
+      <Footer locale={locale} />
     </>
   )
 }

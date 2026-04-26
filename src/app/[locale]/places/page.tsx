@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import Header from '@/components/layout/Header'
+import Footer from '@/components/layout/Footer'
 import Sidebar from '@/components/layout/Sidebar'
 import PlaceFilter from '@/components/places/PlaceFilter'
 import PlaceList from '@/components/places/PlaceList'
@@ -64,6 +65,7 @@ export default async function PlacesPage({ params, searchParams }: PlacesPagePro
           <Sidebar position="right" />
         </div>
       </main>
+      <Footer locale={locale} />
     </>
   )
 }

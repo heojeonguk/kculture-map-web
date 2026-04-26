@@ -18,6 +18,7 @@ export default function SignupForm({ locale }: SignupFormProps) {
   const [success, setSuccess] = useState(false)
   const [nicknameCheck, setNicknameCheck] = useState<'available' | 'taken' | null>(null)
   const [checkingNickname, setCheckingNickname] = useState(false)
+  const [agreeTerms, setAgreeTerms] = useState(false)
 
   const handleNicknameCheck = async () => {
     if (nickname.trim().length < 2) {
@@ -50,6 +51,10 @@ export default function SignupForm({ locale }: SignupFormProps) {
     }
     if (nicknameCheck !== 'available') {
       setError(isKo ? '닉네임 중복확인을 해주세요' : 'Please check nickname availability')
+      return
+    }
+    if (!agreeTerms) {
+      setError(isKo ? '이용약관 및 개인정보처리방침에 동의해주세요' : 'Please agree to the Terms and Privacy Policy')
       return
     }
     if (password.length < 6) {
@@ -193,6 +198,35 @@ export default function SignupForm({ locale }: SignupFormProps) {
             placeholder={isKo ? '6자 이상' : 'At least 6 characters'}
             className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-sky-400 transition-colors"
           />
+        </div>
+
+        {/* 약관 동의 */}
+        <div className="flex items-start gap-2 mb-4">
+          <input
+            type="checkbox"
+            id="agreeTerms"
+            checked={agreeTerms}
+            onChange={(e) => setAgreeTerms(e.target.checked)}
+            className="mt-0.5 w-4 h-4 accent-sky-500 shrink-0"
+          />
+          <label htmlFor="agreeTerms" className="text-xs text-gray-600 leading-relaxed">
+            {isKo ? (
+              <>
+                <Link href={`/${locale}/terms`} target="_blank" className="text-sky-500 underline">이용약관</Link>
+                {' 및 '}
+                <Link href={`/${locale}/privacy`} target="_blank" className="text-sky-500 underline">개인정보처리방침</Link>
+                에 동의합니다 (필수)
+              </>
+            ) : (
+              <>
+                I agree to the{' '}
+                <Link href={`/${locale}/terms`} target="_blank" className="text-sky-500 underline">Terms of Service</Link>
+                {' and '}
+                <Link href={`/${locale}/privacy`} target="_blank" className="text-sky-500 underline">Privacy Policy</Link>
+                {' '}(required)
+              </>
+            )}
+          </label>
         </div>
 
         <button

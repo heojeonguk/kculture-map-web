@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import Header from '@/components/layout/Header'
+import Footer from '@/components/layout/Footer'
 import Sidebar from '@/components/layout/Sidebar'
 import PostFilter from '@/components/community/PostFilter'
 import PostList from '@/components/community/PostList'
@@ -61,6 +62,7 @@ export default async function CommunityPage({ params, searchParams }: CommunityP
           <Sidebar position="right" />
         </div>
       </main>
+      <Footer locale={locale} />
     </>
   )
 }
