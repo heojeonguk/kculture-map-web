@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import ImageModal from '@/components/common/ImageModal'
+import { createClient } from '@/lib/supabase/client'
 
 interface Post {
   id: string
@@ -34,7 +34,6 @@ const categoryLabel: Record<string, { ko: string; en: string; color: string }> =
 }
 
 export default function PostDetail({ post, locale }: PostDetailProps) {
-  const [modalSrc, setModalSrc] = useState<string | null>(null)
   const isKo = locale === 'ko'
   const cat = categoryLabel[post.category ?? 'free'] ?? categoryLabel.free
   const date = new Date(post.created_at).toLocaleDateString(
@@ -42,9 +41,80 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
     { year: 'numeric', month: 'long', day: 'numeric' }
   )
 
+  const [likes, setLikes] = useState(post.likes ?? 0)
+  const [liked, setLiked] = useState(false)
+  const [likeLoading, setLikeLoading] = useState(false)
+  const [modalSrc, setModalSrc] = useState<string | null>(null)
+
+  useEffect(() => {
+    const checkLiked = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      const identifier = user?.id ?? localStorage.getItem('anon_id') ?? ''
+      if (!identifier) return
+      const { data } = await supabase
+        .from('post_likes')
+        .select('id')
+        .eq('post_id', post.id)
+        .eq('user_identifier', identifier)
+        .single()
+      if (data) setLiked(true)
+    }
+    checkLiked()
+  }, [post.id])
+
+  const handleLike = async () => {
+    if (likeLoading) return
+    setLikeLoading(true)
+
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    let identifier = user?.id
+    if (!identifier) {
+      let anonId = localStorage.getItem('anon_id')
+      if (!anonId) {
+        anonId = crypto.randomUUID()
+        localStorage.setItem('anon_id', anonId)
+      }
+      identifier = anonId
+    }
+
+    if (liked) {
+      // 좋아요 취소
+      await supabase
+        .from('post_likes')
+        .delete()
+        .eq('post_id', post.id)
+        .eq('user_identifier', identifier)
+
+      await supabase
+        .from('posts')
+        .update({ likes: likes - 1 })
+        .eq('id', post.id)
+
+      setLikes(prev => prev - 1)
+      setLiked(false)
+    } else {
+      // 좋아요 추가
+      await supabase
+        .from('post_likes')
+        .insert({ post_id: post.id, user_identifier: identifier })
+
+      await supabase
+        .from('posts')
+        .update({ likes: likes + 1 })
+        .eq('id', post.id)
+
+      setLikes(prev => prev + 1)
+      setLiked(true)
+    }
+
+    setLikeLoading(false)
+  }
+
   return (
     <div className="flex flex-col gap-4">
-      {/* 뒤로가기 */}
       <Link
         href={`/${locale}/community`}
         className="text-sm text-gray-400 hover:text-sky-500 transition-colors flex items-center gap-1 w-fit"
@@ -53,7 +123,6 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
       </Link>
 
       <div className="bg-white border border-gray-100 rounded-2xl p-6">
-        {/* 카테고리 + 날짜 */}
         <div className="flex items-center gap-2 mb-3">
           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${cat.color}`}>
             {isKo ? cat.ko : cat.en}
@@ -64,10 +133,8 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
           <span className="text-xs text-gray-300 ml-auto">{date}</span>
         </div>
 
-        {/* 제목 */}
         <h1 className="text-xl font-bold text-gray-900 mb-4">{post.title}</h1>
 
-        {/* 작성자 */}
         <div className="flex items-center gap-2 pb-4 border-b border-gray-100">
           {post.avatar_url ? (
             <img
@@ -85,12 +152,10 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
           </span>
         </div>
 
-        {/* 본문 */}
         <div className="py-4 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
           {post.content}
         </div>
 
-        {/* 사진 */}
         {post.photo_url && (
           <>
             <div
@@ -104,18 +169,41 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
               />
             </div>
             {modalSrc && (
-              <ImageModal
-                src={modalSrc}
-                alt={post.title}
-                onClose={() => setModalSrc(null)}
-              />
+              <div
+                className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+                onClick={() => setModalSrc(null)}
+              >
+                <button
+                  onClick={() => setModalSrc(null)}
+                  className="absolute top-4 right-4 text-white/80 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full bg-black/30"
+                >
+                  ✕
+                </button>
+                <img
+                  src={modalSrc}
+                  alt={post.title}
+                  className="max-w-full max-h-[90vh] object-contain rounded-lg"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
             )}
           </>
         )}
 
-        {/* 좋아요 */}
+        {/* 좋아요 버튼 */}
         <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-100">
-          <span className="text-sm text-gray-500">👍 {post.likes ?? 0}</span>
+          <button
+            onClick={handleLike}
+            disabled={likeLoading}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+              liked
+                ? 'bg-orange-100 text-orange-500 border border-orange-200'
+                : 'bg-gray-50 text-gray-500 border border-gray-200 hover:bg-orange-50 hover:text-orange-400 hover:border-orange-200'
+            }`}
+          >
+            <span className="text-base">{liked ? '🔥' : '🤍'}</span>
+            {likes}
+          </button>
         </div>
       </div>
     </div>
