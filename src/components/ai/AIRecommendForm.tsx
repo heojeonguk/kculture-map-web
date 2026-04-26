@@ -137,7 +137,7 @@ Please provide a specific travel itinerary including place names, routes, and ti
             {durations.map((d) => (
               <button
                 key={d.key}
-                onClick={() => setDuration(d.key)}
+                onClick={() => setDuration(duration === d.key ? '' : d.key)}
                 className={`px-3.5 py-2 rounded-xl text-xs font-medium border transition-colors ${
                   duration === d.key
                     ? 'bg-sky-500 text-white border-sky-500'
@@ -159,7 +159,7 @@ Please provide a specific travel itinerary including place names, routes, and ti
             {regions.map((r) => (
               <button
                 key={r.key}
-                onClick={() => setRegion(r.key)}
+                onClick={() => setRegion(region === r.key ? '' : r.key)}
                 className={`px-3.5 py-2 rounded-xl text-xs font-medium border transition-colors ${
                   region === r.key
                     ? 'bg-sky-500 text-white border-sky-500'
