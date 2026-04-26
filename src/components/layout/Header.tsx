@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import NotificationBell from '@/components/common/NotificationBell'
 
 interface HeaderProps {
   locale: string
@@ -88,6 +89,8 @@ export default function Header({ locale }: HeaderProps) {
 
         {/* 로그인 상태 */}
         {user ? (
+          <div className="flex items-center gap-2">
+          <NotificationBell />
           <div className="relative header-user-menu">
             <button
               onClick={() => setMenuOpen(!menuOpen)}
@@ -123,6 +126,7 @@ export default function Header({ locale }: HeaderProps) {
                 </button>
               </div>
             )}
+          </div>
           </div>
         ) : (
           <Link

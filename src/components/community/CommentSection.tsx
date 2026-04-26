@@ -209,19 +209,42 @@ export default function CommentSection({ comments: initialComments, postId, loca
 
   const addComment = async (parentId: string | null, content: string) => {
     const supabase = createClient()
+    const fromUserName = user.user_metadata?.nickname ?? user.email?.split('@')[0] ?? '익명'
+
     const { data: newComment, error } = await supabase
       .from('post_comments')
       .insert({
         post_id: postId,
         content,
         parent_id: parentId,
-        user_name: user.user_metadata?.nickname ?? user.email?.split('@')[0] ?? '익명',
+        user_name: fromUserName,
       })
       .select('*')
       .single()
 
     if (!error && newComment) {
       setComments(prev => [...prev, newComment])
+
+      const { data: post } = await supabase
+        .from('posts')
+        .select('user_id')
+        .eq('id', postId)
+        .single()
+
+      if (post?.user_id && post.user_id !== user.id) {
+        await fetch(`${window.location.origin}/api/notifications/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: post.user_id,
+            type: 'comment',
+            post_id: postId,
+            from_user_name: fromUserName,
+            from_avatar_url: user.user_metadata?.avatar_url ?? null,
+            message: `${fromUserName}님이 댓글을 달았습니다: ${content.slice(0, 20)}`,
+          }),
+        })
+      }
     }
   }
 

@@ -132,6 +132,28 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
 
       setLikes(prev => prev + 1)
       setLiked(true)
+
+      const { data: postData } = await supabase
+        .from('posts')
+        .select('user_id')
+        .eq('id', post.id)
+        .single()
+
+      if (postData?.user_id && postData.user_id !== user?.id) {
+        const fromUserName = user?.user_metadata?.nickname ?? user?.email?.split('@')[0] ?? '익명'
+        await fetch(`${window.location.origin}/api/notifications/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: postData.user_id,
+            type: 'like',
+            post_id: post.id,
+            from_user_name: fromUserName,
+            from_avatar_url: user?.user_metadata?.avatar_url ?? null,
+            message: `${fromUserName}님이 좋아요를 눌렀습니다`,
+          }),
+        })
+      }
     }
 
     setLikeLoading(false)
