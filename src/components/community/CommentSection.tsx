@@ -59,6 +59,28 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
   const [showReplyInput, setShowReplyInput] = useState(false)
   const [replyContent, setReplyContent] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [translated, setTranslated] = useState<string | null>(null)
+  const [translating, setTranslating] = useState(false)
+  const [showTranslated, setShowTranslated] = useState(false)
+
+  const handleTranslate = async () => {
+    if (translated) {
+      setShowTranslated(!showTranslated)
+      return
+    }
+    setTranslating(true)
+    try {
+      const response = await fetch(`${window.location.origin}/api/translate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: comment.content, targetLocale: locale }),
+      })
+      const data = await response.json()
+      setTranslated(data.translated)
+      setShowTranslated(true)
+    } catch {}
+    setTranslating(false)
+  }
 
   const handleReplySubmit = async () => {
     if (!replyContent.trim()) return
@@ -86,15 +108,39 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
           </div>
           <p className="text-sm text-gray-600 leading-relaxed">{comment.content}</p>
 
-          {/* 답글 버튼 */}
-          {user && depth < 2 && (
-            <button
-              onClick={() => setShowReplyInput(!showReplyInput)}
-              className="text-[11px] text-gray-400 hover:text-sky-500 mt-1 transition-colors"
-            >
-              {isKo ? '↩ 답글' : '↩ Reply'}
-            </button>
+          {/* 번역 결과 */}
+          {showTranslated && translated && (
+            <div className="bg-sky-50 border border-sky-100 rounded-lg p-2.5 mt-1.5 text-xs text-gray-600 leading-relaxed">
+              <p className="text-[9px] text-sky-400 font-medium mb-1">🌐 {isKo ? '번역' : 'Translation'}</p>
+              {translated}
+            </div>
           )}
+
+          {/* 답글 + 번역 버튼 */}
+          <div className="flex items-center gap-3 mt-1">
+            {user && depth < 2 && (
+              <button
+                onClick={() => setShowReplyInput(!showReplyInput)}
+                className="text-[11px] text-gray-400 hover:text-sky-500 transition-colors"
+              >
+                {isKo ? '↩ 답글' : '↩ Reply'}
+              </button>
+            )}
+            <button
+              onClick={handleTranslate}
+              disabled={translating}
+              className="text-[11px] text-gray-400 hover:text-sky-500 transition-colors flex items-center gap-1"
+            >
+              {translating
+                ? <span className="w-2.5 h-2.5 border border-sky-400 border-t-transparent rounded-full animate-spin" />
+                : '🌐'}
+              {translating
+                ? (isKo ? '번역 중' : 'Translating')
+                : showTranslated
+                ? (isKo ? '원문' : 'Original')
+                : (isKo ? '번역' : 'Translate')}
+            </button>
+          </div>
 
           {/* 답글 입력창 */}
           {showReplyInput && (
