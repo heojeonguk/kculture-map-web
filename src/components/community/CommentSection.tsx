@@ -10,12 +10,141 @@ interface Comment {
   nation?: string
   created_at: string
   user_level_emoji?: string
+  parent_id?: string | null
+  children?: Comment[]
 }
 
 interface CommentSectionProps {
   comments: Comment[]
   postId: string
   locale: string
+}
+
+function timeAgo(dateStr: string, isKo: boolean): string {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const mins = Math.floor(diff / 60000)
+  const hours = Math.floor(diff / 3600000)
+  const days = Math.floor(diff / 86400000)
+  if (mins < 1) return isKo ? '방금 전' : 'just now'
+  if (mins < 60) return isKo ? `${mins}분 전` : `${mins}m ago`
+  if (hours < 24) return isKo ? `${hours}시간 전` : `${hours}h ago`
+  return isKo ? `${days}일 전` : `${days}d ago`
+}
+
+function buildTree(comments: Comment[]): Comment[] {
+  const map: Record<string, Comment> = {}
+  const roots: Comment[] = []
+  comments.forEach(c => { map[c.id] = { ...c, children: [] } })
+  comments.forEach(c => {
+    if (c.parent_id && map[c.parent_id]) {
+      map[c.parent_id].children!.push(map[c.id])
+    } else {
+      roots.push(map[c.id])
+    }
+  })
+  return roots
+}
+
+interface CommentItemProps {
+  comment: Comment
+  postId: string
+  locale: string
+  isKo: boolean
+  user: any
+  onReply: (parentId: string, content: string) => Promise<void>
+  depth?: number
+}
+
+function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }: CommentItemProps) {
+  const [showReplyInput, setShowReplyInput] = useState(false)
+  const [replyContent, setReplyContent] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+
+  const handleReplySubmit = async () => {
+    if (!replyContent.trim()) return
+    setSubmitting(true)
+    await onReply(comment.id, replyContent.trim())
+    setReplyContent('')
+    setShowReplyInput(false)
+    setSubmitting(false)
+  }
+
+  return (
+    <div className={`${depth > 0 ? 'ml-8 border-l-2 border-sky-100 pl-3' : ''}`}>
+      <div className="flex gap-3 py-2">
+        <div className="w-7 h-7 rounded-full bg-sky-50 flex items-center justify-center text-xs shrink-0">
+          {comment.user_level_emoji ?? '👤'}
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xs font-medium text-gray-700">
+              {comment.nation ?? ''} {comment.user_name ?? (isKo ? '익명' : 'Anonymous')}
+            </span>
+            <span className="text-[10px] text-gray-300">
+              {timeAgo(comment.created_at, isKo)}
+            </span>
+          </div>
+          <p className="text-sm text-gray-600 leading-relaxed">{comment.content}</p>
+
+          {/* 답글 버튼 */}
+          {user && depth < 2 && (
+            <button
+              onClick={() => setShowReplyInput(!showReplyInput)}
+              className="text-[11px] text-gray-400 hover:text-sky-500 mt-1 transition-colors"
+            >
+              {isKo ? '↩ 답글' : '↩ Reply'}
+            </button>
+          )}
+
+          {/* 답글 입력창 */}
+          {showReplyInput && (
+            <div className="flex gap-2 mt-2">
+              <input
+                type="text"
+                value={replyContent}
+                onChange={(e) => setReplyContent(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleReplySubmit()}
+                placeholder={isKo ? '답글을 입력하세요...' : 'Write a reply...'}
+                className="flex-1 px-3 py-1.5 border border-gray-200 rounded-xl text-xs outline-none focus:border-sky-400 transition-colors"
+                autoFocus
+              />
+              <button
+                onClick={handleReplySubmit}
+                disabled={submitting || !replyContent.trim()}
+                className="px-3 py-1.5 bg-sky-500 text-white rounded-xl text-xs font-medium hover:bg-sky-600 transition-colors disabled:opacity-40"
+              >
+                {isKo ? '등록' : 'Post'}
+              </button>
+              <button
+                onClick={() => { setShowReplyInput(false); setReplyContent('') }}
+                className="px-3 py-1.5 border border-gray-200 rounded-xl text-xs text-gray-500 hover:bg-gray-50 transition-colors"
+              >
+                {isKo ? '취소' : 'Cancel'}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 대댓글 */}
+      {comment.children && comment.children.length > 0 && (
+        <div className="mt-1">
+          {comment.children.map(child => (
+            <CommentItem
+              key={child.id}
+              comment={child}
+              postId={postId}
+              locale={locale}
+              isKo={isKo}
+              user={user}
+              onReply={onReply}
+              depth={depth + 1}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default function CommentSection({ comments: initialComments, postId, locale }: CommentSectionProps) {
@@ -32,57 +161,57 @@ export default function CommentSection({ comments: initialComments, postId, loca
     })
   }, [])
 
-  const handleSubmit = async () => {
-    if (!content.trim() || !user) return
-    setSubmitting(true)
-
+  const addComment = async (parentId: string | null, content: string) => {
     const supabase = createClient()
     const { data: newComment, error } = await supabase
       .from('post_comments')
       .insert({
         post_id: postId,
-        content: content.trim(),
+        content,
+        parent_id: parentId,
         user_name: user.user_metadata?.nickname ?? user.email?.split('@')[0] ?? '익명',
       })
       .select('*')
       .single()
 
     if (!error && newComment) {
-      setComments([...comments, newComment])
-      setContent('')
+      setComments(prev => [...prev, newComment])
     }
+  }
+
+  const handleSubmit = async () => {
+    if (!content.trim() || !user) return
+    setSubmitting(true)
+    await addComment(null, content.trim())
+    setContent('')
     setSubmitting(false)
   }
+
+  const tree = buildTree(comments)
+  const totalCount = comments.length
 
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-5">
       <h2 className="text-sm font-bold text-gray-800 mb-4">
-        💬 {isKo ? `댓글 ${comments.length}개` : `${comments.length} Comments`}
+        💬 {isKo ? `댓글 ${totalCount}개` : `${totalCount} Comments`}
       </h2>
 
-      {comments.length === 0 ? (
+      {tree.length === 0 ? (
         <p className="text-sm text-gray-400 text-center py-6">
           {isKo ? '첫 댓글을 남겨보세요!' : 'Be the first to comment!'}
         </p>
       ) : (
-        <div className="flex flex-col gap-3 mb-4">
-          {comments.map((comment) => (
-            <div key={comment.id} className="flex gap-3">
-              <div className="w-8 h-8 rounded-full bg-sky-50 flex items-center justify-center text-sm shrink-0">
-                {comment.user_level_emoji ?? '👤'}
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-medium text-gray-700">
-                    {comment.nation ?? ''} {comment.user_name ?? (isKo ? '익명' : 'Anonymous')}
-                  </span>
-                  <span className="text-[10px] text-gray-300">
-                    {new Date(comment.created_at).toLocaleDateString()}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600 leading-relaxed">{comment.content}</p>
-              </div>
-            </div>
+        <div className="flex flex-col divide-y divide-gray-50 mb-4">
+          {tree.map(comment => (
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              postId={postId}
+              locale={locale}
+              isKo={isKo}
+              user={user}
+              onReply={(parentId, content) => addComment(parentId, content)}
+            />
           ))}
         </div>
       )}
