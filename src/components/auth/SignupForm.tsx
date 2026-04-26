@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 interface SignupFormProps {
@@ -11,7 +10,6 @@ interface SignupFormProps {
 
 export default function SignupForm({ locale }: SignupFormProps) {
   const isKo = locale === 'ko'
-  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [nickname, setNickname] = useState('')
@@ -22,16 +20,27 @@ export default function SignupForm({ locale }: SignupFormProps) {
   const [checkingNickname, setCheckingNickname] = useState(false)
 
   const handleNicknameCheck = async () => {
-    if (nickname.trim().length < 2) return
+    if (nickname.trim().length < 2) {
+      setError(isKo ? '닉네임은 2자 이상이어야 합니다' : 'Nickname must be at least 2 characters')
+      return
+    }
     setCheckingNickname(true)
+    setError('')
+
     const supabase = createClient()
     const { data } = await supabase
       .from('nicknames')
       .select('nickname')
       .eq('nickname', nickname.trim())
-      .single()
-    setNicknameCheck(data ? 'taken' : 'available')
+      .maybeSingle()
+
     setCheckingNickname(false)
+
+    if (data) {
+      setNicknameCheck('taken')
+    } else {
+      setNicknameCheck('available')
+    }
   }
 
   const handleSignup = async () => {
