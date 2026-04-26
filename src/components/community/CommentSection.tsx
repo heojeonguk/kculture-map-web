@@ -42,7 +42,6 @@ export default function CommentSection({ comments: initialComments, postId, loca
       .insert({
         post_id: postId,
         content: content.trim(),
-        user_id: user.id,
         user_name: user.user_metadata?.nickname ?? user.email?.split('@')[0] ?? '익명',
       })
       .select('*')
