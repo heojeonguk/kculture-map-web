@@ -45,6 +45,9 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
   const [liked, setLiked] = useState(false)
   const [likeLoading, setLikeLoading] = useState(false)
   const [modalSrc, setModalSrc] = useState<string | null>(null)
+  const [translated, setTranslated] = useState<string | null>(null)
+  const [translating, setTranslating] = useState(false)
+  const [showTranslated, setShowTranslated] = useState(false)
 
   useEffect(() => {
     const checkLiked = async () => {
@@ -62,6 +65,27 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
     }
     checkLiked()
   }, [post.id])
+
+  const handleTranslate = async () => {
+    if (translated) {
+      setShowTranslated(!showTranslated)
+      return
+    }
+    setTranslating(true)
+    try {
+      const response = await fetch(`${window.location.origin}/api/translate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: post.content, targetLocale: locale }),
+      })
+      const data = await response.json()
+      setTranslated(data.translated)
+      setShowTranslated(true)
+    } catch {
+      // 에러 무시
+    }
+    setTranslating(false)
+  }
 
   const handleLike = async () => {
     if (likeLoading) return
@@ -155,6 +179,30 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
         <div className="py-4 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
           {post.content}
         </div>
+
+        <div className="flex justify-end mb-2">
+          <button
+            onClick={handleTranslate}
+            disabled={translating}
+            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-sky-500 transition-colors border border-gray-200 rounded-lg px-3 py-1.5 hover:border-sky-300"
+          >
+            {translating ? (
+              <span className="w-3 h-3 border border-sky-400 border-t-transparent rounded-full animate-spin" />
+            ) : '🌐'}
+            {translating
+              ? (isKo ? '번역 중...' : 'Translating...')
+              : showTranslated
+              ? (isKo ? '원문 보기' : 'Show original')
+              : (isKo ? '번역 보기' : 'Translate')}
+          </button>
+        </div>
+
+        {showTranslated && translated && (
+          <div className="bg-sky-50 border border-sky-100 rounded-xl p-4 mb-4 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+            <p className="text-[10px] text-sky-400 font-medium mb-2">🌐 {isKo ? '번역' : 'Translation'}</p>
+            {translated}
+          </div>
+        )}
 
         {post.photo_url && (
           <>
