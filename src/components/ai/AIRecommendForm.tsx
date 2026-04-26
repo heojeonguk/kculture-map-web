@@ -75,7 +75,7 @@ ${extra ? `Additional requests: ${extra}` : ''}
 Please provide a specific travel itinerary including place names, routes, and tips.`
 
     try {
-      const response = await fetch('/api/ai-recommend', {
+      const response = await fetch(`${window.location.origin}/api/ai-recommend`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt, locale }),
