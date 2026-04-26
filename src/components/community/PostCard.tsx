@@ -10,7 +10,7 @@ interface Post {
   user_name?: string
   nation?: string
   photo_url?: string
-  post_comments?: [{ count: number }]
+  post_comments?: { count: number }[]
 }
 
 interface PostCardProps {
