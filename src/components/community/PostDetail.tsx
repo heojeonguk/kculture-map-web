@@ -66,12 +66,10 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
         {/* 작성자 */}
         <div className="flex items-center gap-2 pb-4 border-b border-gray-100">
           {post.avatar_url ? (
-            <Image
+            <img
               src={post.avatar_url}
               alt={post.user_name ?? ''}
-              width={32}
-              height={32}
-              className="rounded-full"
+              className="w-8 h-8 rounded-full object-cover"
             />
           ) : (
             <div className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-sm">

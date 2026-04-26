@@ -23,7 +23,7 @@ export default function BestReviews({ posts, locale }: BestReviewsProps) {
           ⭐ {isKo ? '베스트 여행 후기' : 'Best Travel Reviews'}
         </h2>
         <Link
-          href={`/${locale}/community?category=review`}
+          href={`/${locale}/community?sort=best`}
           className="text-xs text-gray-400 hover:text-sky-600 transition-colors"
         >
           {isKo ? '더보기 →' : 'View all →'}
