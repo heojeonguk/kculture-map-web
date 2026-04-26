@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import ReactMarkdown from 'react-markdown'
 
 interface AIRecommendFormProps {
   locale: string
@@ -212,8 +213,8 @@ Please provide a specific travel itinerary including place names, routes, and ti
             <span className="w-6 h-6 rounded-full bg-sky-100 flex items-center justify-center text-xs">✨</span>
             {isKo ? 'AI 추천 여행 일정' : 'AI Travel Itinerary'}
           </h2>
-          <div className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-            {result}
+          <div className="prose prose-sm max-w-none text-gray-700">
+            <ReactMarkdown>{result}</ReactMarkdown>
           </div>
         </div>
       )}
