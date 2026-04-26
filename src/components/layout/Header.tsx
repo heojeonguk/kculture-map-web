@@ -45,6 +45,15 @@ export default function Header({ locale }: HeaderProps) {
     return () => listener.subscription.unsubscribe()
   }, [])
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      if (!target.closest('.header-user-menu')) setMenuOpen(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
   const handleLogout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
@@ -79,7 +88,7 @@ export default function Header({ locale }: HeaderProps) {
 
         {/* 로그인 상태 */}
         {user ? (
-          <div className="relative">
+          <div className="relative header-user-menu">
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-sky-500 transition-colors"
@@ -92,11 +101,25 @@ export default function Header({ locale }: HeaderProps) {
 
             {menuOpen && (
               <div className="absolute right-0 top-10 bg-white border border-gray-100 rounded-xl shadow-lg py-1 w-36 z-50">
+                <Link
+                  href={`/${locale}/mypage`}
+                  onClick={() => setMenuOpen(false)}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
+                >
+                  👤 {isKo ? '마이페이지' : 'My Page'}
+                </Link>
+                <Link
+                  href={`/${locale}/community/write`}
+                  onClick={() => setMenuOpen(false)}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
+                >
+                  ✏️ {isKo ? '글쓰기' : 'Write'}
+                </Link>
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors"
+                  className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors flex items-center gap-2"
                 >
-                  {isKo ? '로그아웃' : 'Logout'}
+                  🚪 {isKo ? '로그아웃' : 'Logout'}
                 </button>
               </div>
             )}
