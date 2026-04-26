@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Image from 'next/image'
 
 interface Post {
   id: string
@@ -88,12 +87,11 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
 
         {/* 사진 */}
         {post.photo_url && (
-          <div className="relative w-full h-64 rounded-xl overflow-hidden mt-2">
-            <Image
+          <div className="w-full rounded-xl overflow-hidden mt-2">
+            <img
               src={post.photo_url}
               alt={post.title}
-              fill
-              className="object-cover"
+              className="w-full max-h-96 object-cover rounded-xl"
             />
           </div>
         )}
