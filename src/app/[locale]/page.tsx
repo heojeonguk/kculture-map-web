@@ -4,7 +4,7 @@ import Footer from '@/components/layout/Footer'
 import Sidebar from '@/components/layout/Sidebar'
 import SearchZone from '@/components/home/SearchZone'
 import PlaceGrid from '@/components/home/PlaceGrid'
-import BannerAd from '@/components/home/BannerAd'
+// import BannerAd from '@/components/home/BannerAd'
 import BestReviews from '@/components/home/BestReviews'
 import CommunityGrid from '@/components/home/CommunityGrid'
 
@@ -51,7 +51,7 @@ export default async function HomePage({
           <div className="flex flex-col gap-6 min-w-0">
             <SearchZone locale={locale} />
             <PlaceGrid places={popularPlaces ?? []} locale={locale} />
-            <BannerAd />
+            {/* <BannerAd /> */}
             <BestReviews posts={bestPosts ?? []} locale={locale} />
             <CommunityGrid posts={latestPosts ?? []} locale={locale} />
           </div>
