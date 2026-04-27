@@ -14,7 +14,11 @@ interface Notification {
   created_at: string
 }
 
-export default function NotificationBell() {
+interface NotificationBellProps {
+  userId: string | null
+}
+
+export default function NotificationBell({ userId }: NotificationBellProps) {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -24,8 +28,9 @@ export default function NotificationBell() {
   const unreadCount = notifications.filter(n => !n.is_read).length
 
   const fetchNotifications = async () => {
+    if (!userId) return
     try {
-      const res = await fetch(`${window.location.origin}/api/notifications`)
+      const res = await fetch(`${window.location.origin}/api/notifications?user_id=${userId}`)
       if (!res.ok) return
       const data = await res.json()
       setNotifications(data.notifications || [])
@@ -37,7 +42,7 @@ export default function NotificationBell() {
     // 30초마다 폴링
     const interval = setInterval(fetchNotifications, 30000)
     return () => clearInterval(interval)
-  }, [])
+  }, [userId])
 
   // 외부 클릭 시 닫기
   useEffect(() => {
@@ -54,7 +59,11 @@ export default function NotificationBell() {
     setOpen(prev => !prev)
     if (!open && unreadCount > 0) {
       // 열 때 전체 읽음 처리
-      await fetch(`${window.location.origin}/api/notifications`, { method: 'PATCH' })
+      await fetch(`${window.location.origin}/api/notifications`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      })
       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
     }
   }

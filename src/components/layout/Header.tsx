@@ -90,7 +90,7 @@ export default function Header({ locale }: HeaderProps) {
         {/* 로그인 상태 */}
         {user ? (
           <div className="flex items-center gap-2">
-          <NotificationBell />
+          <NotificationBell userId={user?.id ?? null} />
           <div className="relative header-user-menu">
             <button
               onClick={() => setMenuOpen(!menuOpen)}

@@ -1,17 +1,16 @@
 import { createClient } from '@/lib/supabase/client'
 import { NextRequest, NextResponse } from 'next/server'
 
-// GET: 알림 목록 조회
 export async function GET(request: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { searchParams } = new URL(request.url)
+  const userId = searchParams.get('user_id')
+  if (!userId) return NextResponse.json({ notifications: [] })
 
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
+  const supabase = createClient()
   const { data, error } = await supabase
     .from('notifications')
     .select('*')
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
     .order('created_at', { ascending: false })
     .limit(20)
 
@@ -19,17 +18,15 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({ notifications: data })
 }
 
-// PATCH: 전체 읽음 처리
 export async function PATCH(request: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { userId } = await request.json()
+  if (!userId) return NextResponse.json({ error: 'Missing userId' }, { status: 400 })
 
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
+  const supabase = createClient()
   const { error } = await supabase
     .from('notifications')
     .update({ is_read: true })
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
     .eq('is_read', false)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
