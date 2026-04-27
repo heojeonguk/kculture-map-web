@@ -30,6 +30,7 @@ export default function DMPage() {
   const [sending, setSending] = useState(false)
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [modalImg, setModalImg] = useState<string | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -150,6 +151,25 @@ export default function DMPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 flex flex-col h-[calc(100vh-56px)]">
+      {modalImg && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+          onClick={() => setModalImg(null)}
+        >
+          <button
+            onClick={() => setModalImg(null)}
+            className="absolute top-4 right-4 text-white/80 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full bg-black/30"
+          >
+            ×
+          </button>
+          <img
+            src={modalImg}
+            alt="사진 원본"
+            className="max-w-full max-h-[90vh] object-contain rounded-lg"
+            onClick={e => e.stopPropagation()}
+          />
+        </div>
+      )}
       {/* 상단 헤더 */}
       <div className="flex items-center gap-3 pb-4 border-b border-gray-100 shrink-0">
         <button onClick={() => router.push(`/${locale}/messages`)} className="text-gray-400 hover:text-gray-600 text-xl px-1">
@@ -161,9 +181,9 @@ export default function DMPage() {
         <span className="font-semibold text-gray-800 flex-1">{receiverName}</span>
         <button
           onClick={() => router.push(`/${locale}`)}
-          className="text-xs text-gray-400 hover:text-sky-500 transition-colors"
+          className="text-sm text-gray-500 hover:text-sky-500 transition-colors flex items-center gap-1"
         >
-          홈
+          🏠 <span className="text-xs">홈</span>
         </button>
       </div>
 
@@ -180,7 +200,12 @@ export default function DMPage() {
                     : 'bg-gray-100 text-gray-800 rounded-bl-sm'
                 }`}>
                   {msg.photo_url && (
-                    <img src={msg.photo_url} alt="사진" className="max-w-[200px] rounded-lg mb-1" />
+                    <img
+                      src={msg.photo_url}
+                      alt="사진"
+                      className="max-w-[200px] rounded-lg mb-1 cursor-zoom-in hover:opacity-90 transition-opacity"
+                      onClick={() => setModalImg(msg.photo_url!)}
+                    />
                   )}
                   {msg.content && msg.content}
                 </div>
