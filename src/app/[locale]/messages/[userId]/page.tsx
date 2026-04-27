@@ -13,6 +13,7 @@ interface Message {
   receiver_name: string
   is_read: boolean
   created_at: string
+  photo_url?: string
 }
 
 export default function DMPage() {
@@ -27,6 +28,8 @@ export default function DMPage() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -35,7 +38,6 @@ export default function DMPage() {
       if (!data.user) { router.push(`/${locale}/auth/login`); return }
       setCurrentUser(data.user)
 
-      // 닉네임 조회
       const { data: nickData } = await supabase
         .from('nicknames')
         .select('nickname')
@@ -44,7 +46,6 @@ export default function DMPage() {
       const myNick = nickData?.nickname ?? data.user.email?.split('@')[0] ?? '익명'
       setCurrentNickname(myNick)
 
-      // 상대방 닉네임 조회
       const { data: receiverNick } = await supabase
         .from('nicknames')
         .select('nickname')
@@ -52,10 +53,8 @@ export default function DMPage() {
         .single()
       setReceiverName(receiverNick?.nickname ?? '상대방')
 
-      // 메시지 조회
       fetchMessages(data.user.id)
 
-      // 읽음 처리
       await supabase
         .from('messages')
         .update({ is_read: true })
@@ -80,12 +79,30 @@ export default function DMPage() {
   }, [messages])
 
   const handleSend = async () => {
-    if (!input.trim() || !currentUser || sending) return
+    if ((!input.trim() && !photoFile) || !currentUser || sending) return
     setSending(true)
     const content = input.trim()
     setInput('')
 
     const supabase = createClient()
+
+    let photoUrl: string | null = null
+    if (photoFile) {
+      const ext = photoFile.name.split('.').pop()
+      const path = `messages/${currentUser.id}_${Date.now()}.${ext}`
+      const { error: uploadError } = await supabase.storage
+        .from('community-photos')
+        .upload(path, photoFile, { upsert: true })
+      if (!uploadError) {
+        const { data: urlData } = supabase.storage
+          .from('community-photos')
+          .getPublicUrl(path)
+        photoUrl = urlData.publicUrl
+      }
+      setPhotoFile(null)
+      setPhotoPreview(null)
+    }
+
     const { data, error } = await supabase
       .from('messages')
       .insert({
@@ -95,6 +112,7 @@ export default function DMPage() {
         sender_name: currentNickname,
         receiver_name: receiverName,
         is_read: false,
+        ...(photoUrl ? { photo_url: photoUrl } : {}),
       })
       .select('*')
       .single()
@@ -105,10 +123,9 @@ export default function DMPage() {
       return
     }
 
-    if (!error && data) {
+    if (data) {
       setMessages(prev => [...prev, data])
 
-      // 알림 생성
       await fetch(`${window.location.origin}/api/notifications/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -135,13 +152,19 @@ export default function DMPage() {
     <div className="max-w-2xl mx-auto px-4 py-6 flex flex-col h-[calc(100vh-56px)]">
       {/* 상단 헤더 */}
       <div className="flex items-center gap-3 pb-4 border-b border-gray-100 shrink-0">
-        <button onClick={() => router.push(`/${locale}/messages`)} className="text-gray-400 hover:text-gray-600">
+        <button onClick={() => router.push(`/${locale}/messages`)} className="text-gray-400 hover:text-gray-600 text-xl px-1">
           ←
         </button>
         <div className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-sm font-bold text-sky-600">
           {receiverName.charAt(0).toUpperCase()}
         </div>
-        <span className="font-semibold text-gray-800">{receiverName}</span>
+        <span className="font-semibold text-gray-800 flex-1">{receiverName}</span>
+        <button
+          onClick={() => router.push(`/${locale}`)}
+          className="text-xs text-gray-400 hover:text-sky-500 transition-colors"
+        >
+          홈
+        </button>
       </div>
 
       {/* 메시지 목록 */}
@@ -156,7 +179,10 @@ export default function DMPage() {
                     ? 'bg-sky-500 text-white rounded-br-sm'
                     : 'bg-gray-100 text-gray-800 rounded-bl-sm'
                 }`}>
-                  {msg.content}
+                  {msg.photo_url && (
+                    <img src={msg.photo_url} alt="사진" className="max-w-[200px] rounded-lg mb-1" />
+                  )}
+                  {msg.content && msg.content}
                 </div>
                 <span className={`text-xs text-gray-400 ${isMine ? 'text-right' : 'text-left'}`}>
                   {formatTime(msg.created_at)}
@@ -169,22 +195,51 @@ export default function DMPage() {
       </div>
 
       {/* 입력창 */}
-      <div className="shrink-0 flex gap-2 pt-3 border-t border-gray-100">
-        <input
-          type="text"
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
-          placeholder="메시지를 입력하세요..."
-          className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-sky-300"
-        />
-        <button
-          onClick={handleSend}
-          disabled={sending || !input.trim()}
-          className="bg-sky-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-sky-600 disabled:opacity-50 transition-colors"
-        >
-          전송
-        </button>
+      <div className="shrink-0 pt-3 border-t border-gray-100">
+        {photoPreview && (
+          <div className="relative mb-2 w-24 h-24">
+            <img src={photoPreview} className="w-24 h-24 object-cover rounded-xl" alt="preview" />
+            <button
+              onClick={() => { setPhotoFile(null); setPhotoPreview(null) }}
+              className="absolute -top-1 -right-1 w-5 h-5 bg-gray-500 text-white rounded-full text-xs flex items-center justify-center"
+            >×</button>
+          </div>
+        )}
+        <div className="flex gap-2">
+          <button
+            onClick={() => {
+              const input = document.createElement('input')
+              input.type = 'file'
+              input.accept = 'image/*'
+              input.onchange = (e) => {
+                const file = (e.target as HTMLInputElement).files?.[0]
+                if (file) {
+                  setPhotoFile(file)
+                  setPhotoPreview(URL.createObjectURL(file))
+                }
+              }
+              input.click()
+            }}
+            className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-sky-500 border border-gray-200 rounded-xl transition-colors shrink-0"
+          >
+            📷
+          </button>
+          <input
+            type="text"
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
+            placeholder="메시지를 입력하세요..."
+            className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-sky-300"
+          />
+          <button
+            onClick={handleSend}
+            disabled={sending || (!input.trim() && !photoFile)}
+            className="bg-sky-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-sky-600 disabled:opacity-50 transition-colors shrink-0"
+          >
+            전송
+          </button>
+        </div>
       </div>
     </div>
   )

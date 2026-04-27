@@ -71,7 +71,15 @@ export default function MessagesPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
-      <h1 className="text-xl font-bold text-gray-900 mb-6">✉️ 쪽지함</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-xl font-bold text-gray-900">✉️ 쪽지함</h1>
+        <button
+          onClick={() => router.push(`/${locale}`)}
+          className="text-sm text-gray-400 hover:text-sky-500 transition-colors"
+        >
+          ← 홈으로
+        </button>
+      </div>
       {loading ? (
         <div className="text-center py-10 text-gray-400">불러오는 중...</div>
       ) : conversations.length === 0 ? (
