@@ -105,9 +105,17 @@ export default function Header({ locale }: HeaderProps) {
               onClick={() => setMenuOpen(!menuOpen)}
               className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-sky-500 transition-colors"
             >
-              <div className="w-7 h-7 rounded-full bg-sky-100 flex items-center justify-center text-xs font-bold text-sky-600">
-                {nickname.charAt(0).toUpperCase()}
-              </div>
+              {user?.user_metadata?.avatar_url ? (
+                <img
+                  src={user.user_metadata.avatar_url}
+                  alt={nickname}
+                  className="w-7 h-7 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-7 h-7 rounded-full bg-sky-100 flex items-center justify-center text-xs font-bold text-sky-600">
+                  {nickname.charAt(0).toUpperCase()}
+                </div>
+              )}
               <span className="max-w-[80px] truncate">{nickname}</span>
             </button>
 

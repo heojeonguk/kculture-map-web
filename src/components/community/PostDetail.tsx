@@ -209,44 +209,45 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
         <h1 className="text-xl font-bold text-gray-900 mb-4">{post.title}</h1>
 
         <div className="flex items-center gap-2 pb-4 border-b border-gray-100">
-          <div className="relative" ref={authorRef}>
-            <button
-              onClick={() => setAuthorDropdown(prev => !prev)}
-              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-            >
-              {post.avatar_url ? (
-                <img
-                  src={post.avatar_url}
-                  alt={post.user_name ?? ''}
-                  className="w-8 h-8 rounded-full object-cover cursor-pointer"
-                  onClick={(e) => { e.stopPropagation(); setModalSrc(post.avatar_url!) }}
-                />
-              ) : (
-                <div className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-sm">
-                  {post.user_level_emoji ?? '👤'}
-                </div>
-              )}
-              <span className="text-sm font-medium text-gray-700">
-                {post.nation ?? ''} {post.user_name ?? (isKo ? '익명' : 'Anonymous')}
-              </span>
-            </button>
+          {/* 아바타 */}
+          {post.avatar_url ? (
+            <img
+              src={post.avatar_url}
+              alt={post.user_name ?? ''}
+              className="w-8 h-8 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => setModalSrc(post.avatar_url!)}
+            />
+          ) : (
+            <div className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-sm">
+              {post.user_level_emoji ?? '👤'}
+            </div>
+          )}
 
-            {authorDropdown && (
-              <div className="absolute left-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-10 overflow-hidden min-w-[140px]">
-                <div className="px-4 py-2.5 text-xs text-gray-400 border-b border-gray-100">
-                  {post.user_name ?? (isKo ? '익명' : 'Anonymous')}
-                </div>
-                {post.user_id && currentUserId && currentUserId !== post.user_id && (
+          {/* 닉네임 — 본인이 아닐 때만 드롭다운 */}
+          {post.user_id && currentUserId && currentUserId !== post.user_id ? (
+            <div className="relative" ref={authorRef}>
+              <button
+                onClick={() => setAuthorDropdown(prev => !prev)}
+                className="text-sm font-medium text-gray-700 hover:text-sky-500 transition-colors"
+              >
+                {post.nation ?? ''} {post.user_name ?? (isKo ? '익명' : 'Anonymous')}
+              </button>
+              {authorDropdown && (
+                <div className="absolute left-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-10 overflow-hidden min-w-[140px]">
                   <button
                     onClick={() => { setAuthorDropdown(false); router.push(`/${locale}/messages/${post.user_id}`) }}
                     className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors flex items-center gap-2"
                   >
                     ✉️ {isKo ? '메시지 보내기' : 'Send message'}
                   </button>
-                )}
-              </div>
-            )}
-          </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <span className="text-sm font-medium text-gray-700">
+              {post.nation ?? ''} {post.user_name ?? (isKo ? '익명' : 'Anonymous')}
+            </span>
+          )}
         </div>
 
         <div className="py-4 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">

@@ -34,10 +34,10 @@ export default async function HomePage({
   console.log('posts data:', bestPosts)
   console.log('posts error:', postsError)
 
-  // 커뮤니티 최신글 4개 - 조인 제거
+  // 커뮤니티 최신글 4개
   const { data: latestPosts } = await supabase
     .from('posts')
-    .select('id, title, category, city, likes')
+    .select('id, title, category, city, likes, photo_url, user_name, nation, created_at, post_comments(count)')
     .order('created_at', { ascending: false })
     .limit(4)
 
