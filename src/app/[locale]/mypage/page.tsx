@@ -34,7 +34,7 @@ export default async function MyPage({ params }: MypageProps) {
         <div className="grid grid-cols-[160px_1fr_160px] gap-6">
           <Sidebar position="left" />
           <div className="flex flex-col gap-5 min-w-0">
-            <ProfileCard user={user} locale={locale} />
+            <ProfileCard user={user} locale={locale} postCount={myPosts?.length ?? 0} />
             <MyPosts posts={myPosts ?? []} locale={locale} />
           </div>
           <Sidebar position="right" />

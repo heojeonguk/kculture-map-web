@@ -52,7 +52,7 @@ export default function PostCard({ post, locale }: PostCardProps) {
       {/* 썸네일 */}
       {post.photo_url && (
         <div
-          className="w-20 h-20 rounded-lg shrink-0 bg-cover bg-center"
+          className="w-24 h-24 rounded-xl shrink-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${post.photo_url})` }}
         />
       )}

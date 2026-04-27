@@ -7,9 +7,28 @@ import { createClient } from '@/lib/supabase/client'
 interface ProfileCardProps {
   user: any
   locale: string
+  postCount: number
 }
 
-export default function ProfileCard({ user, locale }: ProfileCardProps) {
+const levels = [
+  { min: 0, max: 1, emoji: '🌱', ko: '새싹 여행자', en: 'Sprout Traveler', lv: 1 },
+  { min: 1, max: 5, emoji: '🗺️', ko: '초보 여행자', en: 'Beginner Traveler', lv: 2 },
+  { min: 5, max: 10, emoji: '✈️', ko: '여행 마니아', en: 'Travel Enthusiast', lv: 3 },
+  { min: 10, max: 20, emoji: '🏆', ko: '여행 전문가', en: 'Travel Expert', lv: 4 },
+  { min: 20, max: Infinity, emoji: '👑', ko: '여행 마스터', en: 'Travel Master', lv: 5 },
+]
+
+function getLevel(count: number) {
+  return levels.find(l => count >= l.min && count < l.max) ?? levels[levels.length - 1]
+}
+
+function getLevelProgress(count: number) {
+  const level = getLevel(count)
+  if (level.lv === 5) return 100
+  return Math.min(((count - level.min) / (level.max - level.min)) * 100, 100)
+}
+
+export default function ProfileCard({ user, locale, postCount }: ProfileCardProps) {
   const isKo = locale === 'ko'
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -107,6 +126,37 @@ export default function ProfileCard({ user, locale }: ProfileCardProps) {
             {isKo ? '프로필 사진 변경' : 'Change photo'}
           </button>
         </div>
+      </div>
+
+      {/* 여행자 레벨 게이지 */}
+      <div className="mb-4 bg-gray-50 rounded-xl p-4">
+        {(() => {
+          const level = getLevel(postCount)
+          const progress = getLevelProgress(postCount)
+          const nextLevel = levels.find(l => l.lv === level.lv + 1)
+          return (
+            <>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-gray-700">
+                  {level.emoji} {isKo ? level.ko : level.en}
+                </span>
+                <span className="text-xs font-bold text-sky-500">Lv.{level.lv}</span>
+              </div>
+              <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-1.5">
+                <div
+                  className="h-full bg-sky-500 rounded-full transition-all"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <div className="flex justify-between text-[10px] text-gray-400">
+                <span>{isKo ? `게시글 ${postCount}개` : `${postCount} posts`}</span>
+                {nextLevel && (
+                  <span>{isKo ? `다음 레벨까지 ${nextLevel.min - postCount}개` : `${nextLevel.min - postCount} more to Lv.${nextLevel.lv}`}</span>
+                )}
+              </div>
+            </>
+          )
+        })()}
       </div>
 
       <button
