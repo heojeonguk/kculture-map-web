@@ -204,7 +204,7 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
           {currentUserId && post.user_id && currentUserId !== post.user_id && (
             <button
               onClick={() => router.push(`/${locale}/messages/${post.user_id}`)}
-              className="text-base text-gray-300 hover:text-sky-400 transition-colors ml-1"
+              className="text-xs text-gray-400 hover:text-sky-500 cursor-pointer ml-1 transition-colors"
               title={isKo ? '쪽지 보내기' : 'Send message'}
             >
               ✉️

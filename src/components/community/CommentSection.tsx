@@ -102,18 +102,17 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-medium text-gray-700">
+            <button
+              onClick={() => {
+                if (user && comment.user_id && user.id !== comment.user_id) {
+                  router.push(`/${locale}/messages/${comment.user_id}`)
+                }
+              }}
+              disabled={!comment.user_id}
+              className="text-xs font-medium text-gray-700 cursor-pointer hover:text-sky-500 transition-colors disabled:cursor-default"
+            >
               {comment.nation ?? ''} {comment.user_name ?? (isKo ? '익명' : 'Anonymous')}
-            </span>
-            {user && comment.user_id && user.id !== comment.user_id && (
-              <button
-                onClick={() => router.push(`/${locale}/messages/${comment.user_id}`)}
-                className="text-[11px] text-gray-300 hover:text-sky-400 transition-colors"
-                title={isKo ? '쪽지 보내기' : 'Send message'}
-              >
-                ✉️
-              </button>
-            )}
+            </button>
             <span className="text-[10px] text-gray-300">
               {timeAgo(comment.created_at, isKo)}
             </span>

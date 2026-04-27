@@ -112,6 +112,13 @@ export default function Header({ locale }: HeaderProps) {
                   👤 {isKo ? '마이페이지' : 'My Page'}
                 </Link>
                 <Link
+                  href={`/${locale}/messages`}
+                  onClick={() => setMenuOpen(false)}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
+                >
+                  ✉️ {isKo ? '쪽지함' : 'Messages'}
+                </Link>
+                <Link
                   href={`/${locale}/community/write`}
                   onClick={() => setMenuOpen(false)}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
