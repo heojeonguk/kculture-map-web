@@ -164,6 +164,16 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
     setLikeLoading(false)
   }
 
+  const handleDelete = async () => {
+    const confirmed = window.confirm(
+      isKo ? '정말 삭제하시겠습니까?' : 'Are you sure you want to delete this post?'
+    )
+    if (!confirmed) return
+    const supabase = createClient()
+    await supabase.from('posts').delete().eq('id', post.id)
+    router.push(`/${locale}/community`)
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <Link
@@ -274,7 +284,7 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
           </>
         )}
 
-        {/* 좋아요 버튼 */}
+        {/* 좋아요 + 수정/삭제 버튼 */}
         <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-100">
           <button
             onClick={handleLike}
@@ -288,6 +298,22 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
             <span className="text-base">{liked ? '🔥' : '🤍'}</span>
             {likes}
           </button>
+          {currentUserId && post.user_id && currentUserId === post.user_id && (
+            <div className="flex items-center gap-2 ml-auto">
+              <button
+                onClick={() => router.push(`/${locale}/community/edit/${post.id}`)}
+                className="px-3 py-1.5 border border-gray-200 rounded-xl text-xs text-gray-500 hover:border-sky-300 hover:text-sky-500 transition-colors"
+              >
+                {isKo ? '수정' : 'Edit'}
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-3 py-1.5 border border-gray-200 rounded-xl text-xs text-gray-500 hover:border-red-300 hover:text-red-500 transition-colors"
+              >
+                {isKo ? '삭제' : 'Delete'}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

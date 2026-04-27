@@ -1,4 +1,9 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 
 interface Post {
   id: string
@@ -24,8 +29,23 @@ const categoryLabel: Record<string, { ko: string; en: string; color: string }> =
   review: { ko: '후기', en: 'Review', color: 'text-purple-500 bg-purple-50' },
 }
 
-export default function MyPosts({ posts, locale }: MyPostsProps) {
+export default function MyPosts({ posts: initialPosts, locale }: MyPostsProps) {
   const isKo = locale === 'ko'
+  const router = useRouter()
+  const [posts, setPosts] = useState<Post[]>(initialPosts)
+
+  const handleDelete = async (postId: string) => {
+    const confirmed = window.confirm(
+      isKo ? '정말 삭제하시겠습니까?' : 'Are you sure you want to delete this post?'
+    )
+    if (!confirmed) return
+
+    const supabase = createClient()
+    const { error } = await supabase.from('posts').delete().eq('id', postId)
+    if (!error) {
+      setPosts(prev => prev.filter(p => p.id !== postId))
+    }
+  }
 
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-5">
@@ -63,21 +83,39 @@ export default function MyPosts({ posts, locale }: MyPostsProps) {
             )
 
             return (
-              <Link
+              <div
                 key={post.id}
-                href={`/${locale}/community/${post.id}`}
                 className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100"
               >
                 <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${cat.color}`}>
                   {isKo ? cat.ko : cat.en}
                 </span>
-                <p className="text-sm text-gray-700 flex-1 truncate">{post.title}</p>
+                <Link
+                  href={`/${locale}/community/${post.id}`}
+                  className="text-sm text-gray-700 flex-1 truncate hover:text-sky-500 transition-colors"
+                >
+                  {post.title}
+                </Link>
                 <div className="flex items-center gap-2 text-[10px] text-gray-400 shrink-0">
                   <span>👍 {post.likes ?? 0}</span>
                   <span>💬 {commentCount}</span>
                   <span>{date}</span>
                 </div>
-              </Link>
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    onClick={() => router.push(`/${locale}/community/edit/${post.id}`)}
+                    className="text-[10px] px-2 py-1 border border-gray-200 rounded-lg text-gray-500 hover:border-sky-300 hover:text-sky-500 transition-colors"
+                  >
+                    {isKo ? '수정' : 'Edit'}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(post.id)}
+                    className="text-[10px] px-2 py-1 border border-gray-200 rounded-lg text-gray-500 hover:border-red-300 hover:text-red-500 transition-colors"
+                  >
+                    {isKo ? '삭제' : 'Delete'}
+                  </button>
+                </div>
+              </div>
             )
           })}
         </div>
