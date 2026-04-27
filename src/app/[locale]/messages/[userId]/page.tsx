@@ -95,10 +95,6 @@ export default function DMPage() {
         sender_name: currentNickname,
         receiver_name: receiverName,
         is_read: false,
-        topic: 'direct',
-        extension: 'dm',
-        updated_at: new Date().toISOString(),
-        inserted_at: new Date().toISOString(),
       })
       .select('*')
       .single()
