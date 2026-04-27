@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 
 interface Notification {
   id: string
@@ -39,8 +40,8 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
 
   useEffect(() => {
     fetchNotifications()
-    // 30초마다 폴링
-    const interval = setInterval(fetchNotifications, 30000)
+    // 60초마다 폴링
+    const interval = setInterval(fetchNotifications, 60000)
     return () => clearInterval(interval)
   }, [userId])
 
@@ -58,12 +59,13 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
   const handleOpen = async () => {
     setOpen(prev => !prev)
     if (!open && unreadCount > 0) {
-      // 열 때 전체 읽음 처리
-      await fetch(`${window.location.origin}/api/notifications`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
-      })
+      // 열 때 전체 읽음 처리 (DB 직접 업데이트)
+      const supabase = createClient()
+      await supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .eq('user_id', userId)
+        .eq('is_read', false)
       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
     }
   }
