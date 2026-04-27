@@ -98,6 +98,15 @@ export default function ProfileCard({ user, locale }: ProfileCardProps) {
           <span className="text-gray-400">{isKo ? '이메일' : 'Email'}</span>
           <span className="text-gray-700 truncate max-w-[200px]">{user.email}</span>
         </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-400">{isKo ? '프로필 사진' : 'Profile photo'}</span>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="text-sky-500 hover:text-sky-600 text-xs hover:underline transition-colors"
+          >
+            {isKo ? '프로필 사진 변경' : 'Change photo'}
+          </button>
+        </div>
       </div>
 
       <button

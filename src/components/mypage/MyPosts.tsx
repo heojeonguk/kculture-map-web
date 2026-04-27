@@ -101,16 +101,16 @@ export default function MyPosts({ posts: initialPosts, locale }: MyPostsProps) {
                   <span>💬 {commentCount}</span>
                   <span>{date}</span>
                 </div>
-                <div className="flex items-center gap-1 shrink-0">
+                <div className="flex items-center gap-2 shrink-0">
                   <button
                     onClick={() => router.push(`/${locale}/community/edit/${post.id}`)}
-                    className="text-[10px] px-2 py-1 border border-gray-200 rounded-lg text-gray-500 hover:border-sky-300 hover:text-sky-500 transition-colors"
+                    className="text-xs text-sky-500 hover:underline"
                   >
                     {isKo ? '수정' : 'Edit'}
                   </button>
                   <button
                     onClick={() => handleDelete(post.id)}
-                    className="text-[10px] px-2 py-1 border border-gray-200 rounded-lg text-gray-500 hover:border-red-300 hover:text-red-500 transition-colors"
+                    className="text-xs text-red-400 hover:underline"
                   >
                     {isKo ? '삭제' : 'Delete'}
                   </button>
