@@ -97,9 +97,17 @@ export default function DMPage() {
         is_read: false,
         topic: 'direct',
         extension: 'dm',
+        updated_at: new Date().toISOString(),
+        inserted_at: new Date().toISOString(),
       })
       .select('*')
       .single()
+
+    if (error) {
+      console.error('메시지 전송 에러:', error.message, error.details, error.hint)
+      setSending(false)
+      return
+    }
 
     if (!error && data) {
       setMessages(prev => [...prev, data])
