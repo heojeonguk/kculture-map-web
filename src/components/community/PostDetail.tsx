@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 interface Post {
   id: string
   title: string
   content: string
+  user_id?: string
   category?: string
   city?: string
   likes?: number
@@ -35,12 +37,14 @@ const categoryLabel: Record<string, { ko: string; en: string; color: string }> =
 
 export default function PostDetail({ post, locale }: PostDetailProps) {
   const isKo = locale === 'ko'
+  const router = useRouter()
   const cat = categoryLabel[post.category ?? 'free'] ?? categoryLabel.free
   const date = new Date(post.created_at).toLocaleDateString(
     isKo ? 'ko-KR' : 'en-US',
     { year: 'numeric', month: 'long', day: 'numeric' }
   )
 
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [likes, setLikes] = useState(post.likes ?? 0)
   const [liked, setLiked] = useState(false)
   const [likeLoading, setLikeLoading] = useState(false)
@@ -53,6 +57,7 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
     const checkLiked = async () => {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
+      if (user) setCurrentUserId(user.id)
       const identifier = user?.id ?? localStorage.getItem('anon_id') ?? ''
       if (!identifier) return
       const { data } = await supabase
@@ -196,6 +201,15 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
           <span className="text-sm font-medium text-gray-700">
             {post.nation ?? ''} {post.user_name ?? (isKo ? '익명' : 'Anonymous')}
           </span>
+          {currentUserId && post.user_id && currentUserId !== post.user_id && (
+            <button
+              onClick={() => router.push(`/${locale}/messages/${post.user_id}`)}
+              className="text-base text-gray-300 hover:text-sky-400 transition-colors ml-1"
+              title={isKo ? '쪽지 보내기' : 'Send message'}
+            >
+              ✉️
+            </button>
+          )}
         </div>
 
         <div className="py-4 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">

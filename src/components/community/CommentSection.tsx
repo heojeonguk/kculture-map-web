@@ -1,11 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 interface Comment {
   id: string
   content: string
+  user_id?: string
   user_name?: string
   nation?: string
   created_at: string
@@ -56,6 +58,7 @@ interface CommentItemProps {
 }
 
 function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }: CommentItemProps) {
+  const router = useRouter()
   const [showReplyInput, setShowReplyInput] = useState(false)
   const [replyContent, setReplyContent] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -102,6 +105,15 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
             <span className="text-xs font-medium text-gray-700">
               {comment.nation ?? ''} {comment.user_name ?? (isKo ? '익명' : 'Anonymous')}
             </span>
+            {user && comment.user_id && user.id !== comment.user_id && (
+              <button
+                onClick={() => router.push(`/${locale}/messages/${comment.user_id}`)}
+                className="text-[11px] text-gray-300 hover:text-sky-400 transition-colors"
+                title={isKo ? '쪽지 보내기' : 'Send message'}
+              >
+                ✉️
+              </button>
+            )}
             <span className="text-[10px] text-gray-300">
               {timeAgo(comment.created_at, isKo)}
             </span>
