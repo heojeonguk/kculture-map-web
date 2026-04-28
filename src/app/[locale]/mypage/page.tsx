@@ -6,6 +6,7 @@ import Sidebar from '@/components/layout/Sidebar'
 import ProfileCard from '@/components/mypage/ProfileCard'
 import MyPosts from '@/components/mypage/MyPosts'
 import MyBookmarks from '@/components/mypage/MyBookmarks'
+import MyPageClient from '@/components/mypage/MyPageClient'
 
 interface MypageProps {
   params: Promise<{ locale: string }>
@@ -30,7 +31,7 @@ export default async function MyPage({ params }: MypageProps) {
   ] = await Promise.all([
     supabase
       .from('posts')
-      .select('id, title, category, city, likes, created_at, post_comments(count)')
+      .select('id, title, category, city, likes, created_at, photo_url, post_comments(count)')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false }),
     supabase
@@ -51,6 +52,8 @@ export default async function MyPage({ params }: MypageProps) {
       .eq('user_id', user.id),
   ])
 
+  const photoPosts = (myPosts ?? []).filter(p => p.photo_url)
+
   return (
     <>
       <Header locale={locale} />
@@ -65,11 +68,13 @@ export default async function MyPage({ params }: MypageProps) {
               commentCount={commentCount ?? 0}
               followerCount={followerCount ?? 0}
             />
-            <div className="flex items-center gap-4 px-1 text-sm text-gray-500">
-              <span>👥 {locale === 'ko' ? `팔로워 ${followerCount ?? 0}명` : `${followerCount ?? 0} followers`}</span>
-              <span className="text-gray-300">·</span>
-              <span>{locale === 'ko' ? `팔로잉 ${followingCount ?? 0}명` : `Following ${followingCount ?? 0}`}</span>
-            </div>
+            <MyPageClient
+              userId={user.id}
+              locale={locale}
+              followerCount={followerCount ?? 0}
+              followingCount={followingCount ?? 0}
+              photoPosts={photoPosts as any}
+            />
             <MyPosts posts={myPosts ?? []} locale={locale} />
             <MyBookmarks bookmarks={(bookmarks ?? []) as any} locale={locale} />
           </div>

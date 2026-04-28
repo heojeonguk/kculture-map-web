@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
@@ -65,6 +65,55 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
   const [translated, setTranslated] = useState<string | null>(null)
   const [translating, setTranslating] = useState(false)
   const [showTranslated, setShowTranslated] = useState(false)
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [isFollowing, setIsFollowing] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  useEffect(() => {
+    if (!user || !comment.user_id || user.id === comment.user_id) return
+    const supabase = createClient()
+    supabase.from('follows')
+      .select('id')
+      .eq('follower_id', user.id)
+      .eq('following_id', comment.user_id)
+      .single()
+      .then(({ data }) => { if (data) setIsFollowing(true) })
+  }, [user, comment.user_id])
+
+  const handleFollow = async () => {
+    if (!user || !comment.user_id) return
+    const supabase = createClient()
+    if (isFollowing) {
+      await supabase.from('follows').delete().eq('follower_id', user.id).eq('following_id', comment.user_id)
+      setIsFollowing(false)
+    } else {
+      await supabase.from('follows').insert({ follower_id: user.id, following_id: comment.user_id })
+      setIsFollowing(true)
+      const fromUserName = user.user_metadata?.nickname ?? user.email?.split('@')[0] ?? '익명'
+      await fetch(`${window.location.origin}/api/notifications/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: comment.user_id,
+          type: 'follow',
+          post_id: null,
+          from_user_name: fromUserName,
+          from_avatar_url: user.user_metadata?.avatar_url ?? null,
+          message: `${fromUserName}님이 팔로우했습니다`,
+        }),
+      })
+    }
+  }
 
   const handleTranslate = async () => {
     if (translated) {
@@ -102,17 +151,46 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <button
-              onClick={() => {
-                if (user && comment.user_id && user.id !== comment.user_id) {
-                  router.push(`/${locale}/messages/${comment.user_id}`)
-                }
-              }}
-              disabled={!comment.user_id}
-              className="text-xs font-medium text-gray-700 cursor-pointer hover:text-sky-500 transition-colors disabled:cursor-default"
-            >
-              {comment.nation ?? ''} {comment.user_name ?? (isKo ? '익명' : 'Anonymous')}
-            </button>
+            {comment.user_id ? (
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setShowDropdown(prev => !prev)}
+                  className="text-xs font-medium text-gray-700 hover:text-sky-500 transition-colors"
+                >
+                  {comment.nation ?? ''} {comment.user_name ?? (isKo ? '익명' : 'Anonymous')}
+                </button>
+                {showDropdown && (
+                  <div className="absolute left-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-20 overflow-hidden min-w-[160px]">
+                    <button
+                      onClick={() => { setShowDropdown(false); router.push(`/${locale}/profile/${comment.user_id}`) }}
+                      className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
+                    >
+                      👤 {isKo ? '프로필 보기' : 'View profile'}
+                    </button>
+                    {user && user.id !== comment.user_id && (
+                      <>
+                        <button
+                          onClick={() => { setShowDropdown(false); router.push(`/${locale}/messages/${comment.user_id}`) }}
+                          className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors flex items-center gap-2"
+                        >
+                          ✉️ {isKo ? '메시지 보내기' : 'Send message'}
+                        </button>
+                        <button
+                          onClick={() => { handleFollow(); setShowDropdown(false) }}
+                          className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors flex items-center gap-2"
+                        >
+                          {isFollowing ? '✅' : '➕'} {isFollowing ? (isKo ? '팔로잉' : 'Following') : (isKo ? '팔로우' : 'Follow')}
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <span className="text-xs font-medium text-gray-700">
+                {comment.nation ?? ''} {comment.user_name ?? (isKo ? '익명' : 'Anonymous')}
+              </span>
+            )}
             <span className="text-[10px] text-gray-300">
               {timeAgo(comment.created_at, isKo)}
             </span>
