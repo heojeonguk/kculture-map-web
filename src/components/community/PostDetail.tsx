@@ -223,8 +223,8 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
             </div>
           )}
 
-          {/* 닉네임 — 본인이 아닐 때만 드롭다운 */}
-          {post.user_id && currentUserId && currentUserId !== post.user_id ? (
+          {/* 닉네임 — user_id 있으면 드롭다운 */}
+          {post.user_id ? (
             <div className="relative" ref={authorRef}>
               <button
                 onClick={() => setAuthorDropdown(prev => !prev)}
@@ -233,13 +233,21 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
                 {post.nation ?? ''} {post.user_name ?? (isKo ? '익명' : 'Anonymous')}
               </button>
               {authorDropdown && (
-                <div className="absolute left-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-10 overflow-hidden min-w-[140px]">
+                <div className="absolute left-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-10 overflow-hidden min-w-[160px]">
                   <button
-                    onClick={() => { setAuthorDropdown(false); router.push(`/${locale}/messages/${post.user_id}`) }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors flex items-center gap-2"
+                    onClick={() => { setAuthorDropdown(false); router.push(`/${locale}/community?author=${post.user_id}`) }}
+                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
                   >
-                    ✉️ {isKo ? '메시지 보내기' : 'Send message'}
+                    📝 {isKo ? '게시글 보기' : 'View posts'}
                   </button>
+                  {currentUserId && currentUserId !== post.user_id && (
+                    <button
+                      onClick={() => { setAuthorDropdown(false); router.push(`/${locale}/messages/${post.user_id}`) }}
+                      className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors flex items-center gap-2"
+                    >
+                      ✉️ {isKo ? '메시지 보내기' : 'Send message'}
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -279,37 +287,36 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
         )}
 
         {post.photo_url && (
-          <>
-            <div
-              className="w-full rounded-xl overflow-hidden mt-2 cursor-zoom-in"
-              onClick={() => setModalSrc(post.photo_url!)}
+          <div
+            className="w-full rounded-xl overflow-hidden mt-2 cursor-zoom-in"
+            onClick={() => setModalSrc(post.photo_url!)}
+          >
+            <img
+              src={post.photo_url}
+              alt={post.title}
+              className="w-full max-h-96 object-cover rounded-xl hover:opacity-95 transition-opacity"
+            />
+          </div>
+        )}
+
+        {modalSrc && (
+          <div
+            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+            onClick={() => setModalSrc(null)}
+          >
+            <button
+              onClick={() => setModalSrc(null)}
+              className="absolute top-4 right-4 text-white/80 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full bg-black/30"
             >
-              <img
-                src={post.photo_url}
-                alt={post.title}
-                className="w-full max-h-96 object-cover rounded-xl hover:opacity-95 transition-opacity"
-              />
-            </div>
-            {modalSrc && (
-              <div
-                className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
-                onClick={() => setModalSrc(null)}
-              >
-                <button
-                  onClick={() => setModalSrc(null)}
-                  className="absolute top-4 right-4 text-white/80 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full bg-black/30"
-                >
-                  ✕
-                </button>
-                <img
-                  src={modalSrc}
-                  alt={post.title}
-                  className="max-w-full max-h-[90vh] object-contain rounded-lg"
-                  onClick={(e) => e.stopPropagation()}
-                />
-              </div>
-            )}
-          </>
+              ✕
+            </button>
+            <img
+              src={modalSrc}
+              alt={post.title}
+              className="max-w-full max-h-[90vh] object-contain rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
         )}
 
         {/* 좋아요 + 수정/삭제 버튼 */}

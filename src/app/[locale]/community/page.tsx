@@ -4,6 +4,7 @@ import Footer from '@/components/layout/Footer'
 import Sidebar from '@/components/layout/Sidebar'
 import PostFilter from '@/components/community/PostFilter'
 import PostList from '@/components/community/PostList'
+import Link from 'next/link'
 
 interface CommunityPageProps {
   params: Promise<{ locale: string }>
@@ -12,6 +13,7 @@ interface CommunityPageProps {
     sort?: string
     page?: string
     q?: string
+    author?: string
   }>
 }
 
@@ -19,7 +21,7 @@ const PAGE_SIZE = 10
 
 export default async function CommunityPage({ params, searchParams }: CommunityPageProps) {
   const { locale } = await params
-  const { category, sort = 'latest', page, q } = await searchParams
+  const { category, sort = 'latest', page, q, author } = await searchParams
   const currentPage = Number(page ?? 1)
   const offset = (currentPage - 1) * PAGE_SIZE
 
@@ -29,12 +31,15 @@ export default async function CommunityPage({ params, searchParams }: CommunityP
     .from('posts')
     .select('id, title, category, city, likes, created_at, user_name, nation, photo_url, post_comments(count)', { count: 'exact' })
 
-  if (category && category !== 'all') {
-    query = query.eq('category', category)
-  }
-
-  if (q) {
-    query = query.or(`title.ilike.%${q}%,content.ilike.%${q}%`)
+  if (author) {
+    query = query.eq('user_id', author)
+  } else {
+    if (category && category !== 'all') {
+      query = query.eq('category', category)
+    }
+    if (q) {
+      query = query.or(`title.ilike.%${q}%,content.ilike.%${q}%`)
+    }
   }
 
   if (sort === 'best') {
@@ -47,6 +52,7 @@ export default async function CommunityPage({ params, searchParams }: CommunityP
     .range(offset, offset + PAGE_SIZE - 1)
 
   const totalPages = Math.ceil((count ?? 0) / PAGE_SIZE)
+  const authorName = author ? (posts?.[0]?.user_name ?? author) : null
 
   return (
     <>
@@ -55,7 +61,22 @@ export default async function CommunityPage({ params, searchParams }: CommunityP
         <div className="grid grid-cols-[160px_1fr_160px] gap-6">
           <Sidebar position="left" />
           <div className="flex flex-col gap-5 min-w-0">
-            <PostFilter locale={locale} activeCategory={category} activeSort={sort} />
+            {author ? (
+              <div className="flex items-center gap-3">
+                <Link
+                  href={`/${locale}/community`}
+                  className="text-sm text-gray-400 hover:text-sky-500 transition-colors flex items-center gap-1"
+                >
+                  ← {locale === 'ko' ? '전체 게시글' : 'All posts'}
+                </Link>
+                <span className="text-gray-300">·</span>
+                <h2 className="text-sm font-semibold text-gray-700">
+                  {authorName}{locale === 'ko' ? '님의 게시글' : "'s posts"}
+                </h2>
+              </div>
+            ) : (
+              <PostFilter locale={locale} activeCategory={category} activeSort={sort} />
+            )}
             <PostList
               posts={posts ?? []}
               locale={locale}
