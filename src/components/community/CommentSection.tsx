@@ -160,7 +160,7 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
                   {comment.nation ?? ''} {comment.user_name ?? (isKo ? '익명' : 'Anonymous')}
                 </button>
                 {showDropdown && (
-                  <div className="absolute left-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-20 overflow-hidden min-w-[160px]">
+                  <div className="absolute left-0 top-6 bg-white border border-gray-200 rounded-xl shadow-lg z-20 min-w-[160px] py-1">
                     <button
                       onClick={() => { setShowDropdown(false); router.push(`/${locale}/profile/${comment.user_id}`) }}
                       className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"

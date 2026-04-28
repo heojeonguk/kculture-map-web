@@ -66,7 +66,7 @@ export default function FollowModal({ userId, type, locale, onClose }: FollowMod
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl w-full max-w-sm max-h-[70vh] flex flex-col overflow-hidden shadow-xl"
+        className="bg-white rounded-2xl w-full min-w-[320px] max-w-sm max-h-[500px] flex flex-col overflow-hidden shadow-xl"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
@@ -104,7 +104,7 @@ export default function FollowModal({ userId, type, locale, onClose }: FollowMod
                 <div className="relative shrink-0">
                   <button
                     onClick={() => setActiveDropdown(activeDropdown === u.user_id ? null : u.user_id)}
-                    className="text-gray-300 hover:text-gray-500 text-lg px-1"
+                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                   >
                     ···
                   </button>
@@ -112,7 +112,7 @@ export default function FollowModal({ userId, type, locale, onClose }: FollowMod
                     <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-10 overflow-hidden min-w-[150px]">
                       <button
                         onClick={() => { setActiveDropdown(null); onClose(); router.push(`/${locale}/profile/${u.user_id}`) }}
-                        className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                        className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                       >
                         👤 {isKo ? '프로필 보기' : 'View profile'}
                       </button>
@@ -120,13 +120,13 @@ export default function FollowModal({ userId, type, locale, onClose }: FollowMod
                         <>
                           <button
                             onClick={() => { setActiveDropdown(null); onClose(); router.push(`/${locale}/messages/${u.user_id}`) }}
-                            className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 flex items-center gap-2"
+                            className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 flex items-center gap-2"
                           >
                             ✉️ {isKo ? '메시지 보내기' : 'Send message'}
                           </button>
                           <button
                             onClick={() => { handleFollow(u.user_id); setActiveDropdown(null) }}
-                            className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 flex items-center gap-2"
+                            className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 flex items-center gap-2"
                           >
                             {followingIds.has(u.user_id) ? '✅' : '➕'} {followingIds.has(u.user_id) ? (isKo ? '팔로잉' : 'Following') : (isKo ? '팔로우' : 'Follow')}
                           </button>

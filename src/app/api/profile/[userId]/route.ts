@@ -15,6 +15,7 @@ export async function GET(
       { count: followingCount },
       { count: commentCount },
       { data: nicknameData },
+      { data: bookmarks },
     ] = await Promise.all([
       supabase
         .from('posts')
@@ -25,6 +26,7 @@ export async function GET(
       supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', userId),
       supabase.from('post_comments').select('*', { count: 'exact', head: true }).eq('user_id', userId),
       supabase.from('nicknames').select('nickname').eq('user_id', userId).single(),
+      supabase.from('place_bookmarks').select('place_id, places(id, name, name_en, category, city, emoji)').eq('user_id', userId),
     ])
 
     const avatar_url = posts?.find(p => p.avatar_url)?.avatar_url ?? null
@@ -41,9 +43,10 @@ export async function GET(
       followingCount: followingCount ?? 0,
       commentCount: commentCount ?? 0,
       photoUrls,
+      bookmarks: bookmarks ?? [],
     })
   } catch (error) {
     console.error('Profile API error:', error)
-    return NextResponse.json({ nickname: null, avatar_url: null, posts: [], followerCount: 0, followingCount: 0, commentCount: 0, photoUrls: [] })
+    return NextResponse.json({ nickname: null, avatar_url: null, posts: [], followerCount: 0, followingCount: 0, commentCount: 0, photoUrls: [], bookmarks: [] })
   }
 }

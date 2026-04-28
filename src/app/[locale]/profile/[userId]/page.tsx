@@ -37,6 +37,18 @@ interface Post {
   post_comments?: { count: number }[]
 }
 
+interface Bookmark {
+  place_id: string
+  places: {
+    id: string
+    name: string
+    name_en: string
+    category: string
+    city: string
+    emoji: string
+  } | null
+}
+
 interface ProfileData {
   nickname: string | null
   avatar_url: string | null
@@ -45,6 +57,7 @@ interface ProfileData {
   followingCount: number
   commentCount: number
   photoUrls: { id: string; photo_url: string }[]
+  bookmarks: Bookmark[]
 }
 
 const categoryLabel: Record<string, { ko: string; en: string; color: string }> = {
@@ -168,7 +181,7 @@ export default function ProfilePage() {
             <div className="bg-white border border-gray-100 rounded-2xl p-6">
               <div className="flex items-center gap-4 mb-4">
                 {profile.avatar_url ? (
-                  <img src={profile.avatar_url} alt={nickname} className="w-16 h-16 rounded-full object-cover shrink-0" />
+                  <img src={profile.avatar_url} alt={nickname} className="w-16 h-16 rounded-full object-cover shrink-0 cursor-pointer" onClick={() => setModalPhoto(profile.avatar_url)} />
                 ) : (
                   <div className="w-16 h-16 rounded-full bg-sky-100 flex items-center justify-center text-2xl font-bold text-sky-600 shrink-0">
                     {nickname.charAt(0).toUpperCase()}
@@ -235,6 +248,32 @@ export default function ProfilePage() {
                       />
                     </Link>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* 북마크 장소 */}
+            {profile.bookmarks.length > 0 && (
+              <div className="bg-white border border-gray-100 rounded-2xl p-5">
+                <h2 className="text-base font-bold text-gray-800 mb-3">🔖 {isKo ? '저장한 장소' : 'Saved Places'}</h2>
+                <div className="flex flex-col gap-2">
+                  {profile.bookmarks.map(b => {
+                    const place = b.places
+                    if (!place) return null
+                    return (
+                      <Link
+                        key={b.place_id}
+                        href={`/${locale}/places/${b.place_id}`}
+                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition-all"
+                      >
+                        <span className="text-2xl shrink-0">{place.emoji}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-gray-800 truncate">{isKo ? place.name : place.name_en}</p>
+                          <p className="text-xs text-gray-400">{place.city} · {place.category}</p>
+                        </div>
+                      </Link>
+                    )
+                  })}
                 </div>
               </div>
             )}

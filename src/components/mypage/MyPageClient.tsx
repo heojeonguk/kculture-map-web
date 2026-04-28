@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import FollowModal from './FollowModal'
 
 interface PhotoPost {
@@ -57,12 +56,6 @@ export default function MyPageClient({ userId, locale, followerCount, followingC
                   alt=""
                   className="w-full h-full object-cover rounded-xl cursor-pointer hover:opacity-90 transition-opacity"
                   onClick={() => setModalPhoto(post.photo_url)}
-                />
-                <Link
-                  href={`/${locale}/community/${post.id}`}
-                  className="absolute inset-0 rounded-xl"
-                  aria-label="게시글 보기"
-                  onClick={e => e.stopPropagation()}
                 />
               </div>
             ))}
