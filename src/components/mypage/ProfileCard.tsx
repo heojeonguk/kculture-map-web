@@ -8,27 +8,66 @@ interface ProfileCardProps {
   user: any
   locale: string
   postCount: number
+  commentCount: number
+  followerCount: number
 }
 
-const levels = [
-  { min: 0, max: 1, emoji: '🌱', ko: '새싹 여행자', en: 'Sprout Traveler', lv: 1 },
-  { min: 1, max: 5, emoji: '🗺️', ko: '초보 여행자', en: 'Beginner Traveler', lv: 2 },
-  { min: 5, max: 10, emoji: '✈️', ko: '여행 마니아', en: 'Travel Enthusiast', lv: 3 },
-  { min: 10, max: 20, emoji: '🏆', ko: '여행 전문가', en: 'Travel Expert', lv: 4 },
-  { min: 20, max: Infinity, emoji: '👑', ko: '여행 마스터', en: 'Travel Master', lv: 5 },
+interface Level {
+  min: number
+  max: number
+  emoji: string
+  ko: string
+  en: string
+  lv: number
+  nextText: (ko: boolean) => string
+}
+
+const levels: Level[] = [
+  { min: 0, max: 0, emoji: '🌱', ko: '새싹 여행자', en: 'Sprout Traveler', lv: 1,
+    nextText: (ko) => ko ? '게시글 10개 작성 시 레벨업' : 'Write 10 posts to level up' },
+  { min: 1, max: 9, emoji: '🗺️', ko: '초보 여행자', en: 'Novice Traveler', lv: 2,
+    nextText: (ko) => ko ? '게시글 10개 달성까지' : 'posts to reach Lv.3' },
+  { min: 10, max: 99, emoji: '✈️', ko: '여행 마니아', en: 'Travel Maniac', lv: 3,
+    nextText: (ko) => ko ? '게시글 100개+댓글 50개 달성까지' : 'posts+comments to reach Lv.4' },
+  { min: 100, max: 499, emoji: '🏆', ko: '여행 전문가', en: 'Travel Expert', lv: 4,
+    nextText: (ko) => ko ? '게시글 500개+댓글 100개 달성까지' : 'posts+comments to reach Lv.5' },
+  { min: 500, max: Infinity, emoji: '👑', ko: '여행 마스터', en: 'Travel Master', lv: 5,
+    nextText: () => '' },
 ]
 
-function getLevel(count: number) {
-  return levels.find(l => count >= l.min && count < l.max) ?? levels[levels.length - 1]
+function getLevel(postCount: number, commentCount: number, followerCount: number): Level {
+  if (postCount === 0) return levels[0]
+  if (postCount <= 9) return levels[1]
+  if (postCount <= 99) return commentCount >= 50 ? levels[2] : levels[1]
+  if (postCount <= 499) return commentCount >= 100 ? levels[3] : levels[2]
+  return (commentCount >= 100 && followerCount >= 100) ? levels[4] : levels[3]
 }
 
-function getLevelProgress(count: number) {
-  const level = getLevel(count)
+function getLevelProgress(postCount: number, level: Level): number {
   if (level.lv === 5) return 100
-  return Math.min(((count - level.min) / (level.max - level.min)) * 100, 100)
+  if (level.max === 0) return 0
+  return Math.min(((postCount - level.min) / (level.max - level.min + 1)) * 100, 100)
 }
 
-export default function ProfileCard({ user, locale, postCount }: ProfileCardProps) {
+function getUnmetCondition(postCount: number, commentCount: number, followerCount: number, isKo: boolean): string {
+  if (postCount >= 10 && postCount <= 99 && commentCount < 50) {
+    const need = 50 - commentCount
+    return isKo ? `댓글 ${need}개 더 필요` : `Need ${need} more comments for Lv.3`
+  }
+  if (postCount >= 100 && postCount <= 499 && commentCount < 100) {
+    const need = 100 - commentCount
+    return isKo ? `댓글 ${need}개 더 필요` : `Need ${need} more comments for Lv.4`
+  }
+  if (postCount >= 500) {
+    const parts: string[] = []
+    if (commentCount < 100) parts.push(isKo ? `댓글 ${100 - commentCount}개` : `${100 - commentCount} comments`)
+    if (followerCount < 100) parts.push(isKo ? `팔로워 ${100 - followerCount}명` : `${100 - followerCount} followers`)
+    if (parts.length > 0) return isKo ? `${parts.join(', ')} 더 필요` : `Need ${parts.join(', ')} more for Lv.5`
+  }
+  return ''
+}
+
+export default function ProfileCard({ user, locale, postCount, commentCount, followerCount }: ProfileCardProps) {
   const isKo = locale === 'ko'
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -131,9 +170,9 @@ export default function ProfileCard({ user, locale, postCount }: ProfileCardProp
       {/* 여행자 레벨 게이지 */}
       <div className="mb-4 bg-gray-50 rounded-xl p-4">
         {(() => {
-          const level = getLevel(postCount)
-          const progress = getLevelProgress(postCount)
-          const nextLevel = levels.find(l => l.lv === level.lv + 1)
+          const level = getLevel(postCount, commentCount, followerCount)
+          const progress = getLevelProgress(postCount, level)
+          const unmet = getUnmetCondition(postCount, commentCount, followerCount, isKo)
           return (
             <>
               <div className="flex items-center justify-between mb-2">
@@ -150,9 +189,11 @@ export default function ProfileCard({ user, locale, postCount }: ProfileCardProp
               </div>
               <div className="flex justify-between text-[10px] text-gray-400">
                 <span>{isKo ? `게시글 ${postCount}개` : `${postCount} posts`}</span>
-                {nextLevel && (
-                  <span>{isKo ? `다음 레벨까지 ${nextLevel.min - postCount}개` : `${nextLevel.min - postCount} more to Lv.${nextLevel.lv}`}</span>
-                )}
+                {unmet ? (
+                  <span className="text-orange-400">{unmet}</span>
+                ) : level.lv < 5 ? (
+                  <span>{level.nextText(isKo)}</span>
+                ) : null}
               </div>
             </>
           )

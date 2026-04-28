@@ -1,5 +1,9 @@
-import Image from 'next/image'
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 
 type Category = 'food' | 'cafe' | 'spot' | 'shopping' | 'activity'
 
@@ -46,8 +50,49 @@ function getLocalName(place: Place, locale: string): string {
 
 export default function PlaceDetail({ place, locale }: PlaceDetailProps) {
   const isKo = locale === 'ko'
+  const router = useRouter()
   const config = categoryConfig[place.category] ?? categoryConfig.spot
   const displayName = getLocalName(place, locale)
+
+  const [bookmarked, setBookmarked] = useState(false)
+  const [bookmarkLoading, setBookmarkLoading] = useState(false)
+  const [userId, setUserId] = useState<string | null>(null)
+
+  useEffect(() => {
+    const init = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      setUserId(user.id)
+      const { data } = await supabase
+        .from('place_bookmarks')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('place_id', place.id)
+        .single()
+      if (data) setBookmarked(true)
+    }
+    init()
+  }, [place.id])
+
+  const handleBookmark = async () => {
+    if (!userId) {
+      alert(isKo ? '로그인이 필요합니다.' : 'Please log in first.')
+      router.push(`/${locale}/auth/login`)
+      return
+    }
+    if (bookmarkLoading) return
+    setBookmarkLoading(true)
+    const supabase = createClient()
+    if (bookmarked) {
+      await supabase.from('place_bookmarks').delete().eq('user_id', userId).eq('place_id', place.id)
+      setBookmarked(false)
+    } else {
+      await supabase.from('place_bookmarks').insert({ user_id: userId, place_id: place.id })
+      setBookmarked(true)
+    }
+    setBookmarkLoading(false)
+  }
 
   const googleMapsUrl = place.lat && place.lng
     ? `https://www.google.com/maps?q=${place.lat},${place.lng}`
@@ -66,11 +111,10 @@ export default function PlaceDetail({ place, locale }: PlaceDetailProps) {
       {/* 이미지 헤더 */}
       <div className={`relative w-full h-72 rounded-2xl overflow-hidden ${config.bg} flex items-center justify-center`}>
         {place.photo_url ? (
-          <Image
+          <img
             src={place.photo_url}
             alt={displayName}
-            fill
-            className="object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
           />
         ) : (
           <span className="text-8xl">{place.emoji ?? '📍'}</span>
@@ -116,7 +160,6 @@ export default function PlaceDetail({ place, locale }: PlaceDetailProps) {
 
         {/* 상세 정보 */}
         <div className="flex flex-col gap-2.5">
-          {/* 위치 */}
           <div className="flex items-start gap-3">
             <span className="text-base w-5 shrink-0 mt-0.5">📍</span>
             <div>
@@ -130,16 +173,12 @@ export default function PlaceDetail({ place, locale }: PlaceDetailProps) {
               )}
             </div>
           </div>
-
-          {/* 영업시간 */}
           {place.hours && (
             <div className="flex items-start gap-3">
               <span className="text-base w-5 shrink-0 mt-0.5">🕐</span>
               <p className="text-sm text-gray-700">{place.hours}</p>
             </div>
           )}
-
-          {/* 가격대 */}
           {place.price_range && (
             <div className="flex items-start gap-3">
               <span className="text-base w-5 shrink-0 mt-0.5">💰</span>
@@ -148,8 +187,32 @@ export default function PlaceDetail({ place, locale }: PlaceDetailProps) {
           )}
         </div>
 
-        {/* 지도 버튼 */}
+        {/* 액션 버튼 */}
         <div className="flex gap-2 mt-5">
+          <button
+            onClick={handleBookmark}
+            disabled={bookmarkLoading}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${
+              bookmarked
+                ? 'bg-sky-50 text-sky-600 border-sky-200 hover:bg-sky-100'
+                : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
+            }`}
+          >
+            {bookmarked ? '✅' : '🔖'} {bookmarked ? (isKo ? '저장됨' : 'Saved') : (isKo ? '가고싶어요' : 'Save')}
+          </button>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href)
+              alert(isKo ? '링크가 복사됐습니다!' : 'Link copied!')
+            }}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100 transition-all"
+          >
+            🔗 {isKo ? '공유' : 'Share'}
+          </button>
+        </div>
+
+        {/* 지도 버튼 */}
+        <div className="flex gap-2 mt-3">
           <a
             href={googleMapsUrl}
             target="_blank"

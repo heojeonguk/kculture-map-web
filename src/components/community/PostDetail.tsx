@@ -19,6 +19,7 @@ interface Post {
   avatar_url?: string
   photo_url?: string
   user_level_emoji?: string
+  tags?: string[]
 }
 
 interface PostDetailProps {
@@ -53,6 +54,7 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
   const [translating, setTranslating] = useState(false)
   const [showTranslated, setShowTranslated] = useState(false)
   const [authorDropdown, setAuthorDropdown] = useState(false)
+  const [isFollowing, setIsFollowing] = useState(false)
   const authorRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -69,7 +71,18 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
     const checkLiked = async () => {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
-      if (user) setCurrentUserId(user.id)
+      if (user) {
+        setCurrentUserId(user.id)
+        if (post.user_id && user.id !== post.user_id) {
+          const { data: follow } = await supabase
+            .from('follows')
+            .select('id')
+            .eq('follower_id', user.id)
+            .eq('following_id', post.user_id)
+            .single()
+          if (follow) setIsFollowing(true)
+        }
+      }
       const identifier = user?.id ?? localStorage.getItem('anon_id') ?? ''
       if (!identifier) return
       const { data } = await supabase
@@ -81,7 +94,7 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
       if (data) setLiked(true)
     }
     checkLiked()
-  }, [post.id])
+  }, [post.id, post.user_id])
 
   const handleTranslate = async () => {
     if (translated) {
@@ -176,6 +189,32 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
     setLikeLoading(false)
   }
 
+  const handleFollow = async () => {
+    if (!currentUserId || !post.user_id) return
+    const supabase = createClient()
+    if (isFollowing) {
+      await supabase.from('follows').delete().eq('follower_id', currentUserId).eq('following_id', post.user_id)
+      setIsFollowing(false)
+    } else {
+      await supabase.from('follows').insert({ follower_id: currentUserId, following_id: post.user_id })
+      setIsFollowing(true)
+      const { data: { user } } = await supabase.auth.getUser()
+      const fromUserName = user?.user_metadata?.nickname ?? user?.email?.split('@')[0] ?? '익명'
+      await fetch(`${window.location.origin}/api/notifications/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: post.user_id,
+          type: 'follow',
+          post_id: null,
+          from_user_name: fromUserName,
+          from_avatar_url: user?.user_metadata?.avatar_url ?? null,
+          message: `${fromUserName}님이 팔로우했습니다`,
+        }),
+      })
+    }
+  }
+
   const handleDelete = async () => {
     const confirmed = window.confirm(
       isKo ? '정말 삭제하시겠습니까?' : 'Are you sure you want to delete this post?'
@@ -241,12 +280,20 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
                     📝 {isKo ? '게시글 보기' : 'View posts'}
                   </button>
                   {currentUserId && currentUserId !== post.user_id && (
-                    <button
-                      onClick={() => { setAuthorDropdown(false); router.push(`/${locale}/messages/${post.user_id}`) }}
-                      className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors flex items-center gap-2"
-                    >
-                      ✉️ {isKo ? '메시지 보내기' : 'Send message'}
-                    </button>
+                    <>
+                      <button
+                        onClick={() => { setAuthorDropdown(false); router.push(`/${locale}/messages/${post.user_id}`) }}
+                        className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors flex items-center gap-2"
+                      >
+                        ✉️ {isKo ? '메시지 보내기' : 'Send message'}
+                      </button>
+                      <button
+                        onClick={() => { handleFollow(); setAuthorDropdown(false) }}
+                        className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors flex items-center gap-2"
+                      >
+                        {isFollowing ? '✅' : '➕'} {isFollowing ? (isKo ? '팔로잉' : 'Following') : (isKo ? '팔로우' : 'Follow')}
+                      </button>
+                    </>
                   )}
                 </div>
               )}
@@ -261,6 +308,20 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
         <div className="py-4 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
           {post.content}
         </div>
+
+        {post.tags && post.tags.length > 0 && (
+          <div className="flex gap-2 flex-wrap pb-4">
+            {post.tags.map(tag => (
+              <button
+                key={tag}
+                onClick={() => router.push(`/${locale}/community?tag=${tag}`)}
+                className="text-xs text-blue-500 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-full hover:bg-blue-100 transition-colors"
+              >
+                #{tag}
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="flex justify-end mb-2">
           <button
@@ -332,6 +393,15 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
           >
             <span className="text-base">{liked ? '🔥' : '🤍'}</span>
             {likes}
+          </button>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href)
+              alert(isKo ? '링크가 복사됐습니다!' : 'Link copied!')
+            }}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100 transition-all"
+          >
+            🔗 {isKo ? '공유' : 'Share'}
           </button>
           {currentUserId && post.user_id && currentUserId === post.user_id && (
             <div className="flex items-center gap-2 ml-auto">

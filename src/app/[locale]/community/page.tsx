@@ -14,6 +14,7 @@ interface CommunityPageProps {
     page?: string
     q?: string
     author?: string
+    tag?: string
   }>
 }
 
@@ -21,7 +22,7 @@ const PAGE_SIZE = 10
 
 export default async function CommunityPage({ params, searchParams }: CommunityPageProps) {
   const { locale } = await params
-  const { category, sort = 'latest', page, q, author } = await searchParams
+  const { category, sort = 'latest', page, q, author, tag } = await searchParams
   const currentPage = Number(page ?? 1)
   const offset = (currentPage - 1) * PAGE_SIZE
 
@@ -33,6 +34,8 @@ export default async function CommunityPage({ params, searchParams }: CommunityP
 
   if (author) {
     query = query.eq('user_id', author)
+  } else if (tag) {
+    query = query.contains('tags', [tag])
   } else {
     if (category && category !== 'all') {
       query = query.eq('category', category)
@@ -53,6 +56,7 @@ export default async function CommunityPage({ params, searchParams }: CommunityP
 
   const totalPages = Math.ceil((count ?? 0) / PAGE_SIZE)
   const authorName = author ? (posts?.[0]?.user_name ?? author) : null
+  const isKo = locale === 'ko'
 
   return (
     <>
@@ -67,12 +71,24 @@ export default async function CommunityPage({ params, searchParams }: CommunityP
                   href={`/${locale}/community`}
                   className="text-sm text-gray-400 hover:text-sky-500 transition-colors flex items-center gap-1"
                 >
-                  ← {locale === 'ko' ? '전체 게시글' : 'All posts'}
+                  ← {isKo ? '전체 게시글' : 'All posts'}
                 </Link>
                 <span className="text-gray-300">·</span>
                 <h2 className="text-sm font-semibold text-gray-700">
-                  {authorName}{locale === 'ko' ? '님의 게시글' : "'s posts"}
+                  {authorName}{isKo ? '님의 게시글' : "'s posts"}
                 </h2>
+              </div>
+            ) : tag ? (
+              <div className="flex items-center gap-3">
+                <Link
+                  href={`/${locale}/community`}
+                  className="text-sm text-gray-400 hover:text-sky-500 transition-colors flex items-center gap-1"
+                >
+                  ← {isKo ? '전체 게시글' : 'All posts'}
+                </Link>
+                <span className="text-gray-300">·</span>
+                <h2 className="text-sm font-semibold text-blue-600">#{tag}</h2>
+                <span className="text-xs text-gray-400">{isKo ? '로 검색 중' : 'results'}</span>
               </div>
             ) : (
               <PostFilter locale={locale} activeCategory={category} activeSort={sort} />

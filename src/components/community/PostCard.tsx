@@ -10,6 +10,7 @@ interface Post {
   user_name?: string
   nation?: string
   photo_url?: string
+  tags?: string[]
   post_comments?: { count: number }[]
 }
 
@@ -74,7 +75,18 @@ export default function PostCard({ post, locale }: PostCardProps) {
         </div>
 
         {/* 제목 */}
-        <p className="text-sm font-semibold text-gray-800 truncate mb-2">{post.title}</p>
+        <p className="text-sm font-semibold text-gray-800 truncate mb-1">{post.title}</p>
+
+        {/* 태그 */}
+        {post.tags && post.tags.length > 0 && (
+          <div className="flex gap-1 flex-wrap mb-1.5">
+            {post.tags.slice(0, 3).map(tag => (
+              <span key={tag} className="text-[10px] text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded-full">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* 하단 메타 */}
         <div className="flex items-center gap-3">

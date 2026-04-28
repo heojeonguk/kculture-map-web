@@ -45,6 +45,8 @@ export default function PostWriteForm({ locale }: PostWriteFormProps) {
   const [city, setCity] = useState('')
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [tags, setTags] = useState<string[]>([])
+  const [tagInput, setTagInput] = useState('')
 
   useEffect(() => {
     const supabase = createClient()
@@ -64,6 +66,18 @@ export default function PostWriteForm({ locale }: PostWriteFormProps) {
     setPhotoFile(file)
     const url = URL.createObjectURL(file)
     setPhotoPreview(url)
+  }
+
+  const addTag = () => {
+    let raw = tagInput.trim().replace(/^#/, '')
+    raw = raw.replace(/[^a-zA-Z0-9가-힣_]/g, '').slice(0, 20)
+    if (!raw || tags.length >= 5 || tags.includes(raw)) { setTagInput(''); return }
+    setTags(prev => [...prev, raw])
+    setTagInput('')
+  }
+
+  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); addTag() }
   }
 
   const handleRemovePhoto = () => {
@@ -118,6 +132,7 @@ export default function PostWriteForm({ locale }: PostWriteFormProps) {
         user_id: user.id,
         user_name: user.user_metadata?.nickname ?? user.email?.split('@')[0] ?? '익명',
         likes: 0,
+        tags: tags.length > 0 ? tags : null,
       })
       .select('id')
       .single()
@@ -234,6 +249,41 @@ export default function PostWriteForm({ locale }: PostWriteFormProps) {
             className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-sky-400 transition-colors resize-none"
           />
           <p className="text-[10px] text-gray-400 text-right mt-1">{content.length}/2000</p>
+        </div>
+
+        {/* 태그 */}
+        <div className="mb-4">
+          <label className="text-xs font-medium text-gray-600 mb-1.5 block">
+            {isKo ? '태그 (최대 5개)' : 'Tags (up to 5)'}
+          </label>
+          {tags.length > 0 && (
+            <div className="flex gap-1.5 flex-wrap mb-2">
+              {tags.map(tag => (
+                <span key={tag} className="flex items-center gap-1 text-xs text-blue-600 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-full">
+                  #{tag}
+                  <button onClick={() => setTags(prev => prev.filter(t => t !== tag))} className="text-blue-400 hover:text-blue-600 ml-0.5">×</button>
+                </span>
+              ))}
+            </div>
+          )}
+          {tags.length < 5 && (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleTagKeyDown}
+                placeholder={isKo ? '#태그 입력 후 스페이스/엔터' : '#tag then space/enter'}
+                className="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-sky-400 transition-colors"
+              />
+              <button
+                onClick={addTag}
+                className="px-3 py-2 bg-gray-100 text-gray-600 rounded-xl text-sm hover:bg-gray-200 transition-colors"
+              >
+                +
+              </button>
+            </div>
+          )}
         </div>
 
         {/* 사진 업로드 */}
