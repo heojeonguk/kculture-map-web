@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 interface SearchZoneProps {
   locale: string
@@ -10,29 +11,80 @@ interface SearchZoneProps {
 type Category = 'food' | 'cafe' | 'spot' | 'shopping' | 'activity'
 
 const categories: { key: Category; emoji: string; ko: string; en: string }[] = [
-  { key: 'food', emoji: '🍽', ko: '맛집', en: 'Food' },
+  { key: 'food', emoji: '🍽️', ko: '맛집', en: 'Food' },
   { key: 'cafe', emoji: '☕', ko: '카페', en: 'Cafe' },
   { key: 'spot', emoji: '📍', ko: '명소', en: 'Spots' },
-  { key: 'shopping', emoji: '🛍', ko: '쇼핑', en: 'Shopping' },
+  { key: 'shopping', emoji: '🛍️', ko: '쇼핑', en: 'Shopping' },
   { key: 'activity', emoji: '🎯', ko: '액티비티', en: 'Activity' },
 ]
+
+interface Place {
+  id: string
+  name: string
+  name_en?: string
+  category?: string
+  city?: string
+  emoji?: string
+  rating?: number
+}
+
+interface Post {
+  id: string
+  title: string
+  category?: string
+  city?: string
+  user_name?: string
+  likes?: number
+}
 
 export default function SearchZone({ locale }: SearchZoneProps) {
   const [query, setQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState<Category | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [answer, setAnswer] = useState<string | null>(null)
+  const [places, setPlaces] = useState<Place[]>([])
+  const [posts, setPosts] = useState<Post[]>([])
+  const [searched, setSearched] = useState(false)
   const router = useRouter()
   const isKo = locale === 'ko'
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!query.trim() && !activeCategory) return
-    const params = new URLSearchParams()
-    if (query.trim()) params.set('q', query.trim())
-    if (activeCategory) params.set('category', activeCategory)
-    router.push(`/${locale}/search?${params.toString()}`)
+
+    const searchQuery = [query.trim(), activeCategory].filter(Boolean).join(' ')
+    setLoading(true)
+    setSearched(true)
+    setAnswer(null)
+    setPlaces([])
+    setPosts([])
+
+    try {
+      const res = await fetch(`${window.location.origin}/api/ai-search`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: searchQuery, locale }),
+      })
+      const data = await res.json()
+      setAnswer(data.answer)
+      setPlaces(data.places || [])
+      setPosts(data.posts || [])
+    } catch {
+      setAnswer(isKo ? '검색 중 오류가 발생했습니다.' : 'Search error occurred.')
+    }
+    setLoading(false)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') handleSearch()
+  }
+
+  const handleReset = () => {
+    setQuery('')
+    setActiveCategory(null)
+    setSearched(false)
+    setAnswer(null)
+    setPlaces([])
+    setPosts([])
   }
 
   return (
@@ -46,20 +98,24 @@ export default function SearchZone({ locale }: SearchZoneProps) {
           : "Korea's ultimate culture travel guide for global travelers"}
       </p>
 
-      {/* 검색바 */}
+      {/* 검색창 */}
       <div className="flex gap-2 mb-3">
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={isKo ? '장소, 음식, 지역 검색...' : 'Search places, food, city...'}
+          placeholder={isKo ? '어디든 물어보세요. "서울 분위기 좋은 카페"' : 'Ask anything. "Best cafes in Seoul"'}
           className="flex-1 px-4 py-2.5 rounded-xl text-sm text-gray-800 placeholder:text-gray-400 outline-none border border-gray-200 focus:ring-2 focus:ring-sky-200"
         />
         <button
           onClick={handleSearch}
-          className="bg-sky-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-sky-600 transition-colors"
+          disabled={loading}
+          className="bg-sky-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-sky-600 transition-colors disabled:opacity-50 flex items-center gap-1.5"
         >
+          {loading ? (
+            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          ) : '✨'}
           {isKo ? '검색' : 'Search'}
         </button>
       </div>
@@ -69,9 +125,7 @@ export default function SearchZone({ locale }: SearchZoneProps) {
         {categories.map((cat) => (
           <button
             key={cat.key}
-            onClick={() =>
-              setActiveCategory(activeCategory === cat.key ? null : cat.key)
-            }
+            onClick={() => setActiveCategory(activeCategory === cat.key ? null : cat.key)}
             className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
               activeCategory === cat.key
                 ? 'bg-sky-500 text-white border-sky-500'
@@ -82,6 +136,97 @@ export default function SearchZone({ locale }: SearchZoneProps) {
           </button>
         ))}
       </div>
+
+      {/* AI 검색 결과 */}
+      {searched && (
+        <div className="mt-5 pt-5 border-t border-gray-100">
+          {loading ? (
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <span className="w-4 h-4 border-2 border-sky-400 border-t-transparent rounded-full animate-spin" />
+              {isKo ? 'AI가 검색 중입니다...' : 'AI is searching...'}
+            </div>
+          ) : (
+            <>
+              {/* AI 답변 */}
+              {answer && (
+                <div className="bg-sky-50 border border-sky-100 rounded-xl px-4 py-3 mb-4 text-sm text-gray-700 leading-relaxed">
+                  <p className="text-[10px] text-sky-400 font-medium mb-1">✨ AI 추천</p>
+                  {answer}
+                </div>
+              )}
+
+              {/* 추천 장소 */}
+              {places.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-xs font-semibold text-gray-500 mb-2">
+                    📍 {isKo ? '추천 장소' : 'Recommended Places'}
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    {places.map(place => (
+                      <Link
+                        key={place.id}
+                        href={`/${locale}/places/${place.id}`}
+                        className="flex items-center gap-3 p-3 bg-white border border-gray-100 rounded-xl hover:border-sky-200 hover:bg-sky-50 transition-all"
+                      >
+                        <span className="text-xl shrink-0">{place.emoji ?? '📍'}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-800 truncate">
+                            {locale === 'ko' ? place.name : (place.name_en ?? place.name)}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            {place.category} · {place.city}
+                            {place.rating ? ` · ⭐ ${place.rating}` : ''}
+                          </p>
+                        </div>
+                        <span className="text-xs text-sky-500 shrink-0">→</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 관련 커뮤니티 글 */}
+              {posts.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-xs font-semibold text-gray-500 mb-2">
+                    💬 {isKo ? '관련 후기' : 'Related Posts'}
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    {posts.map(post => (
+                      <Link
+                        key={post.id}
+                        href={`/${locale}/community/${post.id}`}
+                        className="flex items-center justify-between p-3 bg-white border border-gray-100 rounded-xl hover:border-sky-200 hover:bg-sky-50 transition-all"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-800 truncate">{post.title}</p>
+                          <p className="text-xs text-gray-400">
+                            {post.user_name} · 🔥 {post.likes ?? 0}
+                          </p>
+                        </div>
+                        <span className="text-xs text-sky-500 shrink-0 ml-2">→</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {places.length === 0 && posts.length === 0 && (
+                <p className="text-sm text-gray-400 text-center py-4">
+                  {isKo ? '관련 결과를 찾지 못했습니다.' : 'No results found.'}
+                </p>
+              )}
+
+              <button
+                onClick={handleReset}
+                className="text-xs text-gray-400 hover:text-sky-500 transition-colors mt-2"
+              >
+                {isKo ? '← 검색 초기화' : '← Clear search'}
+              </button>
+            </>
+          )}
+        </div>
+      )}
     </section>
   )
 }
