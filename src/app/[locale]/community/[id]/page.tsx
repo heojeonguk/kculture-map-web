@@ -3,8 +3,7 @@ import { notFound } from 'next/navigation'
 import Header from '@/components/layout/Header'
 import Sidebar from '@/components/layout/Sidebar'
 import PostDetail from '@/components/community/PostDetail'
-import dynamic from 'next/dynamic'
-const CommentSection = dynamic(() => import('@/components/community/CommentSection'), { ssr: false })
+import CommentSectionWrapper from '@/components/community/CommentSectionWrapper'
 
 interface PostPageProps {
   params: Promise<{ locale: string; id: string }>
@@ -40,7 +39,7 @@ export default async function PostPage({ params }: PostPageProps) {
           <Sidebar position="left" />
           <div className="flex flex-col gap-4 min-w-0">
             <PostDetail post={serializedPost} locale={locale} />
-            <CommentSection comments={serializedComments} postId={id} locale={locale} />
+            <CommentSectionWrapper comments={serializedComments} postId={id} locale={locale} />
           </div>
           <Sidebar position="right" />
         </div>
