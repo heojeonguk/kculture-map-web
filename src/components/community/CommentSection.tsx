@@ -210,7 +210,7 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
                 {comment.nation ?? ''} {comment.user_name ?? (isKo ? '익명' : 'Anonymous')}
               </span>
             )}
-            <span className="text-[10px] text-gray-300">
+            <span className="text-[10px] text-gray-300" suppressHydrationWarning>
               {timeAgo(comment.created_at, isKo)}
             </span>
           </div>
