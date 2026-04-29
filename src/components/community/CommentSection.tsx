@@ -9,9 +9,10 @@ interface Comment {
   content: string
   user_id?: string
   user_name?: string
+  user_level_emoji?: string
+  avatar_url?: string
   nation?: string
   created_at: string
-  user_level_emoji?: string
   parent_id?: string | null
   children?: Comment[]
 }
@@ -143,9 +144,13 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
   return (
     <div className={`${depth > 0 ? 'ml-8 border-l-2 border-sky-100 pl-3' : ''}`}>
       <div className="flex gap-3 py-2">
-        <div className="w-7 h-7 rounded-full bg-sky-50 flex items-center justify-center text-xs shrink-0 mt-0.5">
-          {comment.user_name?.charAt(0).toUpperCase() ?? '?'}
-        </div>
+        {comment.avatar_url ? (
+          <img src={comment.avatar_url} alt="" className="w-7 h-7 rounded-full object-cover shrink-0 mt-0.5" />
+        ) : (
+          <div className="w-7 h-7 rounded-full bg-sky-100 flex items-center justify-center text-xs font-bold text-sky-600 shrink-0 mt-0.5">
+            {comment.user_name?.charAt(0).toUpperCase() ?? '?'}
+          </div>
+        )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             {comment.user_id ? (
@@ -327,6 +332,8 @@ export default function CommentSection({ comments: initialComments, postId, loca
         content,
         parent_id: parentId,
         user_name: fromUserName,
+        user_id: user.id,
+        avatar_url: user.user_metadata?.avatar_url ?? null,
       })
       .select('*')
       .single()
