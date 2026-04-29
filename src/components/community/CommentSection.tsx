@@ -116,10 +116,7 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
   }
 
   const handleTranslate = async () => {
-    if (translated) {
-      setShowTranslated(!showTranslated)
-      return
-    }
+    if (translated) { setShowTranslated(!showTranslated); return }
     setTranslating(true)
     try {
       const response = await fetch(`${window.location.origin}/api/translate`, {
@@ -146,23 +143,35 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
   return (
     <div className={`${depth > 0 ? 'ml-8 border-l-2 border-sky-100 pl-3' : ''}`}>
       <div className="flex gap-3 py-2">
-        <div className="w-7 h-7 rounded-full bg-sky-50 flex items-center justify-center text-xs shrink-0">
-          {comment.user_level_emoji ?? '👤'}
+        <div className="w-7 h-7 rounded-full bg-sky-50 flex items-center justify-center text-xs shrink-0 mt-0.5">
+          {comment.user_level_emoji ?? '🌍'}
         </div>
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             {comment.user_id ? (
-              <div className="relative" ref={dropdownRef}>
+              <div className="relative" ref={dropdownRef} style={{ zIndex: 10 }}>
                 <button
-                  onClick={() => setShowDropdown(prev => !prev)}
-                  className="text-xs font-medium text-gray-700 hover:text-sky-500 transition-colors"
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setShowDropdown(prev => !prev)
+                  }}
+                  className="text-xs font-medium text-gray-700 hover:text-sky-500 transition-colors cursor-pointer"
                 >
                   {comment.nation ?? ''} {comment.user_name ?? (isKo ? '익명' : 'Anonymous')}
                 </button>
                 {showDropdown && (
-                  <div className="absolute left-0 top-6 bg-white border border-gray-200 rounded-xl shadow-lg z-20 min-w-[160px] py-1">
+                  <div
+                    className="absolute left-0 top-6 bg-white border border-gray-200 rounded-xl shadow-xl py-1"
+                    style={{ zIndex: 9999, minWidth: '160px' }}
+                    onClick={e => e.stopPropagation()}
+                  >
                     <button
-                      onClick={() => { setShowDropdown(false); router.push(`/${locale}/profile/${comment.user_id}`) }}
+                      type="button"
+                      onClick={() => {
+                        setShowDropdown(false)
+                        router.push(`/${locale}/profile/${comment.user_id}`)
+                      }}
                       className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
                     >
                       👤 {isKo ? '프로필 보기' : 'View profile'}
@@ -170,13 +179,21 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
                     {user && user.id !== comment.user_id && (
                       <>
                         <button
-                          onClick={() => { setShowDropdown(false); router.push(`/${locale}/messages/${comment.user_id}`) }}
+                          type="button"
+                          onClick={() => {
+                            setShowDropdown(false)
+                            router.push(`/${locale}/messages/${comment.user_id}`)
+                          }}
                           className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors flex items-center gap-2"
                         >
                           ✉️ {isKo ? '메시지 보내기' : 'Send message'}
                         </button>
                         <button
-                          onClick={() => { handleFollow(); setShowDropdown(false) }}
+                          type="button"
+                          onClick={() => {
+                            handleFollow()
+                            setShowDropdown(false)
+                          }}
                           className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors flex items-center gap-2"
                         >
                           {isFollowing ? '✅' : '➕'} {isFollowing ? (isKo ? '팔로잉' : 'Following') : (isKo ? '팔로우' : 'Follow')}
@@ -195,9 +212,9 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
               {timeAgo(comment.created_at, isKo)}
             </span>
           </div>
+
           <p className="text-sm text-gray-600 leading-relaxed">{comment.content}</p>
 
-          {/* 번역 결과 */}
           {showTranslated && translated && (
             <div className="bg-sky-50 border border-sky-100 rounded-lg p-2.5 mt-1.5 text-xs text-gray-600 leading-relaxed">
               <p className="text-[9px] text-sky-400 font-medium mb-1">🌐 {isKo ? '번역' : 'Translation'}</p>
@@ -205,10 +222,10 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
             </div>
           )}
 
-          {/* 답글 + 번역 버튼 */}
           <div className="flex items-center gap-3 mt-1">
             {user && depth < 2 && (
               <button
+                type="button"
                 onClick={() => setShowReplyInput(!showReplyInput)}
                 className="text-[11px] text-gray-400 hover:text-sky-500 transition-colors"
               >
@@ -216,6 +233,7 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
               </button>
             )}
             <button
+              type="button"
               onClick={handleTranslate}
               disabled={translating}
               className="text-[11px] text-gray-400 hover:text-sky-500 transition-colors flex items-center gap-1"
@@ -231,7 +249,6 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
             </button>
           </div>
 
-          {/* 답글 입력창 */}
           {showReplyInput && (
             <div className="flex gap-2 mt-2">
               <input
@@ -244,6 +261,7 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
                 autoFocus
               />
               <button
+                type="button"
                 onClick={handleReplySubmit}
                 disabled={submitting || !replyContent.trim()}
                 className="px-3 py-1.5 bg-sky-500 text-white rounded-xl text-xs font-medium hover:bg-sky-600 transition-colors disabled:opacity-40"
@@ -251,6 +269,7 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
                 {isKo ? '등록' : 'Post'}
               </button>
               <button
+                type="button"
                 onClick={() => { setShowReplyInput(false); setReplyContent('') }}
                 className="px-3 py-1.5 border border-gray-200 rounded-xl text-xs text-gray-500 hover:bg-gray-50 transition-colors"
               >
@@ -261,7 +280,6 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
         </div>
       </div>
 
-      {/* 대댓글 */}
       {comment.children && comment.children.length > 0 && (
         <div className="mt-1">
           {comment.children.map(child => (
@@ -374,12 +392,11 @@ export default function CommentSection({ comments: initialComments, postId, loca
         </div>
       )}
 
-      {/* 댓글 입력 */}
       <div className="mt-4 pt-4 border-t border-gray-100">
         {user ? (
           <div className="flex gap-2">
             <div className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-xs font-bold text-sky-600 shrink-0">
-              {(user.user_metadata?.nickname ?? user.email ?? '?').charAt(0).toUpperCase()}
+              {(user.user_metadata?.nickname ?? user.email ?? 'A').charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 flex gap-2">
               <input
@@ -391,6 +408,7 @@ export default function CommentSection({ comments: initialComments, postId, loca
                 className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-sky-400 transition-colors"
               />
               <button
+                type="button"
                 onClick={handleSubmit}
                 disabled={submitting || !content.trim()}
                 className="px-4 py-2 bg-sky-500 text-white rounded-xl text-sm font-medium hover:bg-sky-600 transition-colors disabled:opacity-40"
