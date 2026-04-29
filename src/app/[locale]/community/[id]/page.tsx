@@ -27,6 +27,10 @@ export default async function PostPage({ params }: PostPageProps) {
     .eq('post_id', id)
     .order('created_at', { ascending: true })
 
+  // JSON 직렬화로 hydration 에러 방지
+  const serializedComments = JSON.parse(JSON.stringify(comments ?? []))
+  const serializedPost = JSON.parse(JSON.stringify(post))
+
   return (
     <>
       <Header locale={locale} />
@@ -34,8 +38,8 @@ export default async function PostPage({ params }: PostPageProps) {
         <div className="grid grid-cols-[160px_1fr_160px] gap-6">
           <Sidebar position="left" />
           <div className="flex flex-col gap-4 min-w-0">
-            <PostDetail post={post} locale={locale} />
-            <CommentSection comments={comments ?? []} postId={id} locale={locale} />
+            <PostDetail post={serializedPost} locale={locale} />
+            <CommentSection comments={serializedComments} postId={id} locale={locale} />
           </div>
           <Sidebar position="right" />
         </div>
