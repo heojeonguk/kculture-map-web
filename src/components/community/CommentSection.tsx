@@ -149,18 +149,19 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             {comment.user_id ? (
-              <div className="relative" ref={dropdownRef} style={{ zIndex: 10, userSelect: 'none' }}>
-                <button
-                  type="button"
+              <span className="relative inline-block" ref={dropdownRef}>
+                <a
+                  href="#"
                   onClick={(e) => {
+                    e.preventDefault()
                     e.stopPropagation()
                     setShowDropdown(prev => !prev)
                   }}
                   className="text-xs font-medium text-gray-700 hover:text-sky-500 transition-colors"
-                  style={{ cursor: 'pointer', userSelect: 'none', WebkitUserSelect: 'none' }}
+                  style={{ cursor: 'pointer' }}
                 >
                   {comment.nation ?? ''} {comment.user_name ?? (isKo ? '익명' : 'Anonymous')}
-                </button>
+                </a>
                 {showDropdown && (
                   <div
                     className="absolute left-0 top-6 bg-white border border-gray-200 rounded-xl shadow-xl py-1"
@@ -203,7 +204,7 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
                     )}
                   </div>
                 )}
-              </div>
+              </span>
             ) : (
               <span className="text-xs font-medium text-gray-700">
                 {comment.nation ?? ''} {comment.user_name ?? (isKo ? '익명' : 'Anonymous')}
