@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation'
 import Header from '@/components/layout/Header'
 import Sidebar from '@/components/layout/Sidebar'
 import PostDetail from '@/components/community/PostDetail'
-import CommentSection from '@/components/community/CommentSection'
+import dynamic from 'next/dynamic'
+const CommentSection = dynamic(() => import('@/components/community/CommentSection'), { ssr: false })
 
 interface PostPageProps {
   params: Promise<{ locale: string; id: string }>

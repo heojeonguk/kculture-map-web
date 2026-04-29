@@ -144,7 +144,7 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
     <div className={`${depth > 0 ? 'ml-8 border-l-2 border-sky-100 pl-3' : ''}`}>
       <div className="flex gap-3 py-2">
         <div className="w-7 h-7 rounded-full bg-sky-50 flex items-center justify-center text-xs shrink-0 mt-0.5">
-          {comment.user_level_emoji ?? '🌍'}
+          {comment.user_name?.charAt(0).toUpperCase() ?? '?'}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
