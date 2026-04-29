@@ -149,14 +149,15 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             {comment.user_id ? (
-              <div className="relative" ref={dropdownRef} style={{ zIndex: 10 }}>
+              <div className="relative" ref={dropdownRef} style={{ zIndex: 10, userSelect: 'none' }}>
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation()
                     setShowDropdown(prev => !prev)
                   }}
-                  className="text-xs font-medium text-gray-700 hover:text-sky-500 transition-colors cursor-pointer"
+                  className="text-xs font-medium text-gray-700 hover:text-sky-500 transition-colors"
+                  style={{ cursor: 'pointer', userSelect: 'none', WebkitUserSelect: 'none' }}
                 >
                   {comment.nation ?? ''} {comment.user_name ?? (isKo ? '익명' : 'Anonymous')}
                 </button>
