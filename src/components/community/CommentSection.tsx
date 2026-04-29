@@ -68,6 +68,7 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
   const [showTranslated, setShowTranslated] = useState(false)
   const [showDropdown, setShowDropdown] = useState(false)
   const [isFollowing, setIsFollowing] = useState(false)
+  const [modalPhoto, setModalPhoto] = useState<string | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -144,17 +145,30 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
   return (
     <div className={`${depth > 0 ? 'ml-8 border-l-2 border-sky-100 pl-3' : ''}`}>
       <div className="flex gap-3 py-2">
+        {/* 아바타 */}
         {comment.avatar_url ? (
-          <img src={comment.avatar_url} alt="" className="w-7 h-7 rounded-full object-cover shrink-0 mt-0.5" />
+          <img
+            src={comment.avatar_url}
+            alt=""
+            className="w-7 h-7 rounded-full object-cover shrink-0 mt-0.5 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => setModalPhoto(comment.avatar_url!)}
+          />
         ) : (
           <div className="w-7 h-7 rounded-full bg-sky-100 flex items-center justify-center text-xs font-bold text-sky-600 shrink-0 mt-0.5">
             {comment.user_name?.charAt(0).toUpperCase() ?? '?'}
           </div>
         )}
+
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+            {/* 레벨 이모지 */}
+            {comment.user_level_emoji && (
+              <span className="text-xs">{comment.user_level_emoji}</span>
+            )}
+
+            {/* 닉네임 드롭다운 */}
             {comment.user_id ? (
-              <span className="relative inline-block" ref={dropdownRef}>
+              <div className="relative" ref={dropdownRef}>
                 <a
                   href="#"
                   onClick={(e) => {
@@ -175,10 +189,7 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
                   >
                     <button
                       type="button"
-                      onClick={() => {
-                        setShowDropdown(false)
-                        router.push(`/${locale}/profile/${comment.user_id}`)
-                      }}
+                      onClick={() => { setShowDropdown(false); router.push(`/${locale}/profile/${comment.user_id}`) }}
                       className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
                     >
                       👤 {isKo ? '프로필 보기' : 'View profile'}
@@ -187,20 +198,14 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
                       <>
                         <button
                           type="button"
-                          onClick={() => {
-                            setShowDropdown(false)
-                            router.push(`/${locale}/messages/${comment.user_id}`)
-                          }}
+                          onClick={() => { setShowDropdown(false); router.push(`/${locale}/messages/${comment.user_id}`) }}
                           className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors flex items-center gap-2"
                         >
                           ✉️ {isKo ? '메시지 보내기' : 'Send message'}
                         </button>
                         <button
                           type="button"
-                          onClick={() => {
-                            handleFollow()
-                            setShowDropdown(false)
-                          }}
+                          onClick={() => { handleFollow(); setShowDropdown(false) }}
                           className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors flex items-center gap-2"
                         >
                           {isFollowing ? '✅' : '➕'} {isFollowing ? (isKo ? '팔로잉' : 'Following') : (isKo ? '팔로우' : 'Follow')}
@@ -209,12 +214,13 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
                     )}
                   </div>
                 )}
-              </span>
+              </div>
             ) : (
               <span className="text-xs font-medium text-gray-700">
                 {comment.nation ?? ''} {comment.user_name ?? (isKo ? '익명' : 'Anonymous')}
               </span>
             )}
+
             <span className="text-[10px] text-gray-300" suppressHydrationWarning>
               {timeAgo(comment.created_at, isKo)}
             </span>
@@ -301,6 +307,27 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
               depth={depth + 1}
             />
           ))}
+        </div>
+      )}
+
+      {/* 아바타 사진 모달 */}
+      {modalPhoto && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+          onClick={() => setModalPhoto(null)}
+        >
+          <button
+            onClick={() => setModalPhoto(null)}
+            className="absolute top-4 right-4 text-white/80 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full bg-black/30"
+          >
+            ✕
+          </button>
+          <img
+            src={modalPhoto}
+            alt=""
+            className="max-w-full max-h-[90vh] object-contain rounded-lg"
+            onClick={e => e.stopPropagation()}
+          />
         </div>
       )}
     </div>
@@ -404,9 +431,13 @@ export default function CommentSection({ comments: initialComments, postId, loca
       <div className="mt-4 pt-4 border-t border-gray-100">
         {user ? (
           <div className="flex gap-2">
-            <div className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-xs font-bold text-sky-600 shrink-0">
-              {(user.user_metadata?.nickname ?? user.email ?? 'A').charAt(0).toUpperCase()}
-            </div>
+            {user.user_metadata?.avatar_url ? (
+              <img src={user.user_metadata.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-xs font-bold text-sky-600 shrink-0">
+                {(user.user_metadata?.nickname ?? user.email ?? 'A').charAt(0).toUpperCase()}
+              </div>
+            )}
             <div className="flex-1 flex gap-2">
               <input
                 type="text"
