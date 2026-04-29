@@ -8,6 +8,7 @@ interface Post {
   likes?: number
   created_at: string
   user_name?: string
+  user_level_emoji?: string
   nation?: string
   photo_url?: string
   tags?: string[]
@@ -90,7 +91,8 @@ export default function PostCard({ post, locale }: PostCardProps) {
 
         {/* 하단 메타 */}
         <div className="flex items-center gap-3">
-          <span className="text-xs text-gray-400">
+          <span className="text-sm font-medium text-gray-700 flex items-center gap-1">
+            {post.user_level_emoji && <span className="text-sm">{post.user_level_emoji}</span>}
             {post.nation ?? ''} {post.user_name ?? (isKo ? '익명' : 'Anonymous')}
           </span>
           <span className="text-xs text-gray-300">·</span>

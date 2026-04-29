@@ -200,6 +200,23 @@ export default function ProfileCard({ user, locale, postCount, commentCount, fol
         })()}
       </div>
 
+      {/* 레벨 정보 토글 */}
+      <div className="mb-3">
+        <details className="group">
+          <summary className="cursor-pointer text-xs text-sky-500 hover:text-sky-600 flex items-center gap-1 list-none">
+            <span>🏅 레벨 달성 조건 보기</span>
+            <span className="group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <div className="mt-2 bg-gray-50 rounded-xl p-3 flex flex-col gap-1.5 text-xs text-gray-600">
+            <div className="flex items-center gap-2"><span>🌱</span><span>Lv.1 새싹 여행자 — 게시글 0개</span></div>
+            <div className="flex items-center gap-2"><span>🗺️</span><span>Lv.2 초보 여행자 — 게시글 1~9개</span></div>
+            <div className="flex items-center gap-2"><span>✈️</span><span>Lv.3 여행 마니아 — 게시글 10개 + 댓글 50개</span></div>
+            <div className="flex items-center gap-2"><span>🏆</span><span>Lv.4 여행 전문가 — 게시글 100개 + 댓글 100개</span></div>
+            <div className="flex items-center gap-2"><span>👑</span><span>Lv.5 여행 마스터 — 게시글 500개 + 댓글 100개 + 팔로워 100명</span></div>
+          </div>
+        </details>
+      </div>
+
       <button
         onClick={handleLogout}
         className="w-full py-2 border border-red-100 text-red-500 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors"
