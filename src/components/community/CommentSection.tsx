@@ -361,6 +361,7 @@ export default function CommentSection({ comments: initialComments, postId, loca
         user_name: fromUserName,
         user_id: user.id,
         avatar_url: user.user_metadata?.avatar_url ?? null,
+        user_level_emoji: user.user_metadata?.level_emoji ?? '🌱',
       })
       .select('*')
       .single()
