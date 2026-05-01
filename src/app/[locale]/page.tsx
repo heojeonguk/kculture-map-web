@@ -35,11 +35,26 @@ export default async function HomePage({
   console.log('posts data:', bestPosts)
   console.log('posts error:', postsError)
 
-  const { data: bestPhotos } = await supabase
+  const { data: bestPhotosRaw } = await supabase
     .from('user_photos')
     .select('*')
     .order('likes_count', { ascending: false })
     .limit(6)
+
+  const bestPhotos = await Promise.all(
+    (bestPhotosRaw ?? []).map(async (photo) => {
+      const [{ data: nick }, { data: post }] = await Promise.all([
+        supabase.from('nicknames').select('nickname').eq('user_id', photo.user_id).single(),
+        supabase.from('posts').select('avatar_url, user_level_emoji').eq('user_id', photo.user_id).not('avatar_url', 'is', null).limit(1).single(),
+      ])
+      return {
+        ...photo,
+        nickname: nick?.nickname ?? null,
+        avatar_url: post?.avatar_url ?? null,
+        user_level_emoji: post?.user_level_emoji ?? null,
+      }
+    })
+  )
 
   // 커뮤니티 최신글 4개
   const { data: latestPosts } = await supabase

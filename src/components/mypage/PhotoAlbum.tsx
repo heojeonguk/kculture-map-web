@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 interface Photo {
@@ -19,10 +20,11 @@ interface PhotoAlbumProps {
 
 export default function PhotoAlbum({ userId, isOwner, locale }: PhotoAlbumProps) {
   const isKo = locale === 'ko'
+  const router = useRouter()
   const [photos, setPhotos] = useState<Photo[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
-  const [modalSrc, setModalSrc] = useState<string | null>(null)
+  const [modalPhoto, setModalPhoto] = useState<Photo | null>(null)
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set())
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -70,27 +72,32 @@ export default function PhotoAlbum({ userId, isOwner, locale }: PhotoAlbumProps)
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
-  const handleDelete = async (photoId: string) => {
+  const handleDelete = async (photoId: string, e: React.MouseEvent) => {
+    e.stopPropagation()
     if (!window.confirm(isKo ? '이 사진을 삭제하시겠습니까?' : 'Delete this photo?')) return
     const supabase = createClient()
     await supabase.from('user_photos').delete().eq('id', photoId)
     setPhotos(prev => prev.filter(p => p.id !== photoId))
+    if (modalPhoto?.id === photoId) setModalPhoto(null)
   }
 
-  const handleLike = async (photoId: string) => {
+  const handleLike = async (photoId: string, e: React.MouseEvent) => {
+    e.stopPropagation()
     if (!currentUserId) return
     const supabase = createClient()
     const isLiked = likedIds.has(photoId)
     if (isLiked) {
       await supabase.from('photo_likes').delete().eq('photo_id', photoId).eq('user_id', currentUserId)
-      await supabase.rpc('decrement_photo_likes', { photo_id: photoId })
+      await supabase.from('user_photos').update({ likes_count: (photos.find(p => p.id === photoId)?.likes_count ?? 1) - 1 }).eq('id', photoId)
       setLikedIds(prev => { const s = new Set(prev); s.delete(photoId); return s })
       setPhotos(prev => prev.map(p => p.id === photoId ? { ...p, likes_count: (p.likes_count ?? 1) - 1 } : p))
+      if (modalPhoto?.id === photoId) setModalPhoto(prev => prev ? { ...prev, likes_count: (prev.likes_count ?? 1) - 1 } : null)
     } else {
       await supabase.from('photo_likes').insert({ photo_id: photoId, user_id: currentUserId })
-      await supabase.rpc('increment_photo_likes', { photo_id: photoId })
+      await supabase.from('user_photos').update({ likes_count: (photos.find(p => p.id === photoId)?.likes_count ?? 0) + 1 }).eq('id', photoId)
       setLikedIds(prev => new Set([...prev, photoId]))
       setPhotos(prev => prev.map(p => p.id === photoId ? { ...p, likes_count: (p.likes_count ?? 0) + 1 } : p))
+      if (modalPhoto?.id === photoId) setModalPhoto(prev => prev ? { ...prev, likes_count: (prev.likes_count ?? 0) + 1 } : null)
     }
   }
 
@@ -134,23 +141,28 @@ export default function PhotoAlbum({ userId, isOwner, locale }: PhotoAlbumProps)
       ) : (
         <div className="grid grid-cols-3 gap-2">
           {photos.map(photo => (
-            <div key={photo.id} className="relative aspect-square group">
+            <div
+              key={photo.id}
+              className="relative aspect-square group cursor-pointer"
+              onClick={() => setModalPhoto(photo)}
+            >
               <img
                 src={photo.photo_url}
                 alt=""
-                className="w-full h-full object-cover rounded-xl cursor-pointer"
-                onClick={() => setModalSrc(photo.photo_url)}
+                className="w-full h-full object-cover rounded-xl"
               />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex flex-col items-end justify-between p-2">
-                {isOwner && (
-                  <button
-                    onClick={() => handleDelete(photo.id)}
-                    className="bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-500 transition-colors"
-                  >✕</button>
-                )}
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex flex-col items-end justify-between p-2 pointer-events-none">
+                <div className="pointer-events-auto flex flex-col items-end gap-1">
+                  {isOwner && (
+                    <button
+                      onClick={(e) => handleDelete(photo.id, e)}
+                      className="bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-500 transition-colors"
+                    >✕</button>
+                  )}
+                </div>
                 <button
-                  onClick={() => handleLike(photo.id)}
-                  className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full transition-colors ${
+                  onClick={(e) => handleLike(photo.id, e)}
+                  className={`pointer-events-auto flex items-center gap-1 text-xs px-2 py-1 rounded-full transition-colors ${
                     likedIds.has(photo.id) ? 'bg-orange-500 text-white' : 'bg-black/50 text-white'
                   } ${!currentUserId ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
@@ -162,21 +174,39 @@ export default function PhotoAlbum({ userId, isOwner, locale }: PhotoAlbumProps)
         </div>
       )}
 
-      {modalSrc && (
+      {/* 사진 모달 */}
+      {modalPhoto && (
         <div
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
-          onClick={() => setModalSrc(null)}
+          onClick={() => setModalPhoto(null)}
         >
           <button
-            onClick={() => setModalSrc(null)}
+            onClick={() => setModalPhoto(null)}
             className="absolute top-4 right-4 text-white/80 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full bg-black/30"
           >✕</button>
-          <img
-            src={modalSrc}
-            alt=""
-            className="max-w-full max-h-[90vh] object-contain rounded-lg"
+          <div
+            className="flex flex-col items-center gap-3 max-w-2xl w-full"
             onClick={e => e.stopPropagation()}
-          />
+          >
+            <img
+              src={modalPhoto.photo_url}
+              alt=""
+              className="max-w-full max-h-[75vh] object-contain rounded-lg"
+            />
+            {/* 좋아요 버튼 */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={(e) => handleLike(modalPhoto.id, e)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                  likedIds.has(modalPhoto.id)
+                    ? 'bg-orange-500 text-white'
+                    : 'bg-white/20 text-white hover:bg-white/30'
+                } ${!currentUserId ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                🔥 {modalPhoto.likes_count ?? 0}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
