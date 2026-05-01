@@ -28,7 +28,8 @@ export async function GET(request: NextRequest) {
       supabase.from('posts')
         .select('user_id, avatar_url, user_name')
         .in('user_id', userIds)
-        .not('avatar_url', 'is', null),
+        .not('avatar_url', 'is', null)
+        .order('created_at', { ascending: false }),
     ])
 
     const result = userIds.map(uid => {

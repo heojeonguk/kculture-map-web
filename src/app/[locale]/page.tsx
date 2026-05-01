@@ -35,26 +35,33 @@ export default async function HomePage({
   console.log('posts data:', bestPosts)
   console.log('posts error:', postsError)
 
-  const { data: bestPhotosRaw } = await supabase
+  const { data: photosRaw } = await supabase
     .from('user_photos')
     .select('*')
     .order('likes_count', { ascending: false })
     .limit(6)
 
-  const bestPhotos = await Promise.all(
-    (bestPhotosRaw ?? []).map(async (photo) => {
-      const [{ data: nick }, { data: post }] = await Promise.all([
-        supabase.from('nicknames').select('nickname').eq('user_id', photo.user_id).single(),
-        supabase.from('posts').select('avatar_url, user_level_emoji').eq('user_id', photo.user_id).not('avatar_url', 'is', null).limit(1).single(),
-      ])
-      return {
-        ...photo,
-        nickname: nick?.nickname ?? null,
-        avatar_url: post?.avatar_url ?? null,
-        user_level_emoji: post?.user_level_emoji ?? null,
-      }
-    })
-  )
+  const userIds = [...new Set((photosRaw ?? []).map(p => p.user_id))]
+
+  const [{ data: nicknamesData }, { data: postsData }] = await Promise.all([
+    supabase.from('nicknames').select('user_id, nickname').in('user_id', userIds),
+    supabase.from('posts')
+      .select('user_id, avatar_url, user_level_emoji')
+      .in('user_id', userIds)
+      .not('avatar_url', 'is', null)
+      .order('created_at', { ascending: false }),
+  ])
+
+  const bestPhotos = (photosRaw ?? []).map(photo => {
+    const nick = nicknamesData?.find(n => n.user_id === photo.user_id)
+    const post = postsData?.find(p => p.user_id === photo.user_id)
+    return {
+      ...photo,
+      nickname: nick?.nickname ?? null,
+      avatar_url: post?.avatar_url ?? null,
+      user_level_emoji: post?.user_level_emoji ?? null,
+    }
+  })
 
   // 커뮤니티 최신글 4개
   const { data: latestPosts } = await supabase
