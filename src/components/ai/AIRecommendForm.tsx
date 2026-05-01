@@ -28,8 +28,12 @@ const regions = [
   { key: '서울', ko: '서울', en: 'Seoul' },
   { key: '부산', ko: '부산', en: 'Busan' },
   { key: '제주', ko: '제주', en: 'Jeju' },
-  { key: '경주', ko: '경주', en: 'Gyeongju' },
-  { key: '전국', ko: '전국', en: 'Nationwide' },
+  { key: '경기', ko: '경기', en: 'Gyeonggi' },
+  { key: '인천', ko: '인천', en: 'Incheon' },
+  { key: '강원', ko: '강원', en: 'Gangwon' },
+  { key: '경상', ko: '경상', en: 'Gyeongsang' },
+  { key: '전라', ko: '전라', en: 'Jeolla' },
+  { key: '충청', ko: '충청', en: 'Chungcheong' },
 ]
 
 export default function AIRecommendForm({ locale }: AIRecommendFormProps) {
