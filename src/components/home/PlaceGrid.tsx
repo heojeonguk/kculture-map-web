@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Image from 'next/image'
 
 type Category = 'food' | 'cafe' | 'spot' | 'shopping' | 'activity'
 
@@ -57,12 +56,11 @@ export default function PlaceGrid({ places, locale }: PlaceGridProps) {
               {/* 이미지 영역 */}
               <div className={`h-24 ${config.bg} flex items-center justify-center relative`}>
                 {place.photo_url ? (
-                  <Image
-                    src={`/api/place-photo?ref=${place.photo_url}`}
-                    alt={place.name}
-                    fill
-                    className="object-cover"
-                  />
+<img
+  src={`/api/place-photo?ref=${place.photo_url}`}
+  alt={place.name}
+  className="object-cover w-full h-full"
+/>
                 ) : (
                   <span className="text-3xl">{place.emoji ?? config.emoji}</span>
                 )}

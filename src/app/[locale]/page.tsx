@@ -20,8 +20,9 @@ export default async function HomePage({
   const { data: popularPlaces, error: placesError } = await supabase
     .from('places')
     .select('id, name, category, city, district, photo_url, emoji')
-    .limit(4)
-    .order('created_at', { ascending: false })
+    .not('photo_url', 'is', null)
+    .order('rating', { ascending: false })
+    .limit(8)
 
   console.log('places data:', popularPlaces)
   console.log('places error:', placesError)
