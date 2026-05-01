@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Image from 'next/image'
 
 type Category = 'food' | 'cafe' | 'spot' | 'shopping' | 'activity'
 
@@ -40,11 +39,10 @@ export default function PlaceCard({ place, locale }: PlaceCardProps) {
       {/* 이미지 */}
       <div className={`h-40 ${config.bg} flex items-center justify-center relative overflow-hidden`}>
         {place.photo_url ? (
-          <Image
+          <img
             src={`/api/place-photo?ref=${place.photo_url}`}
             alt={place.name}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
           <span className="text-5xl">{place.emoji ?? '📍'}</span>
