@@ -248,17 +248,16 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
         <h1 className="text-xl font-bold text-gray-900 mb-4">{post.title}</h1>
 
         <div className="flex items-center gap-2 pb-4 border-b border-gray-100">
-          {/* 아바타 */}
           {post.avatar_url ? (
             <img
               src={post.avatar_url}
               alt={post.user_name ?? ''}
-              className="w-8 h-8 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
+              className="w-8 h-8 rounded-full object-cover cursor-pointer"
               onClick={() => setModalSrc(post.avatar_url!)}
             />
           ) : (
             <div className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-sm">
-              {post.user_level_emoji ?? '👤'}
+              {post.user_level_emoji ?? '🌱'}
             </div>
           )}
 
@@ -267,8 +266,11 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
             <div className="relative" ref={authorRef}>
               <button
                 onClick={() => setAuthorDropdown(prev => !prev)}
-                className="text-sm font-medium text-gray-700 hover:text-sky-500 transition-colors"
+                className="text-sm font-medium text-gray-700 hover:text-sky-500 transition-colors flex items-center gap-1"
               >
+                {post.avatar_url && post.user_level_emoji && (
+                  <span className="text-sm">{post.user_level_emoji}</span>
+                )}
                 {post.nation ?? ''} {post.user_name ?? (isKo ? '익명' : 'Anonymous')}
               </button>
               {authorDropdown && (
