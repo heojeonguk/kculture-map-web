@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { useCurrentUser } from '@/hooks/useCurrentUser'
+import { api } from '@/lib/api'
 
 interface Notification {
   id: string
@@ -15,37 +16,33 @@ interface Notification {
   created_at: string
 }
 
-interface NotificationBellProps {
-  userId: string | null
-}
-
-export default function NotificationBell({ userId }: NotificationBellProps) {
+export default function NotificationBell() {
+  const { user } = useCurrentUser()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
   const unreadCount = notifications.filter(n => !n.is_read).length
 
-  const fetchNotifications = async () => {
-    if (!userId) return
+  const fetchNotifications = useCallback(async () => {
+    if (!user) return
     try {
-      const res = await fetch(`${window.location.origin}/api/notifications?user_id=${userId}`)
-      if (!res.ok) return
-      const data = await res.json()
+      const data = await api.notifications.list(user.id)
       setNotifications(data.notifications || [])
     } catch {}
-  }
+  }, [user])
 
   useEffect(() => {
     fetchNotifications()
-    // 60초마다 폴링
     const interval = setInterval(fetchNotifications, 60000)
-    return () => clearInterval(interval)
-  }, [userId])
+    window.addEventListener('focus', fetchNotifications)
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('focus', fetchNotifications)
+    }
+  }, [fetchNotifications])
 
-  // 외부 클릭 시 닫기
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -58,14 +55,8 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
 
   const handleOpen = async () => {
     setOpen(prev => !prev)
-    if (!open && unreadCount > 0) {
-      // 열 때 전체 읽음 처리 (DB 직접 업데이트)
-      const supabase = createClient()
-      await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('user_id', userId)
-        .eq('is_read', false)
+    if (!open && unreadCount > 0 && user) {
+      await api.notifications.markRead(user.id)
       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
     }
   }
@@ -85,9 +76,10 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
     return `${Math.floor(hours / 24)}일 전`
   }
 
+  if (!user) return null
+
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* 벨 아이콘 버튼 */}
       <button
         onClick={handleOpen}
         className="relative p-2 text-gray-600 hover:text-gray-900 transition-colors"
@@ -104,7 +96,6 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
         )}
       </button>
 
-      {/* 드롭다운 */}
       {open && (
         <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">

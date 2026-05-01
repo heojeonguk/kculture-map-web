@@ -116,6 +116,8 @@ export default function BestPhotos({ photos, locale }: BestPhotosProps) {
               <img
                 src={photo.photo_url}
                 alt=""
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover rounded-xl hover:opacity-90 transition-opacity"
               />
               <div className="absolute bottom-1 left-1 bg-black/50 text-white text-[10px] px-1.5 py-0.5 rounded-full">

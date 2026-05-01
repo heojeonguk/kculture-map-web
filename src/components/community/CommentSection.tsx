@@ -1,8 +1,11 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { useCurrentUser } from '@/hooks/useCurrentUser'
+import { useFollow } from '@/hooks/useFollow'
+import { api } from '@/lib/api'
 
 interface Comment {
   id: string
@@ -67,9 +70,10 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
   const [translating, setTranslating] = useState(false)
   const [showTranslated, setShowTranslated] = useState(false)
   const [showDropdown, setShowDropdown] = useState(false)
-  const [isFollowing, setIsFollowing] = useState(false)
   const [modalPhoto, setModalPhoto] = useState<string | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const { isFollowing, toggleFollow } = useFollow(comment.user_id, user?.id ?? null)
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -81,52 +85,11 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  useEffect(() => {
-    if (!user || !comment.user_id || user.id === comment.user_id) return
-    const supabase = createClient()
-    supabase.from('follows')
-      .select('id')
-      .eq('follower_id', user.id)
-      .eq('following_id', comment.user_id)
-      .single()
-      .then(({ data }) => { if (data) setIsFollowing(true) })
-  }, [user, comment.user_id])
-
-  const handleFollow = async () => {
-    if (!user || !comment.user_id) return
-    const supabase = createClient()
-    if (isFollowing) {
-      await supabase.from('follows').delete().eq('follower_id', user.id).eq('following_id', comment.user_id)
-      setIsFollowing(false)
-    } else {
-      await supabase.from('follows').insert({ follower_id: user.id, following_id: comment.user_id })
-      setIsFollowing(true)
-      const fromUserName = user.user_metadata?.nickname ?? user.email?.split('@')[0] ?? '익명'
-      await fetch(`${window.location.origin}/api/notifications/create`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: comment.user_id,
-          type: 'follow',
-          post_id: null,
-          from_user_name: fromUserName,
-          from_avatar_url: user.user_metadata?.avatar_url ?? null,
-          message: `${fromUserName}님이 팔로우했습니다`,
-        }),
-      })
-    }
-  }
-
   const handleTranslate = async () => {
     if (translated) { setShowTranslated(!showTranslated); return }
     setTranslating(true)
     try {
-      const response = await fetch(`${window.location.origin}/api/translate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: comment.content, targetLocale: locale }),
-      })
-      const data = await response.json()
+      const data = await api.translate(comment.content, locale)
       setTranslated(data.translated)
       setShowTranslated(true)
     } catch {}
@@ -150,6 +113,8 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
           <img
             src={comment.avatar_url}
             alt=""
+            loading="lazy"
+            decoding="async"
             className="w-7 h-7 rounded-full object-cover shrink-0 mt-0.5 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => setModalPhoto(comment.avatar_url!)}
           />
@@ -161,14 +126,12 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-            {/* 레벨 이모지 */}
             {comment.user_level_emoji && (
               <span className="text-xs">{comment.user_level_emoji}</span>
             )}
 
-            {/* 닉네임 드롭다운 */}
             {comment.user_id ? (
-              <div className="relative" ref={dropdownRef}>
+              <span className="relative inline-block" ref={dropdownRef}>
                 <a
                   href="#"
                   onClick={(e) => {
@@ -205,7 +168,11 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
                         </button>
                         <button
                           type="button"
-                          onClick={() => { handleFollow(); setShowDropdown(false) }}
+                          onClick={() => {
+                            const fromUserName = user?.user_metadata?.nickname ?? user?.email?.split('@')[0] ?? '익명'
+                            toggleFollow(fromUserName, user?.user_metadata?.avatar_url ?? null)
+                            setShowDropdown(false)
+                          }}
                           className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors flex items-center gap-2"
                         >
                           {isFollowing ? '✅' : '➕'} {isFollowing ? (isKo ? '팔로잉' : 'Following') : (isKo ? '팔로우' : 'Follow')}
@@ -214,7 +181,7 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
                     )}
                   </div>
                 )}
-              </div>
+              </span>
             ) : (
               <span className="text-xs font-medium text-gray-700">
                 {comment.nation ?? ''} {comment.user_name ?? (isKo ? '익명' : 'Anonymous')}
@@ -310,7 +277,6 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
         </div>
       )}
 
-      {/* 아바타 사진 모달 */}
       {modalPhoto && (
         <div
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
@@ -319,9 +285,7 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
           <button
             onClick={() => setModalPhoto(null)}
             className="absolute top-4 right-4 text-white/80 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full bg-black/30"
-          >
-            ✕
-          </button>
+          >✕</button>
           <img
             src={modalPhoto}
             alt=""
@@ -337,20 +301,16 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
 export default function CommentSection({ comments: initialComments, postId, locale }: CommentSectionProps) {
   const isKo = locale === 'ko'
   const [comments, setComments] = useState(initialComments)
-  const [user, setUser] = useState<any>(null)
   const [content, setContent] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const { user } = useCurrentUser()
 
-  useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) setUser(data.user)
-    })
-  }, [])
+  const tree = useMemo(() => buildTree(comments), [comments])
+  const totalCount = comments.length
 
   const addComment = async (parentId: string | null, content: string) => {
     const supabase = createClient()
-    const fromUserName = user.user_metadata?.nickname ?? user.email?.split('@')[0] ?? '익명'
+    const fromUserName = user?.user_metadata?.nickname ?? user?.email?.split('@')[0] ?? '익명'
 
     const { data: newComment, error } = await supabase
       .from('post_comments')
@@ -359,9 +319,9 @@ export default function CommentSection({ comments: initialComments, postId, loca
         content,
         parent_id: parentId,
         user_name: fromUserName,
-        user_id: user.id,
-        avatar_url: user.user_metadata?.avatar_url ?? null,
-        user_level_emoji: user.user_metadata?.level_emoji ?? '🌱',
+        user_id: user?.id,
+        avatar_url: user?.user_metadata?.avatar_url ?? null,
+        user_level_emoji: user?.user_metadata?.level_emoji ?? '🌱',
       })
       .select('*')
       .single()
@@ -375,18 +335,14 @@ export default function CommentSection({ comments: initialComments, postId, loca
         .eq('id', postId)
         .single()
 
-      if (post?.user_id && post.user_id !== user.id) {
-        await fetch(`${window.location.origin}/api/notifications/create`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            user_id: post.user_id,
-            type: 'comment',
-            post_id: postId,
-            from_user_name: fromUserName,
-            from_avatar_url: user.user_metadata?.avatar_url ?? null,
-            message: `${fromUserName}님이 댓글을 달았습니다: ${content.slice(0, 20)}`,
-          }),
+      if (post?.user_id && post.user_id !== user?.id) {
+        await api.notifications.create({
+          user_id: post.user_id,
+          type: 'comment',
+          post_id: postId,
+          from_user_name: fromUserName,
+          from_avatar_url: user?.user_metadata?.avatar_url ?? null,
+          message: `${fromUserName}님이 댓글을 달았습니다: ${content.slice(0, 20)}`,
         })
       }
     }
@@ -399,9 +355,6 @@ export default function CommentSection({ comments: initialComments, postId, loca
     setContent('')
     setSubmitting(false)
   }
-
-  const tree = buildTree(comments)
-  const totalCount = comments.length
 
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-5">

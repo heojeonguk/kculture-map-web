@@ -56,6 +56,8 @@ export default function PostCard({ post, locale }: PostCardProps) {
         <img
           src={post.photo_url}
           alt={post.title}
+          loading="lazy"
+          decoding="async"
           className="w-24 h-24 rounded-xl object-cover shrink-0"
         />
       )}

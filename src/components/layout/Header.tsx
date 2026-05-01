@@ -90,7 +90,7 @@ export default function Header({ locale }: HeaderProps) {
         {/* 로그인 상태 */}
         {user ? (
           <div className="flex items-center gap-2">
-          <NotificationBell userId={user?.id ?? null} />
+          <NotificationBell />
           <Link
             href={`/${locale}/messages`}
             className="relative p-2 text-gray-600 hover:text-gray-900 transition-colors"

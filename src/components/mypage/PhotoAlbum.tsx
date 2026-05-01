@@ -149,6 +149,8 @@ export default function PhotoAlbum({ userId, isOwner, locale }: PhotoAlbumProps)
               <img
                 src={photo.photo_url}
                 alt=""
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover rounded-xl"
               />
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex flex-col items-end justify-between p-2 pointer-events-none">
