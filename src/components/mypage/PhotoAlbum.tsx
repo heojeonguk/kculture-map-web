@@ -7,6 +7,7 @@ interface Photo {
   id: string
   user_id: string
   photo_url: string
+  likes_count?: number
   created_at: string
 }
 
@@ -22,19 +23,29 @@ export default function PhotoAlbum({ userId, isOwner, locale }: PhotoAlbumProps)
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [modalSrc, setModalSrc] = useState<string | null>(null)
+  const [likedIds, setLikedIds] = useState<Set<string>>(new Set())
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    const supabase = createClient()
-    supabase
-      .from('user_photos')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .then(({ data }) => {
-        setPhotos(data ?? [])
-        setLoading(false)
-      })
+    const init = async () => {
+      const supabase = createClient()
+      const [{ data: photosData }, { data: { user } }] = await Promise.all([
+        supabase.from('user_photos').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
+        supabase.auth.getUser(),
+      ])
+      setPhotos(photosData ?? [])
+      if (user) {
+        setCurrentUserId(user.id)
+        const { data: liked } = await supabase
+          .from('photo_likes')
+          .select('photo_id')
+          .eq('user_id', user.id)
+        if (liked) setLikedIds(new Set(liked.map(l => l.photo_id)))
+      }
+      setLoading(false)
+    }
+    init()
   }, [userId])
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,10 +70,28 @@ export default function PhotoAlbum({ userId, isOwner, locale }: PhotoAlbumProps)
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
-  const handleDelete = async (photo: Photo) => {
+  const handleDelete = async (photoId: string) => {
+    if (!window.confirm(isKo ? '이 사진을 삭제하시겠습니까?' : 'Delete this photo?')) return
     const supabase = createClient()
-    await supabase.from('user_photos').delete().eq('id', photo.id)
-    setPhotos(prev => prev.filter(p => p.id !== photo.id))
+    await supabase.from('user_photos').delete().eq('id', photoId)
+    setPhotos(prev => prev.filter(p => p.id !== photoId))
+  }
+
+  const handleLike = async (photoId: string) => {
+    if (!currentUserId) return
+    const supabase = createClient()
+    const isLiked = likedIds.has(photoId)
+    if (isLiked) {
+      await supabase.from('photo_likes').delete().eq('photo_id', photoId).eq('user_id', currentUserId)
+      await supabase.rpc('decrement_photo_likes', { photo_id: photoId })
+      setLikedIds(prev => { const s = new Set(prev); s.delete(photoId); return s })
+      setPhotos(prev => prev.map(p => p.id === photoId ? { ...p, likes_count: (p.likes_count ?? 1) - 1 } : p))
+    } else {
+      await supabase.from('photo_likes').insert({ photo_id: photoId, user_id: currentUserId })
+      await supabase.rpc('increment_photo_likes', { photo_id: photoId })
+      setLikedIds(prev => new Set([...prev, photoId]))
+      setPhotos(prev => prev.map(p => p.id === photoId ? { ...p, likes_count: (p.likes_count ?? 0) + 1 } : p))
+    }
   }
 
   return (
@@ -109,17 +138,25 @@ export default function PhotoAlbum({ userId, isOwner, locale }: PhotoAlbumProps)
               <img
                 src={photo.photo_url}
                 alt=""
-                className="w-full h-full object-cover rounded-xl cursor-pointer hover:opacity-90 transition-opacity"
+                className="w-full h-full object-cover rounded-xl cursor-pointer"
                 onClick={() => setModalSrc(photo.photo_url)}
               />
-              {isOwner && (
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex flex-col items-end justify-between p-2">
+                {isOwner && (
+                  <button
+                    onClick={() => handleDelete(photo.id)}
+                    className="bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-500 transition-colors"
+                  >✕</button>
+                )}
                 <button
-                  onClick={() => handleDelete(photo)}
-                  className="absolute top-1 right-1 w-6 h-6 bg-black/60 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
+                  onClick={() => handleLike(photo.id)}
+                  className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full transition-colors ${
+                    likedIds.has(photo.id) ? 'bg-orange-500 text-white' : 'bg-black/50 text-white'
+                  } ${!currentUserId ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  ✕
+                  🔥 {photo.likes_count ?? 0}
                 </button>
-              )}
+              </div>
             </div>
           ))}
         </div>

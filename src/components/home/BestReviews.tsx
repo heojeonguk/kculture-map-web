@@ -20,7 +20,7 @@ export default function BestReviews({ posts, locale }: BestReviewsProps) {
     <section>
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-base font-bold text-gray-800">
-          ⭐ {isKo ? '베스트 여행 후기' : 'Best Travel Reviews'}
+          ⭐ {isKo ? '베스트 게시글' : 'Best Posts'}
         </h2>
         <Link
           href={`/${locale}/community?sort=best`}

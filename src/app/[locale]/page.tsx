@@ -6,6 +6,7 @@ import SearchZone from '@/components/home/SearchZone'
 import PlaceGrid from '@/components/home/PlaceGrid'
 // import BannerAd from '@/components/home/BannerAd'
 import BestReviews from '@/components/home/BestReviews'
+import BestPhotos from '@/components/home/BestPhotos'
 import CommunityGrid from '@/components/home/CommunityGrid'
 
 export default async function HomePage({
@@ -34,6 +35,12 @@ export default async function HomePage({
   console.log('posts data:', bestPosts)
   console.log('posts error:', postsError)
 
+  const { data: bestPhotos } = await supabase
+    .from('user_photos')
+    .select('*')
+    .order('likes_count', { ascending: false })
+    .limit(6)
+
   // 커뮤니티 최신글 4개
   const { data: latestPosts } = await supabase
     .from('posts')
@@ -52,7 +59,10 @@ export default async function HomePage({
             <SearchZone locale={locale} />
             <PlaceGrid places={popularPlaces ?? []} locale={locale} />
             {/* <BannerAd /> */}
-            <BestReviews posts={bestPosts ?? []} locale={locale} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <BestPhotos photos={bestPhotos ?? []} locale={locale} />
+              <BestReviews posts={bestPosts ?? []} locale={locale} />
+            </div>
             <CommunityGrid posts={latestPosts ?? []} locale={locale} />
           </div>
 
