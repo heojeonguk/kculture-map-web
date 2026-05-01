@@ -48,17 +48,7 @@ export default async function MyPage({ params }: MypageProps) {
       .eq('follower_id', user.id),
     supabase
       .from('place_bookmarks')
-      .select(`
-        place_id,
-        places (
-          id,
-          name,
-          name_en,
-          category,
-          city,
-          emoji
-        )
-      `)
+      .select('place_id, places!place_bookmarks_place_id_fkey(id, name, name_en, category, city, emoji)')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false }),
   ])

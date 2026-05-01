@@ -248,63 +248,30 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
         <h1 className="text-xl font-bold text-gray-900 mb-4">{post.title}</h1>
 
         <div className="flex items-center gap-2 pb-4 border-b border-gray-100">
-          {post.avatar_url ? (
-            <img
-              src={post.avatar_url}
-              alt={post.user_name ?? ''}
-              className="w-8 h-8 rounded-full object-cover cursor-pointer"
-              onClick={() => setModalSrc(post.avatar_url!)}
-            />
-          ) : (
-            <div className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-sm">
-              {post.user_level_emoji ?? '🌱'}
-            </div>
-          )}
-
-          {/* 닉네임 — user_id 있으면 드롭다운 */}
-          {post.user_id ? (
-            <div className="relative" ref={authorRef}>
-              <button
-                onClick={() => setAuthorDropdown(prev => !prev)}
-                className="text-sm font-medium text-gray-700 hover:text-sky-500 transition-colors flex items-center gap-1"
-              >
-                {post.avatar_url && post.user_level_emoji && (
-                  <span className="text-sm">{post.user_level_emoji}</span>
-                )}
-                {post.nation ?? ''} {post.user_name ?? (isKo ? '익명' : 'Anonymous')}
-              </button>
-              {authorDropdown && (
-                <div className="absolute left-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-10 overflow-hidden min-w-[160px]">
-                  <button
-                    onClick={() => { setAuthorDropdown(false); router.push(`/${locale}/profile/${post.user_id}`) }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
-                  >
-                    👤 {isKo ? '프로필 보기' : 'View profile'}
-                  </button>
-                  {currentUserId && currentUserId !== post.user_id && (
-                    <>
-                      <button
-                        onClick={() => { setAuthorDropdown(false); router.push(`/${locale}/messages/${post.user_id}`) }}
-                        className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors flex items-center gap-2"
-                      >
-                        ✉️ {isKo ? '메시지 보내기' : 'Send message'}
-                      </button>
-                      <button
-                        onClick={() => { handleFollow(); setAuthorDropdown(false) }}
-                        className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors flex items-center gap-2"
-                      >
-                        {isFollowing ? '✅' : '➕'} {isFollowing ? (isKo ? '팔로잉' : 'Following') : (isKo ? '팔로우' : 'Follow')}
-                      </button>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-          ) : (
-            <span className="text-sm font-medium text-gray-700">
-              {post.nation ?? ''} {post.user_name ?? (isKo ? '익명' : 'Anonymous')}
-            </span>
-          )}
+          {/* 프로필 아바타 */}
+          <div className="relative shrink-0">
+            {post.avatar_url ? (
+              <img
+                src={post.avatar_url}
+                alt={post.user_name ?? ''}
+                className="w-8 h-8 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() => setModalSrc(post.avatar_url!)}
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-sm font-bold text-sky-600">
+                {(post.user_name ?? 'A').charAt(0).toUpperCase()}
+              </div>
+            )}
+            {/* 레벨 이모지 뱃지 */}
+            {post.user_level_emoji && (
+              <span className="absolute -bottom-1 -right-1 text-xs leading-none">
+                {post.user_level_emoji}
+              </span>
+            )}
+          </div>
+          <span className="text-sm font-medium text-gray-700">
+            {post.nation ?? ''} {post.user_name ?? (isKo ? '익명' : 'Anonymous')}
+          </span>
         </div>
 
         <div className="py-4 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
