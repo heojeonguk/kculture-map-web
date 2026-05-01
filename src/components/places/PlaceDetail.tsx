@@ -112,7 +112,7 @@ export default function PlaceDetail({ place, locale }: PlaceDetailProps) {
       <div className={`relative w-full h-72 rounded-2xl overflow-hidden ${config.bg} flex items-center justify-center`}>
         {place.photo_url ? (
           <img
-            src={place.photo_url ? `/api/place-photo?ref=${place.photo_url}` : undefined}
+            src={`/api/place-photo?ref=${place.photo_url}`}
             alt={displayName}
             className="absolute inset-0 w-full h-full object-cover"
           />

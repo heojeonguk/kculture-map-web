@@ -58,7 +58,7 @@ export default function PlaceGrid({ places, locale }: PlaceGridProps) {
               <div className={`h-24 ${config.bg} flex items-center justify-center relative`}>
                 {place.photo_url ? (
                   <Image
-                    src={place.photo_url ? `/api/place-photo?ref=${place.photo_url}` : undefined}
+                    src={`/api/place-photo?ref=${place.photo_url}`}
                     alt={place.name}
                     fill
                     className="object-cover"
