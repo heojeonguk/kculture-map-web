@@ -7,6 +7,7 @@ import ProfileCard from '@/components/mypage/ProfileCard'
 import MyPosts from '@/components/mypage/MyPosts'
 import MyBookmarks from '@/components/mypage/MyBookmarks'
 import MyPageClient from '@/components/mypage/MyPageClient'
+import PhotoAlbum from '@/components/mypage/PhotoAlbum'
 
 interface MypageProps {
   params: Promise<{ locale: string }>
@@ -53,8 +54,6 @@ export default async function MyPage({ params }: MypageProps) {
       .order('created_at', { ascending: false }),
   ])
 
-  const photoPosts = (myPosts ?? []).filter(p => p.photo_url)
-
   return (
     <>
       <Header locale={locale} />
@@ -74,8 +73,8 @@ export default async function MyPage({ params }: MypageProps) {
               locale={locale}
               followerCount={followerCount ?? 0}
               followingCount={followingCount ?? 0}
-              photoPosts={photoPosts as any}
             />
+            <PhotoAlbum userId={user.id} isOwner={true} locale={locale} />
             <MyPosts posts={myPosts ?? []} locale={locale} />
             <MyBookmarks bookmarks={(bookmarks ?? []) as any} locale={locale} />
           </div>

@@ -8,6 +8,7 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import Sidebar from '@/components/layout/Sidebar'
 import FollowModal from '@/components/mypage/FollowModal'
+import PhotoAlbum from '@/components/mypage/PhotoAlbum'
 
 const levels = [
   { min: 0, max: 0, emoji: '🌱', ko: '새싹 여행자', en: 'Sprout Traveler', lv: 1 },
@@ -234,23 +235,7 @@ export default function ProfilePage() {
             </div>
 
             {/* 사진첩 */}
-            {profile.photoUrls.length > 0 && (
-              <div className="bg-white border border-gray-100 rounded-2xl p-5">
-                <h2 className="text-base font-bold text-gray-800 mb-3">📸 {isKo ? '사진첩' : 'Photos'}</h2>
-                <div className="grid grid-cols-3 gap-2">
-                  {profile.photoUrls.map(({ id, photo_url }) => (
-                    <Link key={id} href={`/${locale}/community/${id}`}>
-                      <img
-                        src={photo_url}
-                        alt=""
-                        className="w-full aspect-square object-cover rounded-xl hover:opacity-90 transition-opacity cursor-pointer"
-                        onClick={(e) => { e.preventDefault(); setModalPhoto(photo_url) }}
-                      />
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
+            <PhotoAlbum userId={userId} isOwner={isSelf} locale={locale} />
 
             {/* 북마크 장소 */}
             {profile.bookmarks.length > 0 && (

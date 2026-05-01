@@ -1,0 +1,147 @@
+'use client'
+
+import { useState, useEffect, useRef } from 'react'
+import { createClient } from '@/lib/supabase/client'
+
+interface Photo {
+  id: string
+  user_id: string
+  photo_url: string
+  created_at: string
+}
+
+interface PhotoAlbumProps {
+  userId: string
+  isOwner: boolean
+  locale: string
+}
+
+export default function PhotoAlbum({ userId, isOwner, locale }: PhotoAlbumProps) {
+  const isKo = locale === 'ko'
+  const [photos, setPhotos] = useState<Photo[]>([])
+  const [loading, setLoading] = useState(true)
+  const [uploading, setUploading] = useState(false)
+  const [modalSrc, setModalSrc] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase
+      .from('user_photos')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .then(({ data }) => {
+        setPhotos(data ?? [])
+        setLoading(false)
+      })
+  }, [userId])
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    const supabase = createClient()
+    const ext = file.name.split('.').pop()
+    const path = `albums/${userId}_${Date.now()}.${ext}`
+    const { data: storageData, error: storageError } = await supabase.storage
+      .from('community-photos')
+      .upload(path, file)
+    if (storageError || !storageData) { setUploading(false); return }
+    const { data: { publicUrl } } = supabase.storage.from('community-photos').getPublicUrl(path)
+    const { data: newPhoto } = await supabase
+      .from('user_photos')
+      .insert({ user_id: userId, photo_url: publicUrl })
+      .select('*')
+      .single()
+    if (newPhoto) setPhotos(prev => [newPhoto, ...prev])
+    setUploading(false)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  const handleDelete = async (photo: Photo) => {
+    const supabase = createClient()
+    await supabase.from('user_photos').delete().eq('id', photo.id)
+    setPhotos(prev => prev.filter(p => p.id !== photo.id))
+  }
+
+  return (
+    <div className="bg-white border border-gray-100 rounded-2xl p-5">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-base font-bold text-gray-800">
+          📸 {isKo ? '사진첩' : 'Photos'}
+        </h2>
+        {isOwner && (
+          <>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="flex items-center gap-1 text-xs text-sky-500 hover:text-sky-600 border border-sky-200 hover:border-sky-400 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+            >
+              {uploading ? (
+                <span className="w-3 h-3 border border-sky-400 border-t-transparent rounded-full animate-spin" />
+              ) : '📷'}
+              {isKo ? '사진 추가' : 'Add photo'}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleUpload}
+            />
+          </>
+        )}
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-8">
+          <span className="w-6 h-6 border-2 border-sky-400 border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : photos.length === 0 ? (
+        <p className="text-sm text-gray-400 text-center py-6">
+          {isKo ? '아직 사진이 없습니다' : 'No photos yet'}
+        </p>
+      ) : (
+        <div className="grid grid-cols-3 gap-2">
+          {photos.map(photo => (
+            <div key={photo.id} className="relative aspect-square group">
+              <img
+                src={photo.photo_url}
+                alt=""
+                className="w-full h-full object-cover rounded-xl cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => setModalSrc(photo.photo_url)}
+              />
+              {isOwner && (
+                <button
+                  onClick={() => handleDelete(photo)}
+                  className="absolute top-1 right-1 w-6 h-6 bg-black/60 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {modalSrc && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+          onClick={() => setModalSrc(null)}
+        >
+          <button
+            onClick={() => setModalSrc(null)}
+            className="absolute top-4 right-4 text-white/80 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full bg-black/30"
+          >✕</button>
+          <img
+            src={modalSrc}
+            alt=""
+            className="max-w-full max-h-[90vh] object-contain rounded-lg"
+            onClick={e => e.stopPropagation()}
+          />
+        </div>
+      )}
+    </div>
+  )
+}
