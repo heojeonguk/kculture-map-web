@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
 import { useFollow } from '@/hooks/useFollow'
@@ -56,7 +57,7 @@ interface CommentItemProps {
   postId: string
   locale: string
   isKo: boolean
-  user: any
+  user: User | null
   onReply: (parentId: string, content: string) => Promise<void>
   depth?: number
 }

@@ -2,10 +2,11 @@
 
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
 
 interface ProfileCardProps {
-  user: any
+  user: User
   locale: string
   postCount: number
   commentCount: number

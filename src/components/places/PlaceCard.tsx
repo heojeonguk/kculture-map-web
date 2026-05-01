@@ -3,7 +3,7 @@ import Image from 'next/image'
 
 type Category = 'food' | 'cafe' | 'spot' | 'shopping' | 'activity'
 
-interface Place {
+export interface Place {
   id: string
   name: string
   category: Category
@@ -41,7 +41,7 @@ export default function PlaceCard({ place, locale }: PlaceCardProps) {
       <div className={`h-40 ${config.bg} flex items-center justify-center relative overflow-hidden`}>
         {place.photo_url ? (
           <Image
-            src={place.photo_url}
+            src={place.photo_url ? `/api/place-photo?ref=${place.photo_url}` : undefined}
             alt={place.name}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"

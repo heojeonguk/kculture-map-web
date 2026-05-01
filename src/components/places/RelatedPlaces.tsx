@@ -47,7 +47,7 @@ export default function RelatedPlaces({ places, locale, category }: RelatedPlace
             <div className={`h-20 ${config.bg} rounded-xl flex items-center justify-center mb-2 overflow-hidden relative`}>
               {place.photo_url ? (
                 <Image
-                  src={place.photo_url}
+                  src={place.photo_url ? `/api/place-photo?ref=${place.photo_url}` : undefined}
                   alt={place.name}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform"

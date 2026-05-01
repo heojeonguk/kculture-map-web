@@ -1,17 +1,5 @@
-import PlaceCard from './PlaceCard'
+import PlaceCard, { Place } from './PlaceCard'
 import Link from 'next/link'
-
-interface Place {
-  id: string
-  name: string
-  category: any
-  city: string
-  district?: string
-  photo_url?: string
-  emoji?: string
-  rating?: number
-  address?: string
-}
 
 interface PlaceListProps {
   places: Place[]
