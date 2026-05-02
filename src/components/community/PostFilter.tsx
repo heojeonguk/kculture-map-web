@@ -17,6 +17,7 @@ const sorts = ['latest', 'best']
 export default function PostFilter({ locale, activeCategory, activeSort }: PostFilterProps) {
   const t = useTranslations('community')
   const tCategory = useTranslations('category')
+  const tPlaces = useTranslations('places')
   const router = useRouter()
   const currentCategory = activeCategory ?? 'all'
   const [searchQuery, setSearchQuery] = useState('')
@@ -80,7 +81,7 @@ export default function PostFilter({ locale, activeCategory, activeSort }: PostF
           onClick={handleSearch}
           className="px-3 py-1.5 bg-sky-500 text-white rounded-xl text-xs font-medium hover:bg-sky-600 transition-colors"
         >
-          {t('searchButton')}
+          {tPlaces('searchButton')}
         </button>
       </div>
 
