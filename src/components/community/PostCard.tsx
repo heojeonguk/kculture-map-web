@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 
 interface Post {
   id: string
@@ -20,30 +23,32 @@ interface PostCardProps {
   locale: string
 }
 
-const categoryLabel: Record<string, { ko: string; en: string; color: string }> = {
-  food: { ko: '맛집', en: 'Food', color: 'text-orange-500 bg-orange-50' },
-  spot: { ko: '명소', en: 'Spot', color: 'text-blue-500 bg-blue-50' },
-  cafe: { ko: '카페', en: 'Cafe', color: 'text-amber-500 bg-amber-50' },
-  activity: { ko: '액티비티', en: 'Activity', color: 'text-sky-500 bg-sky-50' },
-  free: { ko: '자유', en: 'Free', color: 'text-gray-500 bg-gray-100' },
-  review: { ko: '후기', en: 'Review', color: 'text-purple-500 bg-purple-50' },
+const categoryColor: Record<string, string> = {
+  food: 'text-orange-500 bg-orange-50',
+  spot: 'text-blue-500 bg-blue-50',
+  cafe: 'text-amber-500 bg-amber-50',
+  activity: 'text-sky-500 bg-sky-50',
+  free: 'text-gray-500 bg-gray-100',
+  review: 'text-purple-500 bg-purple-50',
 }
 
-function timeAgo(dateStr: string, isKo: boolean): string {
+function timeAgo(dateStr: string, locale: string): string {
   const diff = Date.now() - new Date(dateStr).getTime()
   const mins = Math.floor(diff / 60000)
   const hours = Math.floor(diff / 3600000)
   const days = Math.floor(diff / 86400000)
 
-  if (mins < 1) return isKo ? '방금 전' : 'just now'
-  if (mins < 60) return isKo ? `${mins}분 전` : `${mins}m ago`
-  if (hours < 24) return isKo ? `${hours}시간 전` : `${hours}h ago`
-  return isKo ? `${days}일 전` : `${days}d ago`
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
+  if (mins < 1) return rtf.format(0, 'second')
+  if (mins < 60) return rtf.format(-mins, 'minute')
+  if (hours < 24) return rtf.format(-hours, 'hour')
+  return rtf.format(-days, 'day')
 }
 
 export default function PostCard({ post, locale }: PostCardProps) {
-  const isKo = locale === 'ko'
-  const cat = categoryLabel[post.category ?? 'free'] ?? categoryLabel.free
+  const t = useTranslations('community')
+  const tCategory = useTranslations('category')
+  const color = categoryColor[post.category ?? 'free'] ?? categoryColor.free
   const commentCount = post.post_comments?.[0]?.count ?? 0
 
   return (
@@ -66,14 +71,14 @@ export default function PostCard({ post, locale }: PostCardProps) {
       <div className="flex-1 min-w-0">
         {/* 카테고리 + 시간 */}
         <div className="flex items-center gap-2 mb-1.5">
-          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${cat.color}`}>
-            {isKo ? cat.ko : cat.en}
+          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${color}`}>
+            {tCategory(post.category ?? 'free')}
           </span>
           {post.city && (
             <span className="text-[10px] text-gray-400">{post.city}</span>
           )}
           <span className="text-[10px] text-gray-300 ml-auto shrink-0">
-            {timeAgo(post.created_at, isKo)}
+            {timeAgo(post.created_at, locale)}
           </span>
         </div>
 
@@ -95,7 +100,7 @@ export default function PostCard({ post, locale }: PostCardProps) {
         <div className="flex items-center gap-3">
           <span className="text-sm font-medium text-gray-700 flex items-center gap-1">
             {post.user_level_emoji && <span className="text-sm">{post.user_level_emoji}</span>}
-            {post.nation ?? ''} {post.user_name ?? (isKo ? '익명' : 'Anonymous')}
+            {post.nation ?? ''} {post.user_name ?? t('anonymous')}
           </span>
           <span className="text-xs text-gray-300">·</span>
           <span className="text-xs text-gray-400">👍 {post.likes ?? 0}</span>

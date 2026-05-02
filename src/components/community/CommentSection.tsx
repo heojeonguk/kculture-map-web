@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
@@ -27,15 +28,16 @@ interface CommentSectionProps {
   locale: string
 }
 
-function timeAgo(dateStr: string, isKo: boolean): string {
+function timeAgo(dateStr: string, locale: string): string {
   const diff = Date.now() - new Date(dateStr).getTime()
   const mins = Math.floor(diff / 60000)
   const hours = Math.floor(diff / 3600000)
   const days = Math.floor(diff / 86400000)
-  if (mins < 1) return isKo ? '방금 전' : 'just now'
-  if (mins < 60) return isKo ? `${mins}분 전` : `${mins}m ago`
-  if (hours < 24) return isKo ? `${hours}시간 전` : `${hours}h ago`
-  return isKo ? `${days}일 전` : `${days}d ago`
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
+  if (mins < 1) return rtf.format(0, 'second')
+  if (mins < 60) return rtf.format(-mins, 'minute')
+  if (hours < 24) return rtf.format(-hours, 'hour')
+  return rtf.format(-days, 'day')
 }
 
 function buildTree(comments: Comment[]): Comment[] {
@@ -56,13 +58,14 @@ interface CommentItemProps {
   comment: Comment
   postId: string
   locale: string
-  isKo: boolean
   user: User | null
   onReply: (parentId: string, content: string) => Promise<void>
   depth?: number
 }
 
-function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }: CommentItemProps) {
+function CommentItem({ comment, postId, locale, user, onReply, depth = 0 }: CommentItemProps) {
+  const t = useTranslations('community')
+  const tCommon = useTranslations('common')
   const router = useRouter()
   const [showReplyInput, setShowReplyInput] = useState(false)
   const [replyContent, setReplyContent] = useState('')
@@ -109,7 +112,6 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
   return (
     <div className={`${depth > 0 ? 'ml-8 border-l-2 border-sky-100 pl-3' : ''}`}>
       <div className="flex gap-3 py-2">
-        {/* 아바타 */}
         {comment.avatar_url ? (
           <img
             src={comment.avatar_url}
@@ -143,7 +145,7 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
                   className="text-xs font-medium text-gray-700 hover:text-sky-500 transition-colors"
                   style={{ cursor: 'pointer' }}
                 >
-                  {comment.nation ?? ''} {comment.user_name ?? (isKo ? '익명' : 'Anonymous')}
+                  {comment.nation ?? ''} {comment.user_name ?? t('anonymous')}
                 </a>
                 {showDropdown && (
                   <div
@@ -156,7 +158,7 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
                       onClick={() => { setShowDropdown(false); router.push(`/${locale}/profile/${comment.user_id}`) }}
                       className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
                     >
-                      👤 {isKo ? '프로필 보기' : 'View profile'}
+                      👤 {t('viewProfile')}
                     </button>
                     {user && user.id !== comment.user_id && (
                       <>
@@ -165,18 +167,18 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
                           onClick={() => { setShowDropdown(false); router.push(`/${locale}/messages/${comment.user_id}`) }}
                           className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors flex items-center gap-2"
                         >
-                          ✉️ {isKo ? '메시지 보내기' : 'Send message'}
+                          ✉️ {t('sendMessage')}
                         </button>
                         <button
                           type="button"
                           onClick={() => {
-                            const fromUserName = user?.user_metadata?.nickname ?? user?.email?.split('@')[0] ?? '익명'
+                            const fromUserName = user?.user_metadata?.nickname ?? user?.email?.split('@')[0] ?? t('anonymous')
                             toggleFollow(fromUserName, user?.user_metadata?.avatar_url ?? null)
                             setShowDropdown(false)
                           }}
                           className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 transition-colors flex items-center gap-2"
                         >
-                          {isFollowing ? '✅' : '➕'} {isFollowing ? (isKo ? '팔로잉' : 'Following') : (isKo ? '팔로우' : 'Follow')}
+                          {isFollowing ? '✅' : '➕'} {isFollowing ? t('following') : t('follow')}
                         </button>
                       </>
                     )}
@@ -185,12 +187,12 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
               </span>
             ) : (
               <span className="text-xs font-medium text-gray-700">
-                {comment.nation ?? ''} {comment.user_name ?? (isKo ? '익명' : 'Anonymous')}
+                {comment.nation ?? ''} {comment.user_name ?? t('anonymous')}
               </span>
             )}
 
             <span className="text-[10px] text-gray-300" suppressHydrationWarning>
-              {timeAgo(comment.created_at, isKo)}
+              {timeAgo(comment.created_at, locale)}
             </span>
           </div>
 
@@ -198,7 +200,7 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
 
           {showTranslated && translated && (
             <div className="bg-sky-50 border border-sky-100 rounded-lg p-2.5 mt-1.5 text-xs text-gray-600 leading-relaxed">
-              <p className="text-[9px] text-sky-400 font-medium mb-1">🌐 {isKo ? '번역' : 'Translation'}</p>
+              <p className="text-[9px] text-sky-400 font-medium mb-1">🌐 {t('translate')}</p>
               {translated}
             </div>
           )}
@@ -210,7 +212,7 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
                 onClick={() => setShowReplyInput(!showReplyInput)}
                 className="text-[11px] text-gray-400 hover:text-sky-500 transition-colors"
               >
-                {isKo ? '↩ 답글' : '↩ Reply'}
+                ↩ {t('reply')}
               </button>
             )}
             <button
@@ -223,10 +225,10 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
                 ? <span className="w-2.5 h-2.5 border border-sky-400 border-t-transparent rounded-full animate-spin" />
                 : '🌐'}
               {translating
-                ? (isKo ? '번역 중' : 'Translating')
+                ? t('translating')
                 : showTranslated
-                ? (isKo ? '원문' : 'Original')
-                : (isKo ? '번역' : 'Translate')}
+                ? t('original')
+                : t('translate')}
             </button>
           </div>
 
@@ -237,7 +239,7 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleReplySubmit()}
-                placeholder={isKo ? '답글을 입력하세요...' : 'Write a reply...'}
+                placeholder={t('replyPlaceholder')}
                 className="flex-1 px-3 py-1.5 border border-gray-200 rounded-xl text-xs outline-none focus:border-sky-400 transition-colors"
                 autoFocus
               />
@@ -247,14 +249,14 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
                 disabled={submitting || !replyContent.trim()}
                 className="px-3 py-1.5 bg-sky-500 text-white rounded-xl text-xs font-medium hover:bg-sky-600 transition-colors disabled:opacity-40"
               >
-                {isKo ? '등록' : 'Post'}
+                {t('submit')}
               </button>
               <button
                 type="button"
                 onClick={() => { setShowReplyInput(false); setReplyContent('') }}
                 className="px-3 py-1.5 border border-gray-200 rounded-xl text-xs text-gray-500 hover:bg-gray-50 transition-colors"
               >
-                {isKo ? '취소' : 'Cancel'}
+                {tCommon('cancel')}
               </button>
             </div>
           )}
@@ -269,7 +271,6 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
               comment={child}
               postId={postId}
               locale={locale}
-              isKo={isKo}
               user={user}
               onReply={onReply}
               depth={depth + 1}
@@ -300,7 +301,7 @@ function CommentItem({ comment, postId, locale, isKo, user, onReply, depth = 0 }
 }
 
 export default function CommentSection({ comments: initialComments, postId, locale }: CommentSectionProps) {
-  const isKo = locale === 'ko'
+  const t = useTranslations('community')
   const [comments, setComments] = useState(initialComments)
   const [content, setContent] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -311,7 +312,7 @@ export default function CommentSection({ comments: initialComments, postId, loca
 
   const addComment = async (parentId: string | null, content: string) => {
     const supabase = createClient()
-    const fromUserName = user?.user_metadata?.nickname ?? user?.email?.split('@')[0] ?? '익명'
+    const fromUserName = user?.user_metadata?.nickname ?? user?.email?.split('@')[0] ?? t('anonymous')
 
     const { data: newComment, error } = await supabase
       .from('post_comments')
@@ -360,13 +361,11 @@ export default function CommentSection({ comments: initialComments, postId, loca
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-5">
       <h2 className="text-sm font-bold text-gray-800 mb-4">
-        💬 {isKo ? `댓글 ${totalCount}개` : `${totalCount} Comments`}
+        💬 {t('commentsCount', { count: totalCount })}
       </h2>
 
       {tree.length === 0 ? (
-        <p className="text-sm text-gray-400 text-center py-6">
-          {isKo ? '첫 댓글을 남겨보세요!' : 'Be the first to comment!'}
-        </p>
+        <p className="text-sm text-gray-400 text-center py-6">{t('noComments')}</p>
       ) : (
         <div className="flex flex-col divide-y divide-gray-50 mb-4">
           {tree.map(comment => (
@@ -375,7 +374,6 @@ export default function CommentSection({ comments: initialComments, postId, loca
               comment={comment}
               postId={postId}
               locale={locale}
-              isKo={isKo}
               user={user}
               onReply={(parentId, content) => addComment(parentId, content)}
             />
@@ -399,7 +397,7 @@ export default function CommentSection({ comments: initialComments, postId, loca
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-                placeholder={isKo ? '댓글을 입력하세요...' : 'Write a comment...'}
+                placeholder={t('commentPlaceholder')}
                 className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-sky-400 transition-colors"
               />
               <button
@@ -408,15 +406,13 @@ export default function CommentSection({ comments: initialComments, postId, loca
                 disabled={submitting || !content.trim()}
                 className="px-4 py-2 bg-sky-500 text-white rounded-xl text-sm font-medium hover:bg-sky-600 transition-colors disabled:opacity-40"
               >
-                {isKo ? '등록' : 'Post'}
+                {t('submit')}
               </button>
             </div>
           </div>
         ) : (
           <div className="bg-gray-50 rounded-xl p-4 text-center">
-            <p className="text-sm text-gray-500">
-              {isKo ? '댓글을 작성하려면 로그인이 필요합니다' : 'Please log in to write a comment'}
-            </p>
+            <p className="text-sm text-gray-500">{t('loginRequired')}</p>
           </div>
         )}
       </div>

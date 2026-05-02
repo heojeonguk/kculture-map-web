@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 
 interface PostFilterProps {
@@ -10,23 +11,13 @@ interface PostFilterProps {
   activeSort: string
 }
 
-const tabs = [
-  { key: 'all', ko: '전체', en: 'All' },
-  { key: 'free', ko: '자유', en: 'Free' },
-  { key: 'food', ko: '맛집', en: 'Food' },
-  { key: 'spot', ko: '명소', en: 'Spot' },
-  { key: 'cafe', ko: '카페', en: 'Cafe' },
-  { key: 'activity', ko: '액티비티', en: 'Activity' },
-]
-
-const sorts = [
-  { key: 'latest', ko: '최신순', en: 'Latest' },
-  { key: 'best', ko: '인기순', en: 'Popular' },
-]
+const tabs = ['all', 'free', 'food', 'spot', 'cafe', 'activity']
+const sorts = ['latest', 'best']
 
 export default function PostFilter({ locale, activeCategory, activeSort }: PostFilterProps) {
+  const t = useTranslations('community')
+  const tCategory = useTranslations('category')
   const router = useRouter()
-  const isKo = locale === 'ko'
   const currentCategory = activeCategory ?? 'all'
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -52,27 +43,26 @@ export default function PostFilter({ locale, activeCategory, activeSort }: PostF
       {/* 상단: 카테고리 탭 + 글쓰기 버튼 */}
       <div className="flex items-center gap-2">
         <div className="flex gap-1.5 flex-wrap flex-1">
-          {tabs.map((tab) => (
+          {tabs.map((key) => (
             <button
-              key={tab.key}
-              onClick={() => updateFilter('category', tab.key)}
+              key={key}
+              onClick={() => updateFilter('category', key)}
               className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                currentCategory === tab.key
+                currentCategory === key
                   ? 'bg-sky-500 text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              {isKo ? tab.ko : tab.en}
+              {key === 'all' ? t('all') : tCategory(key)}
             </button>
           ))}
         </div>
 
-        {/* 글쓰기 버튼 */}
         <Link
           href={`/${locale}/community/write`}
           className="shrink-0 flex items-center gap-1.5 bg-sky-500 text-white px-3.5 py-1.5 rounded-full text-xs font-medium hover:bg-sky-600 transition-colors"
         >
-          ✏️ {isKo ? '글쓰기' : 'Write'}
+          ✏️ {t('write')}
         </Link>
       </div>
 
@@ -83,30 +73,30 @@ export default function PostFilter({ locale, activeCategory, activeSort }: PostF
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-          placeholder={isKo ? '게시글 검색...' : 'Search posts...'}
+          placeholder={t('searchPlaceholder')}
           className="flex-1 px-3 py-1.5 border border-gray-200 rounded-xl text-xs outline-none focus:border-sky-400 transition-colors"
         />
         <button
           onClick={handleSearch}
           className="px-3 py-1.5 bg-sky-500 text-white rounded-xl text-xs font-medium hover:bg-sky-600 transition-colors"
         >
-          {isKo ? '검색' : 'Search'}
+          {t('searchButton')}
         </button>
       </div>
 
       {/* 정렬 */}
       <div className="flex gap-1.5">
-        {sorts.map((s) => (
+        {sorts.map((key) => (
           <button
-            key={s.key}
-            onClick={() => updateFilter('sort', s.key)}
+            key={key}
+            onClick={() => updateFilter('sort', key)}
             className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
-              activeSort === s.key
+              activeSort === key
                 ? 'bg-sky-100 text-sky-600'
                 : 'text-gray-400 hover:text-gray-600'
             }`}
           >
-            {isKo ? s.ko : s.en}
+            {key === 'latest' ? t('latest') : t('popular')}
           </button>
         ))}
       </div>

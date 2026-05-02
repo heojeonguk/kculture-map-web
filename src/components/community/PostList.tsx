@@ -1,3 +1,6 @@
+'use client'
+
+import { useTranslations } from 'next-intl'
 import PostCard from './PostCard'
 import Link from 'next/link'
 
@@ -23,15 +26,14 @@ interface PostListProps {
 }
 
 export default function PostList({ posts, locale, currentPage, totalPages, totalCount }: PostListProps) {
-  const isKo = locale === 'ko'
+  const t = useTranslations('community')
+  const tPlaces = useTranslations('places')
 
   if (posts.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-gray-400">
         <span className="text-5xl mb-4">📭</span>
-        <p className="text-base font-medium">
-          {isKo ? '게시글이 없습니다' : 'No posts found'}
-        </p>
+        <p className="text-base font-medium">{t('noPosts')}</p>
       </div>
     )
   }
@@ -39,7 +41,7 @@ export default function PostList({ posts, locale, currentPage, totalPages, total
   return (
     <div>
       <p className="text-sm text-gray-500 mb-3">
-        {isKo ? `총 ${totalCount}개의 게시글` : `${totalCount} posts`}
+        {t('total', { count: totalCount })}
       </p>
 
       <div className="flex flex-col gap-2">
@@ -48,7 +50,6 @@ export default function PostList({ posts, locale, currentPage, totalPages, total
         ))}
       </div>
 
-      {/* 페이지네이션 */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 mt-6">
           {currentPage > 1 && (
@@ -56,7 +57,7 @@ export default function PostList({ posts, locale, currentPage, totalPages, total
               href={`/${locale}/community?page=${currentPage - 1}`}
               className="px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 hover:border-sky-300 hover:text-sky-600 transition-colors"
             >
-              ← {isKo ? '이전' : 'Prev'}
+              ← {tPlaces('prev')}
             </Link>
           )}
           {Array.from({ length: totalPages }, (_, i) => i + 1)
@@ -79,7 +80,7 @@ export default function PostList({ posts, locale, currentPage, totalPages, total
               href={`/${locale}/community?page=${currentPage + 1}`}
               className="px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 hover:border-sky-300 hover:text-sky-600 transition-colors"
             >
-              {isKo ? '다음' : 'Next'} →
+              {tPlaces('next')} →
             </Link>
           )}
         </div>

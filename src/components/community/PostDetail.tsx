@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
 
 interface Post {
@@ -27,21 +28,23 @@ interface PostDetailProps {
   locale: string
 }
 
-const categoryLabel: Record<string, { ko: string; en: string; color: string }> = {
-  food: { ko: '맛집', en: 'Food', color: 'text-orange-500 bg-orange-50' },
-  spot: { ko: '명소', en: 'Spot', color: 'text-blue-500 bg-blue-50' },
-  cafe: { ko: '카페', en: 'Cafe', color: 'text-amber-500 bg-amber-50' },
-  activity: { ko: '액티비티', en: 'Activity', color: 'text-sky-500 bg-sky-50' },
-  free: { ko: '자유', en: 'Free', color: 'text-gray-500 bg-gray-100' },
-  review: { ko: '후기', en: 'Review', color: 'text-purple-500 bg-purple-50' },
+const categoryColor: Record<string, string> = {
+  food: 'text-orange-500 bg-orange-50',
+  spot: 'text-blue-500 bg-blue-50',
+  cafe: 'text-amber-500 bg-amber-50',
+  activity: 'text-sky-500 bg-sky-50',
+  free: 'text-gray-500 bg-gray-100',
+  review: 'text-purple-500 bg-purple-50',
 }
 
 export default function PostDetail({ post, locale }: PostDetailProps) {
-  const isKo = locale === 'ko'
+  const t = useTranslations('community')
+  const tCategory = useTranslations('category')
+  const tCommon = useTranslations('common')
   const router = useRouter()
-  const cat = categoryLabel[post.category ?? 'free'] ?? categoryLabel.free
+  const color = categoryColor[post.category ?? 'free'] ?? categoryColor.free
   const date = new Date(post.created_at).toLocaleDateString(
-    isKo ? 'ko-KR' : 'en-US',
+    locale,
     { year: 'numeric', month: 'long', day: 'numeric' }
   )
 
@@ -135,42 +138,19 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
     }
 
     if (liked) {
-      // 좋아요 취소
-      await supabase
-        .from('post_likes')
-        .delete()
-        .eq('post_id', post.id)
-        .eq('user_identifier', identifier)
-
-      await supabase
-        .from('posts')
-        .update({ likes: likes - 1 })
-        .eq('id', post.id)
-
+      await supabase.from('post_likes').delete().eq('post_id', post.id).eq('user_identifier', identifier)
+      await supabase.from('posts').update({ likes: likes - 1 }).eq('id', post.id)
       setLikes(prev => prev - 1)
       setLiked(false)
     } else {
-      // 좋아요 추가
-      await supabase
-        .from('post_likes')
-        .insert({ post_id: post.id, user_identifier: identifier })
-
-      await supabase
-        .from('posts')
-        .update({ likes: likes + 1 })
-        .eq('id', post.id)
-
+      await supabase.from('post_likes').insert({ post_id: post.id, user_identifier: identifier })
+      await supabase.from('posts').update({ likes: likes + 1 }).eq('id', post.id)
       setLikes(prev => prev + 1)
       setLiked(true)
 
-      const { data: postData } = await supabase
-        .from('posts')
-        .select('user_id')
-        .eq('id', post.id)
-        .single()
-
+      const { data: postData } = await supabase.from('posts').select('user_id').eq('id', post.id).single()
       if (postData?.user_id && postData.user_id !== user?.id) {
-        const fromUserName = user?.user_metadata?.nickname ?? user?.email?.split('@')[0] ?? '익명'
+        const fromUserName = user?.user_metadata?.nickname ?? user?.email?.split('@')[0] ?? t('anonymous')
         await fetch(`${window.location.origin}/api/notifications/create`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -199,7 +179,7 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
       await supabase.from('follows').insert({ follower_id: currentUserId, following_id: post.user_id })
       setIsFollowing(true)
       const { data: { user } } = await supabase.auth.getUser()
-      const fromUserName = user?.user_metadata?.nickname ?? user?.email?.split('@')[0] ?? '익명'
+      const fromUserName = user?.user_metadata?.nickname ?? user?.email?.split('@')[0] ?? t('anonymous')
       await fetch(`${window.location.origin}/api/notifications/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -216,9 +196,7 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
   }
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(
-      isKo ? '정말 삭제하시겠습니까?' : 'Are you sure you want to delete this post?'
-    )
+    const confirmed = window.confirm(t('deleteConfirm'))
     if (!confirmed) return
     const supabase = createClient()
     await supabase.from('posts').delete().eq('id', post.id)
@@ -231,13 +209,13 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
         href={`/${locale}/community`}
         className="text-sm text-gray-400 hover:text-sky-500 transition-colors flex items-center gap-1 w-fit"
       >
-        ← {isKo ? '커뮤니티' : 'Back to community'}
+        ← {t('title')}
       </Link>
 
       <div className="bg-white border border-gray-100 rounded-2xl p-6">
         <div className="flex items-center gap-2 mb-3">
-          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${cat.color}`}>
-            {isKo ? cat.ko : cat.en}
+          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${color}`}>
+            {tCategory(post.category ?? 'free')}
           </span>
           {post.city && (
             <span className="text-xs text-gray-400">📍 {post.city}</span>
@@ -248,7 +226,6 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
         <h1 className="text-xl font-bold text-gray-900 mb-4">{post.title}</h1>
 
         <div className="flex items-center gap-2 pb-4 border-b border-gray-100">
-          {/* 프로필 아바타 */}
           <div className="relative shrink-0">
             {post.avatar_url ? (
               <img
@@ -262,7 +239,6 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
                 {(post.user_name ?? 'A').charAt(0).toUpperCase()}
               </div>
             )}
-            {/* 레벨 이모지 뱃지 */}
             {post.user_level_emoji && (
               <span className="absolute -bottom-1 -right-1 text-xs leading-none">
                 {post.user_level_emoji}
@@ -270,7 +246,7 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
             )}
           </div>
           <span className="text-sm font-medium text-gray-700">
-            {post.nation ?? ''} {post.user_name ?? (isKo ? '익명' : 'Anonymous')}
+            {post.nation ?? ''} {post.user_name ?? t('anonymous')}
           </span>
         </div>
 
@@ -302,16 +278,16 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
               <span className="w-3 h-3 border border-sky-400 border-t-transparent rounded-full animate-spin" />
             ) : '🌐'}
             {translating
-              ? (isKo ? '번역 중...' : 'Translating...')
+              ? t('translating')
               : showTranslated
-              ? (isKo ? '원문 보기' : 'Show original')
-              : (isKo ? '번역 보기' : 'Translate')}
+              ? t('showOriginal')
+              : t('translate')}
           </button>
         </div>
 
         {showTranslated && translated && (
           <div className="bg-sky-50 border border-sky-100 rounded-xl p-4 mb-4 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-            <p className="text-[10px] text-sky-400 font-medium mb-2">🌐 {isKo ? '번역' : 'Translation'}</p>
+            <p className="text-[10px] text-sky-400 font-medium mb-2">🌐 {t('translate')}</p>
             {translated}
           </div>
         )}
@@ -349,7 +325,6 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
           </div>
         )}
 
-        {/* 좋아요 + 수정/삭제 버튼 */}
         <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-100">
           <button
             onClick={handleLike}
@@ -366,11 +341,11 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
           <button
             onClick={() => {
               navigator.clipboard.writeText(window.location.href)
-              alert(isKo ? '링크가 복사됐습니다!' : 'Link copied!')
+              alert(t('linkCopied'))
             }}
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100 transition-all"
           >
-            🔗 {isKo ? '공유' : 'Share'}
+            🔗 {tCommon('share')}
           </button>
           {currentUserId && post.user_id && currentUserId === post.user_id && (
             <div className="flex items-center gap-2 ml-auto">
@@ -378,13 +353,13 @@ export default function PostDetail({ post, locale }: PostDetailProps) {
                 onClick={() => router.push(`/${locale}/community/edit/${post.id}`)}
                 className="text-sm text-sky-500 border border-sky-200 px-3 py-2 rounded-xl hover:bg-sky-50 transition-colors"
               >
-                {isKo ? '수정' : 'Edit'}
+                {t('edit')}
               </button>
               <button
                 onClick={handleDelete}
                 className="text-sm text-red-400 border border-red-100 px-3 py-2 rounded-xl hover:bg-red-50 transition-colors"
               >
-                {isKo ? '삭제' : 'Delete'}
+                {t('delete')}
               </button>
             </div>
           )}
