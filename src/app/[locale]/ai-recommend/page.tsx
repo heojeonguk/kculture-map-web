@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
 import Header from '@/components/layout/Header'
 import Sidebar from '@/components/layout/Sidebar'
 import AIRecommendForm from '@/components/ai/AIRecommendForm'
@@ -9,6 +11,12 @@ interface AIPageProps {
 
 export default async function AIRecommendPage({ params }: AIPageProps) {
   const { locale } = await params
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect(`/${locale}/auth/login`)
+  }
 
   return (
     <>
