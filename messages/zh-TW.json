@@ -1,0 +1,12 @@
+{
+  "nav": { "explore": "探索地點", "community": "社群", "aiRecommend": "AI推薦", "myPage": "我的頁面", "write": "寫文章", "logout": "登出", "login": "登入" },
+  "home": { "title": "韓國旅遊的一切", "subtitle": "美食、景點、咖啡廳、購物和活動，盡在一處", "searchPlaceholder": "隨便問問。\"首爾氣氛好的咖啡廳\"", "searchButton": "搜尋", "popularPlaces": "熱門地點", "viewAll": "查看全部 →", "bestPhotos": "最佳照片", "bestPosts": "最佳貼文", "latestPosts": "最新貼文" },
+  "category": { "food": "美食", "cafe": "咖啡廳", "spot": "景點", "shopping": "購物", "activity": "活動" },
+  "places": { "title": "探索地點", "searchPlaceholder": "搜尋地點...", "searchButton": "搜尋", "total": "共找到 {count} 個地點", "noResults": "未找到地點", "noResultsSub": "請嘗試其他篩選條件", "region": "地區", "allRegions": "全部", "prev": "上一頁", "next": "下一頁" },
+  "placeDetail": { "bookmark": "想去", "bookmarked": "已儲存", "share": "分享", "googleMap": "在Google地圖查看", "naverMap": "在Naver地圖查看", "similarPlaces": "相似地點", "closed": "已關閉", "open": "營業中" },
+  "community": { "title": "社群", "write": "寫文章", "likes": "按讚", "comments": "留言", "translate": "翻譯", "edit": "編輯", "delete": "刪除", "reply": "回覆", "noComments": "成為第一個留言的人", "commentPlaceholder": "寫留言...", "submit": "提交" },
+  "ai": { "title": "AI韓國旅遊規劃", "subtitle": "選擇旅遊風格和時間，AI將為您制定個性化行程", "style": "旅遊風格（可多選）", "duration": "旅遊時長", "region": "目的地", "extra": "其他要求（選填）", "extraPlaceholder": "例如：帶孩子旅遊、預算有限、只搭大眾交通...", "button": "獲取AI旅遊計畫", "styles": { "food": "美食之旅", "culture": "文化/歷史", "nature": "自然/療癒", "activity": "戶外活動", "shopping": "購物", "cafe": "咖啡廳巡遊" }, "durations": { "day": "當日來回", "1n2d": "1晚2天", "2n3d": "2晚3天", "4n5d": "4晚5天", "week": "1週以上" }, "regions": { "seoul": "首爾", "busan": "釜山", "jeju": "濟州", "gyeonggi": "京畿", "incheon": "仁川", "gangwon": "江原", "gyeongSang": "慶尚", "jeolla": "全羅", "chungcheong": "忠清", "all": "全韓國" } },
+  "auth": { "login": "登入", "signup": "註冊", "logout": "登出", "email": "電子郵件", "password": "密碼", "nickname": "暱稱", "loginButton": "登入", "signupButton": "註冊", "forgotPassword": "忘記密碼", "noAccount": "沒有帳號？", "hasAccount": "已有帳號？" },
+  "mypage": { "title": "我的頁面", "profile": "個人資料", "myPosts": "我的貼文", "bookmarks": "收藏", "photos": "照片", "following": "關注中", "followers": "粉絲", "level": "等級", "editProfile": "編輯資料" },
+  "common": { "loading": "載入中...", "error": "發生錯誤", "save": "儲存", "cancel": "取消", "confirm": "確認", "close": "關閉", "more": "更多", "back": "返回", "share": "分享", "copy": "複製", "copied": "已複製！" }
+}

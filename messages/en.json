@@ -1,0 +1,138 @@
+{
+  "nav": {
+    "explore": "Explore",
+    "community": "Community",
+    "aiRecommend": "AI Picks",
+    "myPage": "My Page",
+    "write": "Write",
+    "logout": "Logout",
+    "login": "Login"
+  },
+  "home": {
+    "title": "Everything About Korea Travel",
+    "subtitle": "Restaurants, spots, cafes, shopping & activities all in one place",
+    "searchPlaceholder": "Ask anything. \"Cozy cafes in Seoul\"",
+    "searchButton": "Search",
+    "popularPlaces": "Popular Places",
+    "viewAll": "View all →",
+    "bestPhotos": "Best Photos",
+    "bestPosts": "Best Posts",
+    "latestPosts": "Latest Posts"
+  },
+  "category": {
+    "food": "Food",
+    "cafe": "Cafe",
+    "spot": "Spot",
+    "shopping": "Shopping",
+    "activity": "Activity"
+  },
+  "places": {
+    "title": "Explore Places",
+    "searchPlaceholder": "Search places...",
+    "searchButton": "Search",
+    "total": "{count} places found",
+    "noResults": "No places found",
+    "noResultsSub": "Try different filters",
+    "region": "Region",
+    "allRegions": "All",
+    "prev": "Prev",
+    "next": "Next"
+  },
+  "placeDetail": {
+    "bookmark": "Wishlist",
+    "bookmarked": "Saved",
+    "share": "Share",
+    "googleMap": "View on Google Maps",
+    "naverMap": "View on Naver Maps",
+    "similarPlaces": "Similar Places",
+    "closed": "Closed",
+    "open": "Open"
+  },
+  "community": {
+    "title": "Community",
+    "write": "Write",
+    "likes": "Likes",
+    "comments": "Comments",
+    "translate": "Translate",
+    "edit": "Edit",
+    "delete": "Delete",
+    "reply": "Reply",
+    "noComments": "Be the first to comment",
+    "commentPlaceholder": "Write a comment...",
+    "submit": "Submit"
+  },
+  "ai": {
+    "title": "AI Korea Travel Planner",
+    "subtitle": "Select your travel style and duration, and AI will create a personalized itinerary",
+    "style": "Travel Style (multiple)",
+    "duration": "Duration",
+    "region": "Preferred Region",
+    "extra": "Additional Requests (optional)",
+    "extraPlaceholder": "e.g. Traveling with kids, budget-friendly, public transport only...",
+    "button": "Get AI Travel Plan",
+    "styles": {
+      "food": "Food Tour",
+      "culture": "Culture/History",
+      "nature": "Nature/Healing",
+      "activity": "Activity",
+      "shopping": "Shopping",
+      "cafe": "Cafe Hopping"
+    },
+    "durations": {
+      "day": "Day Trip",
+      "1n2d": "1 Night 2 Days",
+      "2n3d": "2 Nights 3 Days",
+      "4n5d": "4 Nights 5 Days",
+      "week": "1 Week+"
+    },
+    "regions": {
+      "seoul": "Seoul",
+      "busan": "Busan",
+      "jeju": "Jeju",
+      "gyeonggi": "Gyeonggi",
+      "incheon": "Incheon",
+      "gangwon": "Gangwon",
+      "gyeongSang": "Gyeongsang",
+      "jeolla": "Jeolla",
+      "chungcheong": "Chungcheong",
+      "all": "All Korea"
+    }
+  },
+  "auth": {
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "nickname": "Nickname",
+    "loginButton": "Login",
+    "signupButton": "Sign Up",
+    "forgotPassword": "Forgot Password",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?"
+  },
+  "mypage": {
+    "title": "My Page",
+    "profile": "Profile",
+    "myPosts": "My Posts",
+    "bookmarks": "Bookmarks",
+    "photos": "Photos",
+    "following": "Following",
+    "followers": "Followers",
+    "level": "Level",
+    "editProfile": "Edit Profile"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "close": "Close",
+    "more": "More",
+    "back": "Back",
+    "share": "Share",
+    "copy": "Copy",
+    "copied": "Copied!"
+  }
+}

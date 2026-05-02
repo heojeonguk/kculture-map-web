@@ -1,0 +1,138 @@
+{
+  "nav": {
+    "explore": "スポット探索",
+    "community": "コミュニティ",
+    "aiRecommend": "AIおすすめ",
+    "myPage": "マイページ",
+    "write": "投稿する",
+    "logout": "ログアウト",
+    "login": "ログイン"
+  },
+  "home": {
+    "title": "韓国旅行のすべて",
+    "subtitle": "グルメ、観光地、カフェ、ショッピング、アクティビティを一か所で",
+    "searchPlaceholder": "何でも聞いてください。「ソウルの雰囲気の良いカフェ」",
+    "searchButton": "検索",
+    "popularPlaces": "人気スポット",
+    "viewAll": "もっと見る →",
+    "bestPhotos": "ベスト写真",
+    "bestPosts": "ベスト投稿",
+    "latestPosts": "最新投稿"
+  },
+  "category": {
+    "food": "グルメ",
+    "cafe": "カフェ",
+    "spot": "観光地",
+    "shopping": "ショッピング",
+    "activity": "アクティビティ"
+  },
+  "places": {
+    "title": "スポット探索",
+    "searchPlaceholder": "スポットを検索...",
+    "searchButton": "検索",
+    "total": "{count}件のスポット",
+    "noResults": "スポットが見つかりません",
+    "noResultsSub": "別の条件で検索してみてください",
+    "region": "地域",
+    "allRegions": "すべて",
+    "prev": "前へ",
+    "next": "次へ"
+  },
+  "placeDetail": {
+    "bookmark": "行きたい",
+    "bookmarked": "保存済み",
+    "share": "シェア",
+    "googleMap": "Googleマップで見る",
+    "naverMap": "NAVERマップで見る",
+    "similarPlaces": "似たスポット",
+    "closed": "営業終了",
+    "open": "営業中"
+  },
+  "community": {
+    "title": "コミュニティ",
+    "write": "投稿する",
+    "likes": "いいね",
+    "comments": "コメント",
+    "translate": "翻訳",
+    "edit": "編集",
+    "delete": "削除",
+    "reply": "返信",
+    "noComments": "最初のコメントを残してください",
+    "commentPlaceholder": "コメントを入力...",
+    "submit": "投稿"
+  },
+  "ai": {
+    "title": "AI韓国旅行プランナー",
+    "subtitle": "旅行スタイルと期間を選ぶと、AIがカスタム旅程を提案します",
+    "style": "旅行スタイル（複数選択可）",
+    "duration": "旅行期間",
+    "region": "希望地域",
+    "extra": "追加リクエスト（任意）",
+    "extraPlaceholder": "例）子連れ旅行、節約旅行、公共交通機関のみ...",
+    "button": "AI旅程を作成する",
+    "styles": {
+      "food": "グルメ旅",
+      "culture": "文化・歴史",
+      "nature": "自然・癒し",
+      "activity": "アクティビティ",
+      "shopping": "ショッピング",
+      "cafe": "カフェ巡り"
+    },
+    "durations": {
+      "day": "日帰り",
+      "1n2d": "1泊2日",
+      "2n3d": "2泊3日",
+      "4n5d": "4泊5日",
+      "week": "1週間以上"
+    },
+    "regions": {
+      "seoul": "ソウル",
+      "busan": "釜山",
+      "jeju": "済州",
+      "gyeonggi": "京畿",
+      "incheon": "仁川",
+      "gangwon": "江原",
+      "gyeongSang": "慶尚",
+      "jeolla": "全羅",
+      "chungcheong": "忠清",
+      "all": "韓国全域"
+    }
+  },
+  "auth": {
+    "login": "ログイン",
+    "signup": "会員登録",
+    "logout": "ログアウト",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "nickname": "ニックネーム",
+    "loginButton": "ログイン",
+    "signupButton": "会員登録",
+    "forgotPassword": "パスワードを忘れた方",
+    "noAccount": "アカウントをお持ちでない方",
+    "hasAccount": "すでにアカウントをお持ちの方"
+  },
+  "mypage": {
+    "title": "マイページ",
+    "profile": "プロフィール",
+    "myPosts": "マイ投稿",
+    "bookmarks": "ブックマーク",
+    "photos": "フォト",
+    "following": "フォロー中",
+    "followers": "フォロワー",
+    "level": "レベル",
+    "editProfile": "プロフィール編集"
+  },
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラーが発生しました",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "confirm": "確認",
+    "close": "閉じる",
+    "more": "もっと見る",
+    "back": "戻る",
+    "share": "シェア",
+    "copy": "コピー",
+    "copied": "コピーしました！"
+  }
+}

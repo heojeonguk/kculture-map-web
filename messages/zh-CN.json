@@ -1,0 +1,138 @@
+{
+  "nav": {
+    "explore": "探索地点",
+    "community": "社区",
+    "aiRecommend": "AI推荐",
+    "myPage": "我的页面",
+    "write": "写文章",
+    "logout": "退出登录",
+    "login": "登录"
+  },
+  "home": {
+    "title": "韩国旅行的一切",
+    "subtitle": "美食、景点、咖啡厅、购物和活动，尽在一处",
+    "searchPlaceholder": "随便问问。\"首尔氛围好的咖啡厅\"",
+    "searchButton": "搜索",
+    "popularPlaces": "热门地点",
+    "viewAll": "查看全部 →",
+    "bestPhotos": "最佳照片",
+    "bestPosts": "最佳帖子",
+    "latestPosts": "最新帖子"
+  },
+  "category": {
+    "food": "美食",
+    "cafe": "咖啡厅",
+    "spot": "景点",
+    "shopping": "购物",
+    "activity": "活动"
+  },
+  "places": {
+    "title": "探索地点",
+    "searchPlaceholder": "搜索地点...",
+    "searchButton": "搜索",
+    "total": "共找到 {count} 个地点",
+    "noResults": "未找到地点",
+    "noResultsSub": "请尝试其他筛选条件",
+    "region": "地区",
+    "allRegions": "全部",
+    "prev": "上一页",
+    "next": "下一页"
+  },
+  "placeDetail": {
+    "bookmark": "想去",
+    "bookmarked": "已保存",
+    "share": "分享",
+    "googleMap": "在Google地图查看",
+    "naverMap": "在Naver地图查看",
+    "similarPlaces": "相似地点",
+    "closed": "已关闭",
+    "open": "营业中"
+  },
+  "community": {
+    "title": "社区",
+    "write": "写文章",
+    "likes": "点赞",
+    "comments": "评论",
+    "translate": "翻译",
+    "edit": "编辑",
+    "delete": "删除",
+    "reply": "回复",
+    "noComments": "成为第一个评论的人",
+    "commentPlaceholder": "写评论...",
+    "submit": "提交"
+  },
+  "ai": {
+    "title": "AI韩国旅行规划",
+    "subtitle": "选择旅行风格和时间，AI将为您制定个性化行程",
+    "style": "旅行风格（可多选）",
+    "duration": "旅行时长",
+    "region": "目的地",
+    "extra": "其他要求（选填）",
+    "extraPlaceholder": "例如：带孩子旅行、预算有限、只乘公共交通...",
+    "button": "获取AI旅行计划",
+    "styles": {
+      "food": "美食之旅",
+      "culture": "文化/历史",
+      "nature": "自然/疗愈",
+      "activity": "户外活动",
+      "shopping": "购物",
+      "cafe": "咖啡厅巡游"
+    },
+    "durations": {
+      "day": "当日往返",
+      "1n2d": "1晚2天",
+      "2n3d": "2晚3天",
+      "4n5d": "4晚5天",
+      "week": "1周以上"
+    },
+    "regions": {
+      "seoul": "首尔",
+      "busan": "釜山",
+      "jeju": "济州",
+      "gyeonggi": "京畿",
+      "incheon": "仁川",
+      "gangwon": "江原",
+      "gyeongSang": "庆尚",
+      "jeolla": "全罗",
+      "chungcheong": "忠清",
+      "all": "全韩国"
+    }
+  },
+  "auth": {
+    "login": "登录",
+    "signup": "注册",
+    "logout": "退出登录",
+    "email": "邮箱",
+    "password": "密码",
+    "nickname": "昵称",
+    "loginButton": "登录",
+    "signupButton": "注册",
+    "forgotPassword": "忘记密码",
+    "noAccount": "没有账号？",
+    "hasAccount": "已有账号？"
+  },
+  "mypage": {
+    "title": "我的页面",
+    "profile": "个人资料",
+    "myPosts": "我的帖子",
+    "bookmarks": "收藏",
+    "photos": "照片",
+    "following": "关注中",
+    "followers": "粉丝",
+    "level": "等级",
+    "editProfile": "编辑资料"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "出现错误",
+    "save": "保存",
+    "cancel": "取消",
+    "confirm": "确认",
+    "close": "关闭",
+    "more": "更多",
+    "back": "返回",
+    "share": "分享",
+    "copy": "复制",
+    "copied": "已复制！"
+  }
+}
