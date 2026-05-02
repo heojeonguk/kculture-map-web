@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import NotificationBell from '@/components/common/NotificationBell'
@@ -10,18 +11,18 @@ interface HeaderProps {
   locale: string
 }
 
-const navItems = [
-  { href: '/places', ko: '장소탐색', en: 'Explore' },
-  { href: '/community', ko: '커뮤니티', en: 'Community' },
-  { href: '/ai-recommend', ko: 'AI추천', en: 'AI Picks' },
-]
-
 export default function Header({ locale }: HeaderProps) {
-  const isKo = locale === 'ko'
+  const t = useTranslations('nav')
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [nickname, setNickname] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
+
+  const navItems = [
+    { href: '/places', label: t('explore') },
+    { href: '/community', label: t('community') },
+    { href: '/ai-recommend', label: t('aiRecommend') },
+  ]
 
   useEffect(() => {
     const supabase = createClient()
@@ -82,75 +83,74 @@ export default function Header({ locale }: HeaderProps) {
               href={`/${locale}${item.href}`}
               className="text-sm text-gray-600 hover:text-sky-500 transition-colors font-medium"
             >
-              {isKo ? item.ko : item.en}
+              {item.label}
             </Link>
           ))}
         </nav>
 
-        {/* 로그인 상태 */}
         {user ? (
           <div className="flex items-center gap-2">
-          <NotificationBell />
-          <Link
-            href={`/${locale}/messages`}
-            className="relative p-2 text-gray-600 hover:text-gray-900 transition-colors"
-            aria-label="쪽지함"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-          </Link>
-          <div className="relative header-user-menu">
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-sky-500 transition-colors"
+            <NotificationBell />
+            <Link
+              href={`/${locale}/messages`}
+              className="relative p-2 text-gray-600 hover:text-gray-900 transition-colors"
+              aria-label="쪽지함"
             >
-              {user?.user_metadata?.avatar_url ? (
-                <img
-                  src={user.user_metadata.avatar_url}
-                  alt={nickname}
-                  className="w-7 h-7 rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-7 h-7 rounded-full bg-sky-100 flex items-center justify-center text-xs font-bold text-sky-600">
-                  {nickname.charAt(0).toUpperCase()}
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </Link>
+            <div className="relative header-user-menu">
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-sky-500 transition-colors"
+              >
+                {user?.user_metadata?.avatar_url ? (
+                  <img
+                    src={user.user_metadata.avatar_url}
+                    alt={nickname}
+                    className="w-7 h-7 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-7 h-7 rounded-full bg-sky-100 flex items-center justify-center text-xs font-bold text-sky-600">
+                    {nickname.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <span className="max-w-[80px] truncate">{nickname}</span>
+              </button>
+
+              {menuOpen && (
+                <div className="absolute right-0 top-10 bg-white border border-gray-100 rounded-xl shadow-lg py-1 w-36 z-50">
+                  <Link
+                    href={`/${locale}/mypage`}
+                    onClick={() => setMenuOpen(false)}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
+                  >
+                    👤 {t('myPage')}
+                  </Link>
+                  <Link
+                    href={`/${locale}/community/write`}
+                    onClick={() => setMenuOpen(false)}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
+                  >
+                    ✏️ {t('write')}
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors flex items-center gap-2"
+                  >
+                    🚪 {t('logout')}
+                  </button>
                 </div>
               )}
-              <span className="max-w-[80px] truncate">{nickname}</span>
-            </button>
-
-            {menuOpen && (
-              <div className="absolute right-0 top-10 bg-white border border-gray-100 rounded-xl shadow-lg py-1 w-36 z-50">
-                <Link
-                  href={`/${locale}/mypage`}
-                  onClick={() => setMenuOpen(false)}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
-                >
-                  👤 {isKo ? '마이페이지' : 'My Page'}
-                </Link>
-                <Link
-                  href={`/${locale}/community/write`}
-                  onClick={() => setMenuOpen(false)}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
-                >
-                  ✏️ {isKo ? '글쓰기' : 'Write'}
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors flex items-center gap-2"
-                >
-                  🚪 {isKo ? '로그아웃' : 'Logout'}
-                </button>
-              </div>
-            )}
-          </div>
+            </div>
           </div>
         ) : (
           <Link
             href={`/${locale}/auth/login`}
             className="text-sm bg-sky-500 text-white px-4 py-1.5 rounded-lg hover:bg-sky-600 transition-colors shrink-0"
           >
-            {isKo ? '로그인' : 'Login'}
+            {t('login')}
           </Link>
         )}
       </div>
