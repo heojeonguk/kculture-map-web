@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 
 interface SearchZoneProps {
@@ -10,12 +11,12 @@ interface SearchZoneProps {
 
 type Category = 'food' | 'cafe' | 'spot' | 'shopping' | 'activity'
 
-const categories: { key: Category; emoji: string; ko: string; en: string }[] = [
-  { key: 'food', emoji: '🍽️', ko: '맛집', en: 'Food' },
-  { key: 'cafe', emoji: '☕', ko: '카페', en: 'Cafe' },
-  { key: 'spot', emoji: '📍', ko: '명소', en: 'Spots' },
-  { key: 'shopping', emoji: '🛍️', ko: '쇼핑', en: 'Shopping' },
-  { key: 'activity', emoji: '🎯', ko: '액티비티', en: 'Activity' },
+const categories: { key: Category; emoji: string }[] = [
+  { key: 'food', emoji: '🍽️' },
+  { key: 'cafe', emoji: '☕' },
+  { key: 'spot', emoji: '📍' },
+  { key: 'shopping', emoji: '🛍️' },
+  { key: 'activity', emoji: '🎯' },
 ]
 
 interface Place {
@@ -38,6 +39,7 @@ interface Post {
 }
 
 export default function SearchZone({ locale }: SearchZoneProps) {
+  const t = useTranslations()
   const [query, setQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState<Category | null>(null)
   const [loading, setLoading] = useState(false)
@@ -46,7 +48,6 @@ export default function SearchZone({ locale }: SearchZoneProps) {
   const [posts, setPosts] = useState<Post[]>([])
   const [searched, setSearched] = useState(false)
   const router = useRouter()
-  const isKo = locale === 'ko'
 
   const handleSearch = async () => {
     if (!query.trim() && !activeCategory) return
@@ -69,7 +70,7 @@ export default function SearchZone({ locale }: SearchZoneProps) {
       setPlaces(data.places || [])
       setPosts(data.posts || [])
     } catch {
-      setAnswer(isKo ? '검색 중 오류가 발생했습니다.' : 'Search error occurred.')
+      setAnswer(t('home.searchError'))
     }
     setLoading(false)
   }
@@ -90,12 +91,10 @@ export default function SearchZone({ locale }: SearchZoneProps) {
   return (
     <section className="bg-white border border-sky-200 rounded-2xl p-6">
       <h1 className="text-xl font-bold mb-1 text-gray-800">
-        {isKo ? '한국 여행의 모든 것' : 'Discover Korea'}
+        {t('home.title')}
       </h1>
       <p className="text-gray-500 text-sm mb-4">
-        {isKo
-          ? '맛집, 명소, 카페, 쇼핑, 액티비티를 한 곳에서'
-          : "Korea's ultimate culture travel guide for global travelers"}
+        {t('home.subtitle')}
       </p>
 
       {/* 검색창 */}
@@ -105,7 +104,7 @@ export default function SearchZone({ locale }: SearchZoneProps) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={isKo ? '어디든 물어보세요. "서울 분위기 좋은 카페"' : 'Ask anything. "Best cafes in Seoul"'}
+          placeholder={t('home.searchPlaceholder')}
           className="flex-1 px-4 py-2.5 rounded-xl text-sm text-gray-800 placeholder:text-gray-400 outline-none border border-gray-200 focus:ring-2 focus:ring-sky-200"
         />
         <button
@@ -116,7 +115,7 @@ export default function SearchZone({ locale }: SearchZoneProps) {
           {loading ? (
             <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
           ) : '✨'}
-          {isKo ? '검색' : 'Search'}
+          {t('home.searchButton')}
         </button>
       </div>
 
@@ -132,7 +131,7 @@ export default function SearchZone({ locale }: SearchZoneProps) {
                 : 'bg-sky-50 text-sky-600 border-sky-200 hover:bg-sky-100'
             }`}
           >
-            {cat.emoji} {isKo ? cat.ko : cat.en}
+            {cat.emoji} {t(`category.${cat.key}`)}
           </button>
         ))}
       </div>
@@ -143,23 +142,21 @@ export default function SearchZone({ locale }: SearchZoneProps) {
           {loading ? (
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <span className="w-4 h-4 border-2 border-sky-400 border-t-transparent rounded-full animate-spin" />
-              {isKo ? 'AI가 검색 중입니다...' : 'AI is searching...'}
+              {t('home.aiSearching')}
             </div>
           ) : (
             <>
-              {/* AI 답변 */}
               {answer && (
                 <div className="bg-sky-50 border border-sky-100 rounded-xl px-4 py-3 mb-4 text-sm text-gray-700 leading-relaxed">
-                  <p className="text-[10px] text-sky-400 font-medium mb-1">✨ AI 추천</p>
+                  <p className="text-[10px] text-sky-400 font-medium mb-1">{t('home.aiLabel')}</p>
                   {answer}
                 </div>
               )}
 
-              {/* 추천 장소 */}
               {places.length > 0 && (
                 <div className="mb-4">
                   <p className="text-xs font-semibold text-gray-500 mb-2">
-                    📍 {isKo ? '추천 장소' : 'Recommended Places'}
+                    📍 {t('home.recommendedPlaces')}
                   </p>
                   <div className="flex flex-col gap-2">
                     {places.map(place => (
@@ -185,11 +182,10 @@ export default function SearchZone({ locale }: SearchZoneProps) {
                 </div>
               )}
 
-              {/* 관련 커뮤니티 글 */}
               {posts.length > 0 && (
                 <div className="mb-4">
                   <p className="text-xs font-semibold text-gray-500 mb-2">
-                    💬 {isKo ? '관련 후기' : 'Related Posts'}
+                    💬 {t('home.relatedPosts')}
                   </p>
                   <div className="flex flex-col gap-2">
                     {posts.map(post => (
@@ -213,7 +209,7 @@ export default function SearchZone({ locale }: SearchZoneProps) {
 
               {places.length === 0 && posts.length === 0 && (
                 <p className="text-sm text-gray-400 text-center py-4">
-                  {isKo ? '관련 결과를 찾지 못했습니다.' : 'No results found.'}
+                  {t('home.noSearchResults')}
                 </p>
               )}
 
@@ -221,7 +217,7 @@ export default function SearchZone({ locale }: SearchZoneProps) {
                 onClick={handleReset}
                 className="text-xs text-gray-400 hover:text-sky-500 transition-colors mt-2"
               >
-                {isKo ? '← 검색 초기화' : '← Clear search'}
+                {t('home.clearSearch')}
               </button>
             </>
           )}

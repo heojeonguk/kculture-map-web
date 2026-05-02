@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 
 type Category = 'food' | 'cafe' | 'spot' | 'shopping' | 'activity'
 
@@ -19,16 +22,16 @@ interface PlaceCardProps {
   locale: string
 }
 
-const categoryConfig: Record<Category, { ko: string; en: string; bg: string }> = {
-  food: { ko: '맛집', en: 'Food', bg: 'bg-orange-50' },
-  cafe: { ko: '카페', en: 'Cafe', bg: 'bg-amber-50' },
-  spot: { ko: '명소', en: 'Spot', bg: 'bg-blue-50' },
-  shopping: { ko: '쇼핑', en: 'Shop', bg: 'bg-pink-50' },
-  activity: { ko: '액티비티', en: 'Activity', bg: 'bg-sky-50' },
+const categoryConfig: Record<Category, { bg: string }> = {
+  food: { bg: 'bg-orange-50' },
+  cafe: { bg: 'bg-amber-50' },
+  spot: { bg: 'bg-blue-50' },
+  shopping: { bg: 'bg-pink-50' },
+  activity: { bg: 'bg-sky-50' },
 }
 
 export default function PlaceCard({ place, locale }: PlaceCardProps) {
-  const isKo = locale === 'ko'
+  const t = useTranslations('category')
   const config = categoryConfig[place.category] ?? categoryConfig.spot
 
   return (
@@ -62,7 +65,7 @@ export default function PlaceCard({ place, locale }: PlaceCardProps) {
 
         <div className="flex items-center justify-between">
           <span className="text-[11px] bg-sky-50 text-sky-600 px-2 py-0.5 rounded-full border border-sky-100">
-            {isKo ? config.ko : config.en}
+            {t(place.category)}
           </span>
           <span className="text-[11px] text-gray-400">
             {place.city} {place.district && `· ${place.district}`}

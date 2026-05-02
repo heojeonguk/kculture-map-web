@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
 
 type Category = 'food' | 'cafe' | 'spot' | 'shopping' | 'activity'
@@ -33,12 +34,12 @@ interface PlaceDetailProps {
   locale: string
 }
 
-const categoryConfig: Record<Category, { ko: string; en: string; bg: string; color: string }> = {
-  food: { ko: '맛집', en: 'Food', bg: 'bg-orange-50', color: 'text-orange-600' },
-  cafe: { ko: '카페', en: 'Cafe', bg: 'bg-amber-50', color: 'text-amber-600' },
-  spot: { ko: '명소', en: 'Spot', bg: 'bg-blue-50', color: 'text-blue-600' },
-  shopping: { ko: '쇼핑', en: 'Shop', bg: 'bg-pink-50', color: 'text-pink-600' },
-  activity: { ko: '액티비티', en: 'Activity', bg: 'bg-sky-50', color: 'text-sky-600' },
+const categoryConfig: Record<Category, { bg: string; color: string }> = {
+  food: { bg: 'bg-orange-50', color: 'text-orange-600' },
+  cafe: { bg: 'bg-amber-50', color: 'text-amber-600' },
+  spot: { bg: 'bg-blue-50', color: 'text-blue-600' },
+  shopping: { bg: 'bg-pink-50', color: 'text-pink-600' },
+  activity: { bg: 'bg-sky-50', color: 'text-sky-600' },
 }
 
 function getLocalName(place: Place, locale: string): string {
@@ -49,7 +50,9 @@ function getLocalName(place: Place, locale: string): string {
 }
 
 export default function PlaceDetail({ place, locale }: PlaceDetailProps) {
-  const isKo = locale === 'ko'
+  const t = useTranslations('placeDetail')
+  const tCategory = useTranslations('category')
+  const tCommon = useTranslations('common')
   const router = useRouter()
   const config = categoryConfig[place.category] ?? categoryConfig.spot
   const displayName = getLocalName(place, locale)
@@ -77,7 +80,7 @@ export default function PlaceDetail({ place, locale }: PlaceDetailProps) {
 
   const handleBookmark = async () => {
     if (!userId) {
-      alert(isKo ? '로그인이 필요합니다.' : 'Please log in first.')
+      alert(tCommon('loginRequired'))
       router.push(`/${locale}/auth/login`)
       return
     }
@@ -105,7 +108,7 @@ export default function PlaceDetail({ place, locale }: PlaceDetailProps) {
         href={`/${locale}/places`}
         className="text-sm text-gray-400 hover:text-sky-500 transition-colors flex items-center gap-1 w-fit"
       >
-        ← {isKo ? '장소 목록' : 'Back to places'}
+        ← {tCommon('back')}
       </Link>
 
       {/* 이미지 헤더 */}
@@ -122,7 +125,7 @@ export default function PlaceDetail({ place, locale }: PlaceDetailProps) {
         {/* 카테고리 배지 */}
         <div className="absolute top-4 left-4">
           <span className={`bg-white/90 backdrop-blur-sm text-xs font-semibold px-3 py-1.5 rounded-full border ${config.color}`}>
-            {isKo ? config.ko : config.en}
+            {tCategory(place.category)}
           </span>
         </div>
         {/* 영업 상태 */}
@@ -133,9 +136,7 @@ export default function PlaceDetail({ place, locale }: PlaceDetailProps) {
                 ? 'bg-green-100 text-green-700'
                 : 'bg-red-100 text-red-600'
             }`}>
-              {place.is_open
-                ? (isKo ? '영업중' : 'Open')
-                : (isKo ? '영업종료' : 'Closed')}
+              {place.is_open ? t('open') : t('closed')}
             </span>
           </div>
         )}
@@ -198,16 +199,16 @@ export default function PlaceDetail({ place, locale }: PlaceDetailProps) {
                 : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
             }`}
           >
-            {bookmarked ? '✅' : '🔖'} {bookmarked ? (isKo ? '저장됨' : 'Saved') : (isKo ? '가고싶어요' : 'Save')}
+            {bookmarked ? '✅' : '🔖'} {bookmarked ? t('bookmarked') : t('bookmark')}
           </button>
           <button
             onClick={() => {
               navigator.clipboard.writeText(window.location.href)
-              alert(isKo ? '링크가 복사됐습니다!' : 'Link copied!')
+              alert(tCommon('copied'))
             }}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100 transition-all"
           >
-            🔗 {isKo ? '공유' : 'Share'}
+            🔗 {t('share')}
           </button>
         </div>
 
@@ -219,7 +220,7 @@ export default function PlaceDetail({ place, locale }: PlaceDetailProps) {
             rel="noopener noreferrer"
             className="flex-1 flex items-center justify-center gap-2 bg-sky-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-sky-600 transition-colors"
           >
-            🗺 {isKo ? 'Google 지도로 보기' : 'View on Google Maps'}
+            🗺 {t('googleMap')}
           </a>
           <a
             href={`https://map.naver.com/v5/search/${encodeURIComponent(place.name)}`}
@@ -227,7 +228,7 @@ export default function PlaceDetail({ place, locale }: PlaceDetailProps) {
             rel="noopener noreferrer"
             className="flex-1 flex items-center justify-center gap-2 bg-green-500 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-green-600 transition-colors"
           >
-            🗺 {isKo ? '네이버 지도로 보기' : 'View on Naver Map'}
+            🗺 {t('naverMap')}
           </a>
         </div>
       </div>

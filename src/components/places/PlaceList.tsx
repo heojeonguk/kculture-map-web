@@ -1,3 +1,6 @@
+'use client'
+
+import { useTranslations } from 'next-intl'
 import PlaceCard, { Place } from './PlaceCard'
 import Link from 'next/link'
 
@@ -16,18 +19,14 @@ export default function PlaceList({
   totalPages,
   totalCount,
 }: PlaceListProps) {
-  const isKo = locale === 'ko'
+  const t = useTranslations('places')
 
   if (places.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-gray-400">
         <span className="text-5xl mb-4">🔍</span>
-        <p className="text-base font-medium">
-          {isKo ? '검색 결과가 없습니다' : 'No places found'}
-        </p>
-        <p className="text-sm mt-1">
-          {isKo ? '다른 조건으로 검색해보세요' : 'Try different filters'}
-        </p>
+        <p className="text-base font-medium">{t('noResults')}</p>
+        <p className="text-sm mt-1">{t('noResultsSub')}</p>
       </div>
     )
   }
@@ -36,7 +35,7 @@ export default function PlaceList({
     <div>
       {/* 결과 수 */}
       <p className="text-sm text-gray-500 mb-4">
-        {isKo ? `총 ${totalCount}개의 장소` : `${totalCount} places found`}
+        {t('total', { count: totalCount })}
       </p>
 
       {/* 그리드 */}
@@ -54,7 +53,7 @@ export default function PlaceList({
               href={`/${locale}/places?page=${currentPage - 1}`}
               className="px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 hover:border-sky-300 hover:text-sky-600 transition-colors"
             >
-              ← {isKo ? '이전' : 'Prev'}
+              ← {t('prev')}
             </Link>
           )}
 
@@ -79,7 +78,7 @@ export default function PlaceList({
               href={`/${locale}/places?page=${currentPage + 1}`}
               className="px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 hover:border-sky-300 hover:text-sky-600 transition-colors"
             >
-              {isKo ? '다음' : 'Next'} →
+              {t('next')} →
             </Link>
           )}
         </div>

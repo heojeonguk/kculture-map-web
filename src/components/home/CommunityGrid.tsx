@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 
 interface Post {
   id: string
@@ -13,36 +16,37 @@ interface CommunityGridProps {
   locale: string
 }
 
-const categoryLabel: Record<string, { ko: string; en: string; color: string }> = {
-  food: { ko: '맛집', en: 'Food', color: 'text-orange-500' },
-  spot: { ko: '명소', en: 'Spot', color: 'text-green-500' },
-  cafe: { ko: '카페', en: 'Cafe', color: 'text-amber-500' },
-  activity: { ko: '액티비티', en: 'Activity', color: 'text-blue-500' },
-  free: { ko: '자유', en: 'Free', color: 'text-gray-500' },
-  review: { ko: '후기', en: 'Review', color: 'text-purple-500' },
+const categoryColor: Record<string, string> = {
+  food: 'text-orange-500',
+  spot: 'text-green-500',
+  cafe: 'text-amber-500',
+  activity: 'text-blue-500',
+  free: 'text-gray-500',
+  review: 'text-purple-500',
 }
 
 export default function CommunityGrid({ posts, locale }: CommunityGridProps) {
-  const isKo = locale === 'ko'
+  const t = useTranslations('home')
+  const tCategory = useTranslations('category')
 
   return (
     <section>
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-base font-bold text-gray-800">
-          💬 {isKo ? '커뮤니티 최신글' : 'Latest Posts'}
+          💬 {t('latestPosts')}
         </h2>
         <Link
           href={`/${locale}/community`}
           className="text-xs text-gray-400 hover:text-sky-600 transition-colors"
         >
-          {isKo ? '더보기 →' : 'View all →'}
+          {t('viewAll')}
         </Link>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         {posts.map((post) => {
           const likeCount = post.likes ?? 0
-          const cat = categoryLabel[post.category ?? 'free'] ?? categoryLabel.free
+          const color = categoryColor[post.category ?? 'free'] ?? categoryColor.free
 
           return (
             <Link
@@ -50,8 +54,8 @@ export default function CommunityGrid({ posts, locale }: CommunityGridProps) {
               href={`/${locale}/community/${post.id}`}
               className="bg-white border border-gray-100 rounded-xl p-3.5 hover:border-sky-200 hover:shadow-sm transition-all"
             >
-              <p className={`text-xs font-semibold mb-1.5 ${cat.color}`}>
-                {isKo ? cat.ko : cat.en}
+              <p className={`text-xs font-semibold mb-1.5 ${color}`}>
+                {tCategory(post.category ?? 'free')}
               </p>
               <p className="text-sm font-medium text-gray-800 line-clamp-2 leading-snug">
                 {post.title}

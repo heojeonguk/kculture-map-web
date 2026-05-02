@@ -17,14 +17,23 @@
     "viewAll": "もっと見る →",
     "bestPhotos": "ベスト写真",
     "bestPosts": "ベスト投稿",
-    "latestPosts": "最新投稿"
+    "latestPosts": "最新投稿",
+    "aiSearching": "AI検索中...",
+    "aiLabel": "✨ AIおすすめ",
+    "recommendedPlaces": "おすすめスポット",
+    "relatedPosts": "関連レビュー",
+    "noSearchResults": "関連する結果が見つかりませんでした。",
+    "clearSearch": "← 検索をクリア",
+    "searchError": "検索中にエラーが発生しました。"
   },
   "category": {
     "food": "グルメ",
     "cafe": "カフェ",
     "spot": "観光地",
     "shopping": "ショッピング",
-    "activity": "アクティビティ"
+    "activity": "アクティビティ",
+    "free": "自由",
+    "review": "レビュー"
   },
   "places": {
     "title": "スポット探索",
@@ -36,7 +45,9 @@
     "region": "地域",
     "allRegions": "すべて",
     "prev": "前へ",
-    "next": "次へ"
+    "next": "次へ",
+    "reset": "リセット",
+    "category": "カテゴリー"
   },
   "placeDetail": {
     "bookmark": "行きたい",
@@ -133,6 +144,7 @@
     "back": "戻る",
     "share": "シェア",
     "copy": "コピー",
-    "copied": "コピーしました！"
+    "copied": "コピーしました！",
+    "loginRequired": "ログインが必要です。"
   }
 }

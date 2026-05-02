@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 interface PlaceFilterProps {
   locale: string
@@ -10,24 +11,26 @@ interface PlaceFilterProps {
   searchQuery?: string
 }
 
-const categories = [
-  { key: 'food', emoji: '🍽', ko: '맛집', en: 'Food' },
-  { key: 'cafe', emoji: '☕', ko: '카페', en: 'Cafe' },
-  { key: 'spot', emoji: '📍', ko: '명소', en: 'Spots' },
-  { key: 'shopping', emoji: '🛍', ko: '쇼핑', en: 'Shopping' },
-  { key: 'activity', emoji: '🎯', ko: '액티비티', en: 'Activity' },
+type Category = 'food' | 'cafe' | 'spot' | 'shopping' | 'activity'
+
+const categories: { key: Category; emoji: string }[] = [
+  { key: 'food', emoji: '🍽' },
+  { key: 'cafe', emoji: '☕' },
+  { key: 'spot', emoji: '📍' },
+  { key: 'shopping', emoji: '🛍' },
+  { key: 'activity', emoji: '🎯' },
 ]
 
-const cities = [
-  { key: '서울', ko: '서울', en: 'Seoul' },
-  { key: '부산', ko: '부산', en: 'Busan' },
-  { key: '제주', ko: '제주', en: 'Jeju' },
-  { key: '경기', ko: '경기', en: 'Gyeonggi' },
-  { key: '인천', ko: '인천', en: 'Incheon' },
-  { key: '강원', ko: '강원', en: 'Gangwon' },
-  { key: '경상', ko: '경상', en: 'Gyeongsang' },
-  { key: '전라', ko: '전라', en: 'Jeolla' },
-  { key: '충청', ko: '충청', en: 'Chungcheong' },
+const cities: { key: string; regionKey: string }[] = [
+  { key: '서울', regionKey: 'seoul' },
+  { key: '부산', regionKey: 'busan' },
+  { key: '제주', regionKey: 'jeju' },
+  { key: '경기', regionKey: 'gyeonggi' },
+  { key: '인천', regionKey: 'incheon' },
+  { key: '강원', regionKey: 'gangwon' },
+  { key: '경상', regionKey: 'gyeongSang' },
+  { key: '전라', regionKey: 'jeolla' },
+  { key: '충청', regionKey: 'chungcheong' },
 ]
 
 export default function PlaceFilter({
@@ -36,8 +39,10 @@ export default function PlaceFilter({
   activeCity,
   searchQuery,
 }: PlaceFilterProps) {
+  const t = useTranslations('places')
+  const tCategory = useTranslations('category')
+  const tAi = useTranslations('ai')
   const router = useRouter()
-  const isKo = locale === 'ko'
   const [query, setQuery] = useState(searchQuery ?? '')
 
   const updateFilter = (key: string, value: string | undefined) => {
@@ -68,30 +73,28 @@ export default function PlaceFilter({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-          placeholder={isKo ? '장소명 검색...' : 'Search places...'}
+          placeholder={t('searchPlaceholder')}
           className="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-sky-400 transition-colors"
         />
         <button
           onClick={handleSearch}
           className="bg-sky-500 text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-sky-600 transition-colors"
         >
-          {isKo ? '검색' : 'Search'}
+          {t('searchButton')}
         </button>
         {(activeCategory || activeCity || searchQuery) && (
           <button
             onClick={handleReset}
             className="px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-500 hover:bg-gray-50 transition-colors"
           >
-            {isKo ? '초기화' : 'Reset'}
+            {t('reset')}
           </button>
         )}
       </div>
 
       {/* 카테고리 필터 */}
       <div>
-        <p className="text-xs text-gray-400 mb-2 font-medium">
-          {isKo ? '카테고리' : 'Category'}
-        </p>
+        <p className="text-xs text-gray-400 mb-2 font-medium">{t('category')}</p>
         <div className="flex gap-2 flex-wrap">
           {categories.map((cat) => (
             <button
@@ -105,7 +108,7 @@ export default function PlaceFilter({
                   : 'bg-white text-gray-600 border-gray-200 hover:border-sky-300 hover:text-sky-600'
               }`}
             >
-              {cat.emoji} {isKo ? cat.ko : cat.en}
+              {cat.emoji} {tCategory(cat.key)}
             </button>
           ))}
         </div>
@@ -113,9 +116,7 @@ export default function PlaceFilter({
 
       {/* 지역 필터 */}
       <div>
-        <p className="text-xs text-gray-400 mb-2 font-medium">
-          {isKo ? '지역' : 'Region'}
-        </p>
+        <p className="text-xs text-gray-400 mb-2 font-medium">{t('region')}</p>
         <div className="flex gap-2 flex-wrap">
           {cities.map((c) => (
             <button
@@ -129,7 +130,7 @@ export default function PlaceFilter({
                   : 'bg-white text-gray-600 border-gray-200 hover:border-sky-300 hover:text-sky-600'
               }`}
             >
-              {isKo ? c.ko : c.en}
+              {tAi(`regions.${c.regionKey}`)}
             </button>
           ))}
         </div>

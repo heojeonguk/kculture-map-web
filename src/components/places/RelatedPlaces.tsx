@@ -1,5 +1,7 @@
+'use client'
+
 import Link from 'next/link'
-import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 
 type Category = 'food' | 'cafe' | 'spot' | 'shopping' | 'activity'
 
@@ -20,22 +22,22 @@ interface RelatedPlacesProps {
   category: Category
 }
 
-const categoryConfig: Record<Category, { ko: string; en: string; bg: string }> = {
-  food: { ko: '맛집', en: 'Food', bg: 'bg-orange-50' },
-  cafe: { ko: '카페', en: 'Cafe', bg: 'bg-amber-50' },
-  spot: { ko: '명소', en: 'Spot', bg: 'bg-blue-50' },
-  shopping: { ko: '쇼핑', en: 'Shop', bg: 'bg-pink-50' },
-  activity: { ko: '액티비티', en: 'Activity', bg: 'bg-sky-50' },
+const categoryConfig: Record<Category, { bg: string }> = {
+  food: { bg: 'bg-orange-50' },
+  cafe: { bg: 'bg-amber-50' },
+  spot: { bg: 'bg-blue-50' },
+  shopping: { bg: 'bg-pink-50' },
+  activity: { bg: 'bg-sky-50' },
 }
 
 export default function RelatedPlaces({ places, locale, category }: RelatedPlacesProps) {
-  const isKo = locale === 'ko'
+  const t = useTranslations('placeDetail')
   const config = categoryConfig[category] ?? categoryConfig.spot
 
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-5">
       <h2 className="text-base font-bold text-gray-800 mb-4">
-        {isKo ? `비슷한 ${config.ko}` : `Similar ${config.en}s`}
+        {t('similarPlaces')}
       </h2>
       <div className="grid grid-cols-4 gap-3">
         {places.map((place) => (
@@ -46,11 +48,10 @@ export default function RelatedPlaces({ places, locale, category }: RelatedPlace
           >
             <div className={`h-20 ${config.bg} rounded-xl flex items-center justify-center mb-2 overflow-hidden relative`}>
               {place.photo_url ? (
-                <Image
+                <img
                   src={`/api/place-photo?ref=${place.photo_url}`}
                   alt={place.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform"
+                  className="object-cover w-full h-full group-hover:scale-105 transition-transform"
                 />
               ) : (
                 <span className="text-2xl">{place.emoji ?? '📍'}</span>

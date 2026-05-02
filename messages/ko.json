@@ -17,14 +17,23 @@
     "viewAll": "더보기 →",
     "bestPhotos": "베스트 사진",
     "bestPosts": "베스트 게시글",
-    "latestPosts": "커뮤니티 최신글"
+    "latestPosts": "커뮤니티 최신글",
+    "aiSearching": "AI가 검색 중입니다...",
+    "aiLabel": "✨ AI 추천",
+    "recommendedPlaces": "추천 장소",
+    "relatedPosts": "관련 후기",
+    "noSearchResults": "관련 결과를 찾지 못했습니다.",
+    "clearSearch": "← 검색 초기화",
+    "searchError": "검색 중 오류가 발생했습니다."
   },
   "category": {
     "food": "맛집",
     "cafe": "카페",
     "spot": "명소",
     "shopping": "쇼핑",
-    "activity": "액티비티"
+    "activity": "액티비티",
+    "free": "자유",
+    "review": "후기"
   },
   "places": {
     "title": "장소 탐색",
@@ -36,7 +45,9 @@
     "region": "지역",
     "allRegions": "전체",
     "prev": "이전",
-    "next": "다음"
+    "next": "다음",
+    "reset": "초기화",
+    "category": "카테고리"
   },
   "placeDetail": {
     "bookmark": "가고싶어요",
@@ -133,6 +144,7 @@
     "back": "뒤로가기",
     "share": "공유",
     "copy": "복사",
-    "copied": "복사됨"
+    "copied": "복사됨",
+    "loginRequired": "로그인이 필요합니다."
   }
 }

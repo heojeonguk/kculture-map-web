@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 
 type Category = 'food' | 'cafe' | 'spot' | 'shopping' | 'activity'
 
@@ -17,16 +20,17 @@ interface PlaceGridProps {
   locale: string
 }
 
-const categoryConfig: Record<Category, { emoji: string; ko: string; en: string; bg: string }> = {
-  food: { emoji: '🍽', ko: '맛집', en: 'Food', bg: 'bg-orange-50' },
-  cafe: { emoji: '☕', ko: '카페', en: 'Cafe', bg: 'bg-amber-50' },
-  spot: { emoji: '📍', ko: '명소', en: 'Spot', bg: 'bg-green-50' },
-  shopping: { emoji: '🛍', ko: '쇼핑', en: 'Shop', bg: 'bg-pink-50' },
-  activity: { emoji: '🎯', ko: '액티비티', en: 'Activity', bg: 'bg-blue-50' },
+const categoryConfig: Record<Category, { emoji: string; bg: string }> = {
+  food: { emoji: '🍽', bg: 'bg-orange-50' },
+  cafe: { emoji: '☕', bg: 'bg-amber-50' },
+  spot: { emoji: '📍', bg: 'bg-green-50' },
+  shopping: { emoji: '🛍', bg: 'bg-pink-50' },
+  activity: { emoji: '🎯', bg: 'bg-blue-50' },
 }
 
 export default function PlaceGrid({ places, locale }: PlaceGridProps) {
-  const isKo = locale === 'ko'
+  const t = useTranslations('home')
+  const tCategory = useTranslations('category')
 
   if (!places || places.length === 0) return null
 
@@ -34,13 +38,13 @@ export default function PlaceGrid({ places, locale }: PlaceGridProps) {
     <section>
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-base font-bold text-gray-800">
-          🔥 {isKo ? '인기 장소' : 'Popular Places'}
+          🔥 {t('popularPlaces')}
         </h2>
         <Link
           href={`/${locale}/places`}
           className="text-xs text-gray-400 hover:text-sky-600 transition-colors"
         >
-          {isKo ? '더보기 →' : 'View all →'}
+          {t('viewAll')}
         </Link>
       </div>
 
@@ -56,11 +60,11 @@ export default function PlaceGrid({ places, locale }: PlaceGridProps) {
               {/* 이미지 영역 */}
               <div className={`h-24 ${config.bg} flex items-center justify-center relative`}>
                 {place.photo_url ? (
-<img
-  src={`/api/place-photo?ref=${place.photo_url}`}
-  alt={place.name}
-  className="object-cover w-full h-full"
-/>
+                  <img
+                    src={`/api/place-photo?ref=${place.photo_url}`}
+                    alt={place.name}
+                    className="object-cover w-full h-full"
+                  />
                 ) : (
                   <span className="text-3xl">{place.emoji ?? config.emoji}</span>
                 )}
@@ -71,7 +75,7 @@ export default function PlaceGrid({ places, locale }: PlaceGridProps) {
                 <p className="text-xs font-semibold text-gray-800 truncate">{place.name}</p>
                 <div className="flex items-center justify-between mt-1">
                   <span className="text-[10px] bg-sky-50 text-sky-700 px-1.5 py-0.5 rounded-full">
-                    {isKo ? config.ko : config.en}
+                    {tCategory(place.category)}
                   </span>
                   <span className="text-[10px] text-gray-400">{place.city}</span>
                 </div>

@@ -17,14 +17,23 @@
     "viewAll": "View all →",
     "bestPhotos": "Best Photos",
     "bestPosts": "Best Posts",
-    "latestPosts": "Latest Posts"
+    "latestPosts": "Latest Posts",
+    "aiSearching": "AI is searching...",
+    "aiLabel": "✨ AI Picks",
+    "recommendedPlaces": "Recommended Places",
+    "relatedPosts": "Related Posts",
+    "noSearchResults": "No results found.",
+    "clearSearch": "← Clear search",
+    "searchError": "Search error occurred."
   },
   "category": {
     "food": "Food",
     "cafe": "Cafe",
     "spot": "Spot",
     "shopping": "Shopping",
-    "activity": "Activity"
+    "activity": "Activity",
+    "free": "Free",
+    "review": "Review"
   },
   "places": {
     "title": "Explore Places",
@@ -36,7 +45,9 @@
     "region": "Region",
     "allRegions": "All",
     "prev": "Prev",
-    "next": "Next"
+    "next": "Next",
+    "reset": "Reset",
+    "category": "Category"
   },
   "placeDetail": {
     "bookmark": "Wishlist",
@@ -133,6 +144,7 @@
     "back": "Back",
     "share": "Share",
     "copy": "Copy",
-    "copied": "Copied!"
+    "copied": "Copied!",
+    "loginRequired": "Please log in first."
   }
 }
