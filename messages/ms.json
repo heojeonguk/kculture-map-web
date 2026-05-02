@@ -141,7 +141,11 @@
       "jeolla": "Jeolla",
       "chungcheong": "Chungcheong",
       "all": "Seluruh Korea"
-    }
+    },
+    "loading": "AI sedang membuat jadual...",
+    "resultTitle": "Jadual Perjalanan AI",
+    "errorResult": "Gagal mendapatkan cadangan.",
+    "errorGeneral": "Ralat berlaku. Sila cuba lagi."
   },
   "auth": {
     "login": "Log Masuk",

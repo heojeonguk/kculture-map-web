@@ -141,7 +141,11 @@
       "jeolla": "Jeolla",
       "chungcheong": "Chungcheong",
       "all": "Toda Corea"
-    }
+    },
+    "loading": "IA creando tu itinerario...",
+    "resultTitle": "Itinerario de IA",
+    "errorResult": "No se pudo obtener la recomendación.",
+    "errorGeneral": "Ocurrió un error. Por favor intenta de nuevo."
   },
   "auth": {
     "login": "Iniciar sesión",

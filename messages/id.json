@@ -141,7 +141,11 @@
       "jeolla": "Jeolla",
       "chungcheong": "Chungcheong",
       "all": "Seluruh Korea"
-    }
+    },
+    "loading": "AI sedang membuat itinerary...",
+    "resultTitle": "Itinerary AI",
+    "errorResult": "Gagal mendapatkan rekomendasi.",
+    "errorGeneral": "Terjadi kesalahan. Silakan coba lagi."
   },
   "auth": {
     "login": "Masuk",

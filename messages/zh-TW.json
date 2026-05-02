@@ -141,7 +141,11 @@
       "jeolla": "全羅",
       "chungcheong": "忠清",
       "all": "全韓國"
-    }
+    },
+    "loading": "AI正在規劃行程...",
+    "resultTitle": "AI推薦行程",
+    "errorResult": "無法取得推薦結果。",
+    "errorGeneral": "發生錯誤，請重試。"
   },
   "auth": {
     "login": "登入",

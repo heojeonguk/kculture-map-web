@@ -141,7 +141,11 @@
       "jeolla": "Jeolla",
       "chungcheong": "Chungcheong",
       "all": "Toàn Hàn Quốc"
-    }
+    },
+    "loading": "AI đang tạo lịch trình...",
+    "resultTitle": "Lịch trình AI",
+    "errorResult": "Không thể lấy kết quả.",
+    "errorGeneral": "Đã xảy ra lỗi. Vui lòng thử lại."
   },
   "auth": {
     "login": "Đăng nhập",

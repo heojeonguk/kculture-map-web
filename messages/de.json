@@ -141,7 +141,11 @@
       "jeolla": "Jeolla",
       "chungcheong": "Chungcheong",
       "all": "Ganz Korea"
-    }
+    },
+    "loading": "KI erstellt Ihren Reiseplan...",
+    "resultTitle": "KI-Reiseplan",
+    "errorResult": "Empfehlung konnte nicht abgerufen werden.",
+    "errorGeneral": "Ein Fehler ist aufgetreten. Bitte erneut versuchen."
   },
   "auth": {
     "login": "Anmelden",

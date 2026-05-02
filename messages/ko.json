@@ -141,7 +141,11 @@
       "jeolla": "전라",
       "chungcheong": "충청",
       "all": "전국"
-    }
+    },
+    "loading": "AI가 일정을 작성 중...",
+    "resultTitle": "AI 추천 여행 일정",
+    "errorResult": "추천 결과를 가져오지 못했습니다.",
+    "errorGeneral": "오류가 발생했습니다. 다시 시도해주세요."
   },
   "auth": {
     "login": "로그인",

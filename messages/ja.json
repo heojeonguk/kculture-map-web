@@ -141,7 +141,11 @@
       "jeolla": "全羅",
       "chungcheong": "忠清",
       "all": "韓国全域"
-    }
+    },
+    "loading": "AIが日程を作成中...",
+    "resultTitle": "AI旅行プラン",
+    "errorResult": "推薦結果を取得できませんでした。",
+    "errorGeneral": "エラーが発生しました。もう一度お試しください。"
   },
   "auth": {
     "login": "ログイン",
