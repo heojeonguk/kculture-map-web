@@ -1,49 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server'
+import createIntlMiddleware from 'next-intl/middleware'
+import { routing } from './routing'
 import { createServerClient } from '@supabase/ssr'
+import { NextRequest } from 'next/server'
 
-// 지원 언어 15개
-export const locales = [
-  'ko', 'en', 'zh-CN', 'ja', 'zh-TW',
-  'th', 'vi', 'id', 'ms', 'es',
-  'fr', 'de', 'pt', 'ru', 'ar'
-]
-export const defaultLocale = 'en'
-
-function getLocale(request: NextRequest): string {
-  const acceptLang = request.headers.get('accept-language') || ''
-  const preferred = acceptLang.split(',')[0].split(';')[0].trim()
-
-  if (locales.includes(preferred)) return preferred
-
-  // zh 계열 처리
-  if (preferred.startsWith('zh-TW') || preferred.startsWith('zh-HK')) return 'zh-TW'
-  if (preferred.startsWith('zh')) return 'zh-CN'
-
-  const base = preferred.split('-')[0]
-  const match = locales.find(l => l === base)
-  return match || defaultLocale
-}
+const intlMiddleware = createIntlMiddleware(routing)
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
+  // next-intl이 locale 감지 및 리다이렉트 처리
+  const response = intlMiddleware(request)
 
-  // 이미 locale prefix가 있으면 통과
-  const pathnameHasLocale = locales.some(
-    locale => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
-  )
-
-  // Supabase 세션 갱신
-  let response: NextResponse
-
-  if (!pathnameHasLocale) {
-    const locale = getLocale(request)
-    const newUrl = new URL(`/${locale}${pathname}`, request.url)
-    response = NextResponse.redirect(newUrl)
-  } else {
-    response = NextResponse.next()
-  }
-
-  // Supabase 세션 갱신 처리
+  // Supabase 세션 갱신 — intlMiddleware가 만든 response에 쿠키를 덧씌움
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
