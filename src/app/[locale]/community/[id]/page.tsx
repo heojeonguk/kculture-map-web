@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Header from '@/components/layout/Header'
@@ -5,8 +6,37 @@ import Sidebar from '@/components/layout/Sidebar'
 import PostDetail from '@/components/community/PostDetail'
 import CommentSectionWrapper from '@/components/community/CommentSectionWrapper'
 
+const BASE_URL = 'https://www.kculture-map.com'
+
 interface PostPageProps {
   params: Promise<{ locale: string; id: string }>
+}
+
+export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
+  const { locale, id } = await params
+  const supabase = await createClient()
+  const { data: post } = await supabase
+    .from('posts')
+    .select('title, content')
+    .eq('id', id)
+    .single()
+  if (!post) return { title: 'K컬처MAP' }
+  const title = `${post.title} - K컬처MAP`
+  const description = (post.content as string)?.replace(/<[^>]*>/g, '').slice(0, 100) ?? ''
+  return {
+    title,
+    description,
+    robots: { index: true, follow: true },
+    alternates: { canonical: `${BASE_URL}/${locale}/community/${id}` },
+    openGraph: {
+      title,
+      description,
+      url: `${BASE_URL}/${locale}/community/${id}`,
+      siteName: 'K컬처MAP',
+      locale,
+      type: 'article',
+    },
+  }
 }
 
 export default async function PostPage({ params }: PostPageProps) {

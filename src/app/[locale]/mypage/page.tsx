@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Header from '@/components/layout/Header'
@@ -11,6 +12,14 @@ import PhotoAlbum from '@/components/mypage/PhotoAlbum'
 
 interface MypageProps {
   params: Promise<{ locale: string }>
+}
+
+export async function generateMetadata({ params }: MypageProps): Promise<Metadata> {
+  const { locale } = await params
+  return {
+    title: locale === 'ko' ? 'K컬처MAP - 마이페이지' : 'K컬처MAP - My Page',
+    robots: { index: false, follow: false },
+  }
 }
 
 export default async function MyPage({ params }: MypageProps) {

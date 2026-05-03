@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Header from '@/components/layout/Header'
@@ -5,8 +6,37 @@ import Sidebar from '@/components/layout/Sidebar'
 import PlaceDetail from '@/components/places/PlaceDetail'
 import RelatedPlaces from '@/components/places/RelatedPlaces'
 
+const BASE_URL = 'https://www.kculture-map.com'
+
 interface PlacePageProps {
   params: Promise<{ locale: string; id: string }>
+}
+
+export async function generateMetadata({ params }: PlacePageProps): Promise<Metadata> {
+  const { locale, id } = await params
+  const supabase = await createClient()
+  const { data: place } = await supabase
+    .from('places')
+    .select('name, city, category, address')
+    .eq('id', id)
+    .single()
+  if (!place) return { title: 'K컬처MAP' }
+  const title = `${place.name} - K컬처MAP`
+  const description = [place.city, place.category, place.address].filter(Boolean).join(' · ')
+  return {
+    title,
+    description,
+    robots: { index: true, follow: true },
+    alternates: { canonical: `${BASE_URL}/${locale}/places/${id}` },
+    openGraph: {
+      title,
+      description,
+      url: `${BASE_URL}/${locale}/places/${id}`,
+      siteName: 'K컬처MAP',
+      locale,
+      type: 'article',
+    },
+  }
 }
 
 export default async function PlacePage({ params }: PlacePageProps) {

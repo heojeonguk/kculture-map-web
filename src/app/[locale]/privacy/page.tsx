@@ -1,7 +1,30 @@
+import type { Metadata } from 'next'
 import Header from '@/components/layout/Header'
+
+const BASE_URL = 'https://www.kculture-map.com'
 
 interface PrivacyPageProps {
   params: Promise<{ locale: string }>
+}
+
+export async function generateMetadata({ params }: PrivacyPageProps): Promise<Metadata> {
+  const { locale } = await params
+  const title = locale === 'ko' ? 'K컬처MAP - 개인정보처리방침' : 'K컬처MAP - Privacy Policy'
+  const description = locale === 'ko' ? 'K컬처MAP 개인정보처리방침' : 'K컬처MAP Privacy Policy'
+  return {
+    title,
+    description,
+    robots: { index: true, follow: true },
+    alternates: { canonical: `${BASE_URL}/${locale}/privacy` },
+    openGraph: {
+      title,
+      description,
+      url: `${BASE_URL}/${locale}/privacy`,
+      siteName: 'K컬처MAP',
+      locale,
+      type: 'website',
+    },
+  }
 }
 
 export default async function PrivacyPage({ params }: PrivacyPageProps) {

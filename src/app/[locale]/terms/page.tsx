@@ -1,7 +1,30 @@
+import type { Metadata } from 'next'
 import Header from '@/components/layout/Header'
+
+const BASE_URL = 'https://www.kculture-map.com'
 
 interface TermsPageProps {
   params: Promise<{ locale: string }>
+}
+
+export async function generateMetadata({ params }: TermsPageProps): Promise<Metadata> {
+  const { locale } = await params
+  const title = locale === 'ko' ? 'K컬처MAP - 이용약관' : 'K컬처MAP - Terms of Service'
+  const description = locale === 'ko' ? 'K컬처MAP 서비스 이용약관' : 'K컬처MAP Terms of Service'
+  return {
+    title,
+    description,
+    robots: { index: true, follow: true },
+    alternates: { canonical: `${BASE_URL}/${locale}/terms` },
+    openGraph: {
+      title,
+      description,
+      url: `${BASE_URL}/${locale}/terms`,
+      siteName: 'K컬처MAP',
+      locale,
+      type: 'website',
+    },
+  }
 }
 
 export default async function TermsPage({ params }: TermsPageProps) {

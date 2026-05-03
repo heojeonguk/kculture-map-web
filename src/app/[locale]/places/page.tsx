@@ -1,9 +1,39 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import Sidebar from '@/components/layout/Sidebar'
 import PlaceFilter from '@/components/places/PlaceFilter'
 import PlaceList from '@/components/places/PlaceList'
+
+const BASE_URL = 'https://www.kculture-map.com'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const title = locale === 'ko' ? 'K컬처MAP - 장소 탐색' : 'K컬처MAP - Explore Places'
+  const description =
+    locale === 'ko'
+      ? '한국의 맛집, 카페, 명소, 쇼핑, 액티비티를 탐색하세요'
+      : 'Explore restaurants, cafes, spots, shopping and activities in Korea'
+  return {
+    title,
+    description,
+    robots: { index: true, follow: true },
+    alternates: { canonical: `${BASE_URL}/${locale}/places` },
+    openGraph: {
+      title,
+      description,
+      url: `${BASE_URL}/${locale}/places`,
+      siteName: 'K컬처MAP',
+      locale,
+      type: 'website',
+    },
+  }
+}
 
 interface PlacesPageProps {
   params: Promise<{ locale: string }>

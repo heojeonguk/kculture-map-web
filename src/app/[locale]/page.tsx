@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
@@ -8,6 +9,44 @@ import PlaceGrid from '@/components/home/PlaceGrid'
 import BestReviews from '@/components/home/BestReviews'
 import BestPhotos from '@/components/home/BestPhotos'
 import CommunityGrid from '@/components/home/CommunityGrid'
+
+const BASE_URL = 'https://www.kculture-map.com'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const titles: Record<string, string> = {
+    ko: 'K컬처MAP - 한국 여행의 모든 것',
+    en: 'K컬처MAP - Everything About Korea Travel',
+    ja: 'K컬처MAP - 韓国旅行のすべて',
+    'zh-CN': 'K컬처MAP - 韩国旅行指南',
+  }
+  const descs: Record<string, string> = {
+    ko: '한국 맛집, 명소, 카페, 쇼핑, 액티비티를 한 곳에서',
+    en: 'Discover Korean restaurants, spots, cafes, shopping & activities',
+    ja: '韓国グルメ、観光地、カフェ、ショッピングを一か所で',
+    'zh-CN': '发现韩国美食、景点、咖啡厅、购物和活动',
+  }
+  const title = titles[locale] ?? titles.en
+  const description = descs[locale] ?? descs.en
+  return {
+    title,
+    description,
+    robots: { index: true, follow: true },
+    alternates: { canonical: `${BASE_URL}/${locale}` },
+    openGraph: {
+      title,
+      description,
+      url: `${BASE_URL}/${locale}`,
+      siteName: 'K컬처MAP',
+      locale,
+      type: 'website',
+    },
+  }
+}
 
 export default async function HomePage({
   params,

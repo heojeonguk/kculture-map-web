@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
@@ -5,6 +6,35 @@ import Sidebar from '@/components/layout/Sidebar'
 import PostFilter from '@/components/community/PostFilter'
 import PostList from '@/components/community/PostList'
 import Link from 'next/link'
+
+const BASE_URL = 'https://www.kculture-map.com'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const title = locale === 'ko' ? 'K컬처MAP - 커뮤니티' : 'K컬처MAP - Community'
+  const description =
+    locale === 'ko'
+      ? '한국 여행 경험을 공유하고 소통하세요'
+      : 'Share and connect with fellow Korea travel enthusiasts'
+  return {
+    title,
+    description,
+    robots: { index: true, follow: true },
+    alternates: { canonical: `${BASE_URL}/${locale}/community` },
+    openGraph: {
+      title,
+      description,
+      url: `${BASE_URL}/${locale}/community`,
+      siteName: 'K컬처MAP',
+      locale,
+      type: 'website',
+    },
+  }
+}
 
 interface CommunityPageProps {
   params: Promise<{ locale: string }>
