@@ -104,7 +104,9 @@
     "saving": "Speichern...",
     "errorTitle": "Bitte Titel eingeben",
     "errorContent": "Bitte Inhalt eingeben",
-    "errorSave": "Fehler beim Speichern"
+    "errorSave": "Fehler beim Speichern",
+    "messagePlaceholder": "Nachricht eingeben...",
+    "send": "Senden"
   },
   "ai": {
     "title": "KI Korea-Reiseplaner",

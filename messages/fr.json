@@ -104,7 +104,9 @@
     "saving": "Enregistrement...",
     "errorTitle": "Veuillez entrer un titre",
     "errorContent": "Veuillez entrer le contenu",
-    "errorSave": "Échec de la sauvegarde"
+    "errorSave": "Échec de la sauvegarde",
+    "messagePlaceholder": "Saisissez un message...",
+    "send": "Envoyer"
   },
   "ai": {
     "title": "Planificateur de voyage en Corée IA",

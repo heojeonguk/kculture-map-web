@@ -104,7 +104,9 @@
     "saving": "Salvando...",
     "errorTitle": "Por favor insira um título",
     "errorContent": "Por favor insira o conteúdo",
-    "errorSave": "Falha ao salvar publicação"
+    "errorSave": "Falha ao salvar publicação",
+    "messagePlaceholder": "Digite uma mensagem...",
+    "send": "Enviar"
   },
   "ai": {
     "title": "Planejador de viagens à Coreia com IA",

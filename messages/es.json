@@ -104,7 +104,9 @@
     "saving": "Guardando...",
     "errorTitle": "Por favor ingresa un título",
     "errorContent": "Por favor ingresa el contenido",
-    "errorSave": "Error al guardar la publicación"
+    "errorSave": "Error al guardar la publicación",
+    "messagePlaceholder": "Escribe un mensaje...",
+    "send": "Enviar"
   },
   "ai": {
     "title": "Planificador de viajes a Corea con IA",

@@ -104,7 +104,9 @@
     "saving": "保存中...",
     "errorTitle": "请输入标题",
     "errorContent": "请输入内容",
-    "errorSave": "帖子保存失败"
+    "errorSave": "帖子保存失败",
+    "messagePlaceholder": "输入消息...",
+    "send": "发送"
   },
   "ai": {
     "title": "AI韩国旅行规划",

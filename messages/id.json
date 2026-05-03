@@ -104,7 +104,9 @@
     "saving": "Menyimpan...",
     "errorTitle": "Masukkan judul",
     "errorContent": "Masukkan konten",
-    "errorSave": "Gagal menyimpan postingan"
+    "errorSave": "Gagal menyimpan postingan",
+    "messagePlaceholder": "Ketik pesan...",
+    "send": "Kirim"
   },
   "ai": {
     "title": "AI Perencana Wisata Korea",

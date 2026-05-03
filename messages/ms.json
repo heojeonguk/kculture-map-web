@@ -104,7 +104,9 @@
     "saving": "Menyimpan...",
     "errorTitle": "Sila masukkan tajuk",
     "errorContent": "Sila masukkan kandungan",
-    "errorSave": "Gagal menyimpan siaran"
+    "errorSave": "Gagal menyimpan siaran",
+    "messagePlaceholder": "Taip mesej...",
+    "send": "Hantar"
   },
   "ai": {
     "title": "Perancang Pelancongan Korea AI",

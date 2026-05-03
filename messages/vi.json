@@ -104,7 +104,9 @@
     "saving": "Đang lưu...",
     "errorTitle": "Vui lòng nhập tiêu đề",
     "errorContent": "Vui lòng nhập nội dung",
-    "errorSave": "Lưu bài viết thất bại"
+    "errorSave": "Lưu bài viết thất bại",
+    "messagePlaceholder": "Nhập tin nhắn...",
+    "send": "Gửi"
   },
   "ai": {
     "title": "AI Lập kế hoạch du lịch Hàn Quốc",

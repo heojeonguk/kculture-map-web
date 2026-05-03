@@ -104,7 +104,9 @@
     "saving": "保存中...",
     "errorTitle": "タイトルを入力してください",
     "errorContent": "内容を入力してください",
-    "errorSave": "投稿の保存に失敗しました"
+    "errorSave": "投稿の保存に失敗しました",
+    "messagePlaceholder": "メッセージを入力...",
+    "send": "送信"
   },
   "ai": {
     "title": "AI韓国旅行プランナー",

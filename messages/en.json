@@ -104,7 +104,9 @@
     "saving": "Saving...",
     "errorTitle": "Please enter a title",
     "errorContent": "Please enter content",
-    "errorSave": "Failed to save post"
+    "errorSave": "Failed to save post",
+    "messagePlaceholder": "Type a message...",
+    "send": "Send"
   },
   "ai": {
     "title": "AI Korea Travel Planner",

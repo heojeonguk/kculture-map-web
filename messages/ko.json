@@ -104,7 +104,9 @@
     "saving": "저장 중...",
     "errorTitle": "제목을 입력해주세요",
     "errorContent": "내용을 입력해주세요",
-    "errorSave": "게시글 저장에 실패했습니다"
+    "errorSave": "게시글 저장에 실패했습니다",
+    "messagePlaceholder": "메시지를 입력하세요...",
+    "send": "전송"
   },
   "ai": {
     "title": "AI 한국 여행 추천",
