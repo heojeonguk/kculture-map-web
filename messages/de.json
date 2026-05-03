@@ -185,7 +185,11 @@
     "postsToReach": "Beiträge bis Lv.{lv}",
     "needComments": "Noch {count} Kommentare benötigt",
     "needFollowers": "Noch {count} Follower benötigt",
-    "level1Next": "10 Beiträge für Level-Aufstieg schreiben"
+    "level1Next": "10 Beiträge für Level-Aufstieg schreiben",
+    "viewProfile": "Profil anzeigen",
+    "sendMessage": "Nachricht senden",
+    "follow": "Folgen",
+    "noneYet": "Noch keine"
   },
   "common": {
     "loading": "Lädt...",

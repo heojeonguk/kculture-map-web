@@ -185,7 +185,11 @@
     "postsToReach": "ถึง Lv.{lv}",
     "needComments": "ต้องการอีก {count} ความคิดเห็น",
     "needFollowers": "ต้องการอีก {count} ผู้ติดตาม",
-    "level1Next": "โพสต์ 10 ครั้งเพื่ออัปเลเวล"
+    "level1Next": "โพสต์ 10 ครั้งเพื่ออัปเลเวล",
+    "viewProfile": "ดูโปรไฟล์",
+    "sendMessage": "ส่งข้อความ",
+    "follow": "ติดตาม",
+    "noneYet": "ยังไม่มี"
   },
   "common": {
     "loading": "กำลังโหลด...",

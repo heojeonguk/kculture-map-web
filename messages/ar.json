@@ -185,7 +185,11 @@
     "postsToReach": "منشورات للوصول إلى Lv.{lv}",
     "needComments": "تحتاج {count} تعليقات أخرى",
     "needFollowers": "تحتاج {count} متابعين أخرى",
-    "level1Next": "اكتب 10 منشورات للترقية"
+    "level1Next": "اكتب 10 منشورات للترقية",
+    "viewProfile": "عرض الملف الشخصي",
+    "sendMessage": "إرسال رسالة",
+    "follow": "متابعة",
+    "noneYet": "لا يوجد بعد"
   },
   "common": {
     "loading": "جارٍ التحميل...",

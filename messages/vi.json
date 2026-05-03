@@ -185,7 +185,11 @@
     "postsToReach": "để đạt Lv.{lv}",
     "needComments": "Cần thêm {count} bình luận",
     "needFollowers": "Cần thêm {count} người theo dõi",
-    "level1Next": "Viết 10 bài để lên cấp"
+    "level1Next": "Viết 10 bài để lên cấp",
+    "viewProfile": "Xem hồ sơ",
+    "sendMessage": "Gửi tin nhắn",
+    "follow": "Theo dõi",
+    "noneYet": "Chưa có"
   },
   "common": {
     "loading": "Đang tải...",

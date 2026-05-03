@@ -185,7 +185,11 @@
     "postsToReach": "升至Lv.{lv}还需",
     "needComments": "还需{count}条评论",
     "needFollowers": "还需{count}位粉丝",
-    "level1Next": "发布10篇帖子可升级"
+    "level1Next": "发布10篇帖子可升级",
+    "viewProfile": "查看资料",
+    "sendMessage": "发送消息",
+    "follow": "关注",
+    "noneYet": "暂无"
   },
   "common": {
     "loading": "加载中...",

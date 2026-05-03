@@ -185,7 +185,11 @@
     "postsToReach": "posts to reach Lv.{lv}",
     "needComments": "Need {count} more comments",
     "needFollowers": "Need {count} more followers",
-    "level1Next": "Write 10 posts to level up"
+    "level1Next": "Write 10 posts to level up",
+    "viewProfile": "View profile",
+    "sendMessage": "Send message",
+    "follow": "Follow",
+    "noneYet": "None yet"
   },
   "common": {
     "loading": "Loading...",

@@ -185,7 +185,11 @@
     "postsToReach": "untuk mencapai Lv.{lv}",
     "needComments": "Perlu {count} komentar lagi",
     "needFollowers": "Perlu {count} pengikut lagi",
-    "level1Next": "Tulis 10 postingan untuk naik level"
+    "level1Next": "Tulis 10 postingan untuk naik level",
+    "viewProfile": "Lihat profil",
+    "sendMessage": "Kirim pesan",
+    "follow": "Ikuti",
+    "noneYet": "Belum ada"
   },
   "common": {
     "loading": "Memuat...",

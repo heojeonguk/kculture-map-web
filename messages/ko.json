@@ -185,7 +185,11 @@
     "postsToReach": "Lv.{lv} 달성까지",
     "needComments": "댓글 {count}개 더 필요",
     "needFollowers": "팔로워 {count}명 더 필요",
-    "level1Next": "게시글 10개 작성 시 레벨업"
+    "level1Next": "게시글 10개 작성 시 레벨업",
+    "viewProfile": "프로필 보기",
+    "sendMessage": "메시지 보내기",
+    "follow": "팔로우",
+    "noneYet": "없습니다"
   },
   "common": {
     "loading": "로딩 중...",

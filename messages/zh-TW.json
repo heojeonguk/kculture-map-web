@@ -185,7 +185,11 @@
     "postsToReach": "升至Lv.{lv}還需",
     "needComments": "還需{count}則留言",
     "needFollowers": "還需{count}位粉絲",
-    "level1Next": "發布10篇文章可升級"
+    "level1Next": "發布10篇文章可升級",
+    "viewProfile": "查看資料",
+    "sendMessage": "傳送訊息",
+    "follow": "追蹤",
+    "noneYet": "目前沒有"
   },
   "common": {
     "loading": "載入中...",

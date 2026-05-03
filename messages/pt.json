@@ -185,7 +185,11 @@
     "postsToReach": "publicações para alcançar o Lv.{lv}",
     "needComments": "Precisa de mais {count} comentários",
     "needFollowers": "Precisa de mais {count} seguidores",
-    "level1Next": "Escreva 10 publicações para subir de nível"
+    "level1Next": "Escreva 10 publicações para subir de nível",
+    "viewProfile": "Ver perfil",
+    "sendMessage": "Enviar mensagem",
+    "follow": "Seguir",
+    "noneYet": "Nenhum ainda"
   },
   "common": {
     "loading": "Carregando...",

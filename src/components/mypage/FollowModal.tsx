@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
 
 interface FollowUser {
@@ -18,13 +19,12 @@ interface FollowModalProps {
 }
 
 export default function FollowModal({ userId, type, locale, onClose }: FollowModalProps) {
-  const isKo = locale === 'ko'
+  const t = useTranslations('mypage')
   const router = useRouter()
   const [users, setUsers] = useState<FollowUser[]>([])
   const [loading, setLoading] = useState(true)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [followingIds, setFollowingIds] = useState<Set<string>>(new Set())
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
 
   useEffect(() => {
     const init = async () => {
@@ -50,8 +50,7 @@ export default function FollowModal({ userId, type, locale, onClose }: FollowMod
   const handleFollow = async (targetId: string) => {
     if (!currentUserId) return
     const supabase = createClient()
-    const isNowFollowing = followingIds.has(targetId)
-    if (isNowFollowing) {
+    if (followingIds.has(targetId)) {
       await supabase.from('follows').delete().eq('follower_id', currentUserId).eq('following_id', targetId)
       setFollowingIds(prev => { const s = new Set(prev); s.delete(targetId); return s })
     } else {
@@ -60,83 +59,106 @@ export default function FollowModal({ userId, type, locale, onClose }: FollowMod
     }
   }
 
+  const goTo = (path: string) => { onClose(); router.push(path) }
+
   return (
     <div
       className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl w-full min-w-[320px] max-w-sm max-h-[500px] flex flex-col overflow-hidden shadow-xl"
+        className="bg-white rounded-2xl w-full max-w-md max-h-[70vh] flex flex-col overflow-hidden shadow-xl"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+        {/* 헤더 */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
           <h3 className="font-bold text-gray-800">
-            {type === 'followers' ? (isKo ? '팔로워' : 'Followers') : (isKo ? '팔로잉' : 'Following')}
+            {type === 'followers' ? t('followers') : t('following')}
           </h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
+            ✕
+          </button>
         </div>
 
+        {/* 목록 */}
         <div className="overflow-y-auto flex-1">
           {loading ? (
-            <div className="flex justify-center py-10">
+            <div className="flex justify-center py-12">
               <span className="w-6 h-6 border-2 border-sky-400 border-t-transparent rounded-full animate-spin" />
             </div>
           ) : users.length === 0 ? (
-            <p className="text-center text-gray-400 text-sm py-10">
-              {isKo ? '없습니다' : 'None yet'}
-            </p>
+            <p className="text-center text-gray-400 text-sm py-12">{t('noneYet')}</p>
           ) : (
-            users.map(u => (
-              <div key={u.user_id} className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition-colors">
-                {u.avatar_url ? (
-                  <img src={u.avatar_url} alt={u.nickname} className="w-9 h-9 rounded-full object-cover shrink-0" />
-                ) : (
-                  <div className="w-9 h-9 rounded-full bg-sky-100 flex items-center justify-center text-sm font-bold text-sky-600 shrink-0">
-                    {u.nickname.charAt(0).toUpperCase()}
-                  </div>
-                )}
-                <button
-                  onClick={() => { onClose(); router.push(`/${locale}/profile/${u.user_id}`) }}
-                  className="flex-1 text-sm font-medium text-gray-700 text-left hover:text-sky-500 transition-colors truncate"
-                >
-                  {u.nickname}
-                </button>
-                <div className="relative shrink-0">
-                  <button
-                    onClick={() => setActiveDropdown(activeDropdown === u.user_id ? null : u.user_id)}
-                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                  >
-                    ···
-                  </button>
-                  {activeDropdown === u.user_id && (
-                    <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-10 overflow-hidden min-w-[150px]">
-                      <button
-                        onClick={() => { setActiveDropdown(null); onClose(); router.push(`/${locale}/profile/${u.user_id}`) }}
-                        className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                      >
-                        👤 {isKo ? '프로필 보기' : 'View profile'}
-                      </button>
-                      {currentUserId && currentUserId !== u.user_id && (
-                        <>
-                          <button
-                            onClick={() => { setActiveDropdown(null); onClose(); router.push(`/${locale}/messages/${u.user_id}`) }}
-                            className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 flex items-center gap-2"
-                          >
-                            ✉️ {isKo ? '메시지 보내기' : 'Send message'}
-                          </button>
-                          <button
-                            onClick={() => { handleFollow(u.user_id); setActiveDropdown(null) }}
-                            className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 flex items-center gap-2"
-                          >
-                            {followingIds.has(u.user_id) ? '✅' : '➕'} {followingIds.has(u.user_id) ? (isKo ? '팔로잉' : 'Following') : (isKo ? '팔로우' : 'Follow')}
-                          </button>
-                        </>
-                      )}
+            users.map(u => {
+              const isMe = currentUserId === u.user_id
+              const isFollowing = followingIds.has(u.user_id)
+
+              return (
+                <div key={u.user_id} className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0">
+                  {/* 아바타 */}
+                  {u.avatar_url ? (
+                    <img
+                      src={u.avatar_url}
+                      alt={u.nickname}
+                      className="w-10 h-10 rounded-full object-cover shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => goTo(`/${locale}/profile/${u.user_id}`)}
+                    />
+                  ) : (
+                    <div
+                      className="w-10 h-10 rounded-full bg-sky-100 flex items-center justify-center text-sm font-bold text-sky-600 shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => goTo(`/${locale}/profile/${u.user_id}`)}
+                    >
+                      {u.nickname.charAt(0).toUpperCase()}
                     </div>
                   )}
+
+                  {/* 닉네임 */}
+                  <button
+                    onClick={() => goTo(`/${locale}/profile/${u.user_id}`)}
+                    className="flex-1 text-sm font-medium text-gray-700 text-left hover:text-sky-500 transition-colors truncate"
+                  >
+                    {u.nickname}
+                  </button>
+
+                  {/* 액션 버튼들 */}
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {/* 프로필 보기 */}
+                    <button
+                      onClick={() => goTo(`/${locale}/profile/${u.user_id}`)}
+                      title={t('viewProfile')}
+                      className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-sky-500 hover:bg-sky-50 transition-colors text-base"
+                    >
+                      👤
+                    </button>
+
+                    {/* 메시지 — 본인 제외 */}
+                    {!isMe && (
+                      <button
+                        onClick={() => goTo(`/${locale}/messages/${u.user_id}`)}
+                        title={t('sendMessage')}
+                        className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-sky-500 hover:bg-sky-50 transition-colors text-base"
+                      >
+                        ✉️
+                      </button>
+                    )}
+
+                    {/* 팔로우 — 본인 제외, 로그인 필요 */}
+                    {!isMe && currentUserId && (
+                      <button
+                        onClick={() => handleFollow(u.user_id)}
+                        className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                          isFollowing
+                            ? 'bg-green-100 text-green-600 hover:bg-green-200'
+                            : 'bg-sky-500 text-white hover:bg-sky-600'
+                        }`}
+                      >
+                        {isFollowing ? t('following') : t('follow')}
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))
+              )
+            })
           )}
         </div>
       </div>
