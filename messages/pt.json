@@ -215,6 +215,10 @@
       "like": "{name} curtiu sua publicação",
       "follow": "{name} seguiu você",
       "message": "{name} enviou uma mensagem para você"
-    }
+    },
+    "terms": "Termos",
+    "privacy": "Privacidade",
+    "contact": "Contato",
+    "copyright": "© 2026 K컬처MAP. All rights reserved."
   }
 }

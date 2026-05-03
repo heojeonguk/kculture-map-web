@@ -215,6 +215,10 @@
       "like": "{name} đã thích bài viết của bạn",
       "follow": "{name} đã theo dõi bạn",
       "message": "{name} đã gửi tin nhắn cho bạn"
-    }
+    },
+    "terms": "Điều khoản",
+    "privacy": "Chính sách bảo mật",
+    "contact": "Liên hệ",
+    "copyright": "© 2026 K컬처MAP. All rights reserved."
   }
 }

@@ -215,6 +215,10 @@
       "like": "{name}さんがいいねしました",
       "follow": "{name}さんがフォローしました",
       "message": "{name}さんからメッセージが届きました"
-    }
+    },
+    "terms": "利用規約",
+    "privacy": "プライバシーポリシー",
+    "contact": "お問い合わせ",
+    "copyright": "© 2026 K컬처MAP. All rights reserved."
   }
 }

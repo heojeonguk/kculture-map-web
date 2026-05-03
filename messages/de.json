@@ -215,6 +215,10 @@
       "like": "{name} gefällt Ihr Beitrag",
       "follow": "{name} folgt Ihnen jetzt",
       "message": "{name} hat Ihnen eine Nachricht gesendet"
-    }
+    },
+    "terms": "Nutzungsbedingungen",
+    "privacy": "Datenschutz",
+    "contact": "Kontakt",
+    "copyright": "© 2026 K컬처MAP. All rights reserved."
   }
 }

@@ -215,6 +215,10 @@
       "like": "{name}赞了你的帖子",
       "follow": "{name}关注了你",
       "message": "{name}发来了消息"
-    }
+    },
+    "terms": "服务条款",
+    "privacy": "隐私政策",
+    "contact": "联系我们",
+    "copyright": "© 2026 K컬처MAP. All rights reserved."
   }
 }

@@ -215,6 +215,10 @@
       "like": "{name}ถูกใจโพสต์ของคุณ",
       "follow": "{name}ติดตามคุณ",
       "message": "{name}ส่งข้อความถึงคุณ"
-    }
+    },
+    "terms": "ข้อกำหนด",
+    "privacy": "นโยบายความเป็นส่วนตัว",
+    "contact": "ติดต่อเรา",
+    "copyright": "© 2026 K컬처MAP. All rights reserved."
   }
 }

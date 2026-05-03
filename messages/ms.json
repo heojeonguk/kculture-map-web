@@ -215,6 +215,10 @@
       "like": "{name} menyukai catatan anda",
       "follow": "{name} mengikuti anda",
       "message": "{name} menghantar mesej kepada anda"
-    }
+    },
+    "terms": "Terma",
+    "privacy": "Dasar Privasi",
+    "contact": "Hubungi",
+    "copyright": "© 2026 K컬처MAP. All rights reserved."
   }
 }

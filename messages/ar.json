@@ -215,6 +215,10 @@
       "like": "{name} أعجب بمنشورك",
       "follow": "{name} بدأ بمتابعتك",
       "message": "{name} أرسل لك رسالة"
-    }
+    },
+    "terms": "الشروط",
+    "privacy": "الخصوصية",
+    "contact": "اتصل بنا",
+    "copyright": "© 2026 K컬처MAP. All rights reserved."
   }
 }

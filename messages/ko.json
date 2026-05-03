@@ -215,6 +215,10 @@
       "like": "{name}님이 좋아요를 눌렀습니다",
       "follow": "{name}님이 팔로우했습니다",
       "message": "{name}님이 메시지를 보냈습니다"
-    }
+    },
+    "terms": "이용약관",
+    "privacy": "개인정보처리방침",
+    "contact": "문의하기",
+    "copyright": "© 2026 K컬처MAP. All rights reserved."
   }
 }
