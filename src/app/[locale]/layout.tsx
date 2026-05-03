@@ -12,7 +12,7 @@ export default async function LocaleLayout({
   const messages = await getMessages()
   return (
     <div lang={locale}>
-      <NextIntlClientProvider messages={messages}>
+      <NextIntlClientProvider locale={locale} messages={messages}>
         {children}
       </NextIntlClientProvider>
     </div>
