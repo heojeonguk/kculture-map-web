@@ -199,6 +199,12 @@
     "share": "Share",
     "copy": "Copy",
     "copied": "Copied!",
-    "loginRequired": "Please log in first."
+    "loginRequired": "Please log in first.",
+    "justNow": "Just now",
+    "minsAgo": "{count} min ago",
+    "hoursAgo": "{count} hr ago",
+    "daysAgo": "{count} day ago",
+    "notifications": "Notifications",
+    "noNotifications": "No notifications"
   }
 }

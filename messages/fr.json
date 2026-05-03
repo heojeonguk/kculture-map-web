@@ -199,6 +199,12 @@
     "share": "Partager",
     "copy": "Copier",
     "copied": "Copié !",
-    "loginRequired": "Veuillez vous connecter d'abord."
+    "loginRequired": "Veuillez vous connecter d'abord.",
+    "justNow": "À l'instant",
+    "minsAgo": "Il y a {count} min",
+    "hoursAgo": "Il y a {count} h",
+    "daysAgo": "Il y a {count} jour(s)",
+    "notifications": "Notifications",
+    "noNotifications": "Aucune notification"
   }
 }

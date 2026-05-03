@@ -199,6 +199,12 @@
     "share": "Chia sẻ",
     "copy": "Sao chép",
     "copied": "Đã sao chép!",
-    "loginRequired": "Vui lòng đăng nhập trước."
+    "loginRequired": "Vui lòng đăng nhập trước.",
+    "justNow": "Vừa xong",
+    "minsAgo": "{count} phút trước",
+    "hoursAgo": "{count} giờ trước",
+    "daysAgo": "{count} ngày trước",
+    "notifications": "Thông báo",
+    "noNotifications": "Không có thông báo"
   }
 }

@@ -199,6 +199,12 @@
     "share": "Kongsi",
     "copy": "Salin",
     "copied": "Disalin!",
-    "loginRequired": "Sila log masuk dahulu."
+    "loginRequired": "Sila log masuk dahulu.",
+    "justNow": "Baru sahaja",
+    "minsAgo": "{count} min lalu",
+    "hoursAgo": "{count} jam lalu",
+    "daysAgo": "{count} hari lalu",
+    "notifications": "Pemberitahuan",
+    "noNotifications": "Tiada pemberitahuan"
   }
 }

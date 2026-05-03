@@ -199,6 +199,12 @@
     "share": "Teilen",
     "copy": "Kopieren",
     "copied": "Kopiert!",
-    "loginRequired": "Bitte zuerst anmelden."
+    "loginRequired": "Bitte zuerst anmelden.",
+    "justNow": "Gerade eben",
+    "minsAgo": "Vor {count} Min.",
+    "hoursAgo": "Vor {count} Std.",
+    "daysAgo": "Vor {count} Tag(en)",
+    "notifications": "Benachrichtigungen",
+    "noNotifications": "Keine Benachrichtigungen"
   }
 }

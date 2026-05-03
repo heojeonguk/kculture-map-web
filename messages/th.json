@@ -199,6 +199,12 @@
     "share": "แชร์",
     "copy": "คัดลอก",
     "copied": "คัดลอกแล้ว!",
-    "loginRequired": "กรุณาเข้าสู่ระบบก่อน"
+    "loginRequired": "กรุณาเข้าสู่ระบบก่อน",
+    "justNow": "เพิ่งเมื่อกี้",
+    "minsAgo": "{count} นาทีที่แล้ว",
+    "hoursAgo": "{count} ชั่วโมงที่แล้ว",
+    "daysAgo": "{count} วันที่แล้ว",
+    "notifications": "การแจ้งเตือน",
+    "noNotifications": "ไม่มีการแจ้งเตือน"
   }
 }

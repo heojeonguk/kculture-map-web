@@ -199,6 +199,12 @@
     "share": "공유",
     "copy": "복사",
     "copied": "복사됨",
-    "loginRequired": "로그인이 필요합니다."
+    "loginRequired": "로그인이 필요합니다.",
+    "justNow": "방금 전",
+    "minsAgo": "{count}분 전",
+    "hoursAgo": "{count}시간 전",
+    "daysAgo": "{count}일 전",
+    "notifications": "알림",
+    "noNotifications": "알림이 없습니다"
   }
 }

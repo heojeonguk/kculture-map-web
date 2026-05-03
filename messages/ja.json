@@ -199,6 +199,12 @@
     "share": "シェア",
     "copy": "コピー",
     "copied": "コピーしました！",
-    "loginRequired": "ログインが必要です。"
+    "loginRequired": "ログインが必要です。",
+    "justNow": "たった今",
+    "minsAgo": "{count}分前",
+    "hoursAgo": "{count}時間前",
+    "daysAgo": "{count}日前",
+    "notifications": "通知",
+    "noNotifications": "通知はありません"
   }
 }

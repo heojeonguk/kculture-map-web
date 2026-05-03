@@ -199,6 +199,12 @@
     "share": "Bagikan",
     "copy": "Salin",
     "copied": "Tersalin!",
-    "loginRequired": "Silakan login terlebih dahulu."
+    "loginRequired": "Silakan login terlebih dahulu.",
+    "justNow": "Baru saja",
+    "minsAgo": "{count} menit lalu",
+    "hoursAgo": "{count} jam lalu",
+    "daysAgo": "{count} hari lalu",
+    "notifications": "Notifikasi",
+    "noNotifications": "Tidak ada notifikasi"
   }
 }

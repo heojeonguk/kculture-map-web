@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
 import { api } from '@/lib/api'
 
@@ -18,6 +19,7 @@ interface Notification {
 
 export default function NotificationBell() {
   const { user } = useCurrentUser()
+  const t = useTranslations('common')
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [open, setOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -69,11 +71,11 @@ export default function NotificationBell() {
   const formatTime = (dateStr: string) => {
     const diff = Date.now() - new Date(dateStr).getTime()
     const mins = Math.floor(diff / 60000)
-    if (mins < 1) return '방금 전'
-    if (mins < 60) return `${mins}분 전`
+    if (mins < 1) return t('justNow')
+    if (mins < 60) return t('minsAgo', { count: mins })
     const hours = Math.floor(mins / 60)
-    if (hours < 24) return `${hours}시간 전`
-    return `${Math.floor(hours / 24)}일 전`
+    if (hours < 24) return t('hoursAgo', { count: hours })
+    return t('daysAgo', { count: Math.floor(hours / 24) })
   }
 
   if (!user) return null
@@ -83,7 +85,7 @@ export default function NotificationBell() {
       <button
         onClick={handleOpen}
         className="relative p-2 text-gray-600 hover:text-gray-900 transition-colors"
-        aria-label="알림"
+        aria-label={t('notifications')}
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -99,16 +101,16 @@ export default function NotificationBell() {
       {open && (
         <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-            <span className="font-semibold text-gray-800">알림</span>
+            <span className="font-semibold text-gray-800">{t('notifications')}</span>
             {notifications.length > 0 && (
-              <span className="text-xs text-gray-400">{notifications.length}개</span>
+              <span className="text-xs text-gray-400">{notifications.length}</span>
             )}
           </div>
 
           <div className="max-h-96 overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="py-10 text-center text-gray-400 text-sm">
-                알림이 없습니다
+                {t('noNotifications')}
               </div>
             ) : (
               notifications.map(n => (
@@ -125,7 +127,9 @@ export default function NotificationBell() {
                     </span>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-gray-800 leading-snug">{n.message}</p>
-                      <p className="text-xs text-gray-400 mt-1">{formatTime(n.created_at)}</p>
+                      <p className="text-xs text-gray-400 mt-1" suppressHydrationWarning>
+                        {formatTime(n.created_at)}
+                      </p>
                     </div>
                     {!n.is_read && (
                       <span className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 shrink-0" />

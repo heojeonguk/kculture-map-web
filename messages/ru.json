@@ -199,6 +199,12 @@
     "share": "Поделиться",
     "copy": "Копировать",
     "copied": "Скопировано!",
-    "loginRequired": "Пожалуйста, войдите сначала."
+    "loginRequired": "Пожалуйста, войдите сначала.",
+    "justNow": "Только что",
+    "minsAgo": "{count} мин назад",
+    "hoursAgo": "{count} ч назад",
+    "daysAgo": "{count} дн назад",
+    "notifications": "Уведомления",
+    "noNotifications": "Нет уведомлений"
   }
 }

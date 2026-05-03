@@ -199,6 +199,12 @@
     "share": "مشاركة",
     "copy": "نسخ",
     "copied": "تم النسخ!",
-    "loginRequired": "الرجاء تسجيل الدخول أولاً."
+    "loginRequired": "الرجاء تسجيل الدخول أولاً.",
+    "justNow": "الآن",
+    "minsAgo": "منذ {count} دقيقة",
+    "hoursAgo": "منذ {count} ساعة",
+    "daysAgo": "منذ {count} يوم",
+    "notifications": "الإشعارات",
+    "noNotifications": "لا توجد إشعارات"
   }
 }
