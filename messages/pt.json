@@ -201,10 +201,16 @@
     "copied": "Copiado!",
     "loginRequired": "Por favor faça login primeiro.",
     "justNow": "Agora mesmo",
-    "minsAgo": "Há {count} min",
-    "hoursAgo": "Há {count} h",
-    "daysAgo": "Há {count} dia(s)",
+    "minsAgo": "{count, plural, one {há # min} other {há # mins}}",
+    "hoursAgo": "{count, plural, one {há # hora} other {há # horas}}",
+    "daysAgo": "{count, plural, one {há # dia} other {há # dias}}",
     "notifications": "Notificações",
-    "noNotifications": "Sem notificações"
+    "noNotifications": "Sem notificações",
+    "notif": {
+      "comment": "{name} comentou sua publicação",
+      "like": "{name} curtiu sua publicação",
+      "follow": "{name} seguiu você",
+      "message": "{name} enviou uma mensagem para você"
+    }
   }
 }

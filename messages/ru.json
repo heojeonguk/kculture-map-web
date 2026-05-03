@@ -205,6 +205,12 @@
     "hoursAgo": "{count} ч назад",
     "daysAgo": "{count} дн назад",
     "notifications": "Уведомления",
-    "noNotifications": "Нет уведомлений"
+    "noNotifications": "Нет уведомлений",
+    "notif": {
+      "comment": "{name} прокомментировал(а) вашу публикацию",
+      "like": "{name} лайкнул(а) вашу публикацию",
+      "follow": "{name} подписался(ась) на вас",
+      "message": "{name} отправил(а) вам сообщение"
+    }
   }
 }

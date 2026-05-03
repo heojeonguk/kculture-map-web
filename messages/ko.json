@@ -205,6 +205,12 @@
     "hoursAgo": "{count}시간 전",
     "daysAgo": "{count}일 전",
     "notifications": "알림",
-    "noNotifications": "알림이 없습니다"
+    "noNotifications": "알림이 없습니다",
+    "notif": {
+      "comment": "{name}님이 댓글을 달았습니다",
+      "like": "{name}님이 좋아요를 눌렀습니다",
+      "follow": "{name}님이 팔로우했습니다",
+      "message": "{name}님이 메시지를 보냈습니다"
+    }
   }
 }

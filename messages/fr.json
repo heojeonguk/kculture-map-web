@@ -201,10 +201,16 @@
     "copied": "Copié !",
     "loginRequired": "Veuillez vous connecter d'abord.",
     "justNow": "À l'instant",
-    "minsAgo": "Il y a {count} min",
-    "hoursAgo": "Il y a {count} h",
-    "daysAgo": "Il y a {count} jour(s)",
+    "minsAgo": "{count, plural, one {il y a # min} other {il y a # mins}}",
+    "hoursAgo": "{count, plural, one {il y a # heure} other {il y a # heures}}",
+    "daysAgo": "{count, plural, one {il y a # jour} other {il y a # jours}}",
     "notifications": "Notifications",
-    "noNotifications": "Aucune notification"
+    "noNotifications": "Aucune notification",
+    "notif": {
+      "comment": "{name} a commenté votre publication",
+      "like": "{name} a aimé votre publication",
+      "follow": "{name} vous a suivi(e)",
+      "message": "{name} vous a envoyé un message"
+    }
   }
 }

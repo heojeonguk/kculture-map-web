@@ -201,10 +201,16 @@
     "copied": "Kopiert!",
     "loginRequired": "Bitte zuerst anmelden.",
     "justNow": "Gerade eben",
-    "minsAgo": "Vor {count} Min.",
-    "hoursAgo": "Vor {count} Std.",
-    "daysAgo": "Vor {count} Tag(en)",
+    "minsAgo": "vor {count} Min.",
+    "hoursAgo": "vor {count} Std.",
+    "daysAgo": "{count, plural, one {vor # Tag} other {vor # Tagen}}",
     "notifications": "Benachrichtigungen",
-    "noNotifications": "Keine Benachrichtigungen"
+    "noNotifications": "Keine Benachrichtigungen",
+    "notif": {
+      "comment": "{name} hat Ihren Beitrag kommentiert",
+      "like": "{name} gefällt Ihr Beitrag",
+      "follow": "{name} folgt Ihnen jetzt",
+      "message": "{name} hat Ihnen eine Nachricht gesendet"
+    }
   }
 }

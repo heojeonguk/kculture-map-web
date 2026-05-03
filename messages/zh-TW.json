@@ -205,6 +205,12 @@
     "hoursAgo": "{count}小時前",
     "daysAgo": "{count}天前",
     "notifications": "通知",
-    "noNotifications": "沒有通知"
+    "noNotifications": "沒有通知",
+    "notif": {
+      "comment": "{name}留言了你的文章",
+      "like": "{name}按讚了你的文章",
+      "follow": "{name}追蹤了你",
+      "message": "{name}傳送了訊息"
+    }
   }
 }

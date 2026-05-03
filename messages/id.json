@@ -205,6 +205,12 @@
     "hoursAgo": "{count} jam lalu",
     "daysAgo": "{count} hari lalu",
     "notifications": "Notifikasi",
-    "noNotifications": "Tidak ada notifikasi"
+    "noNotifications": "Tidak ada notifikasi",
+    "notif": {
+      "comment": "{name} mengomentari postingan Anda",
+      "like": "{name} menyukai postingan Anda",
+      "follow": "{name} mengikuti Anda",
+      "message": "{name} mengirim pesan kepada Anda"
+    }
   }
 }

@@ -205,6 +205,12 @@
     "hoursAgo": "{count}小时前",
     "daysAgo": "{count}天前",
     "notifications": "通知",
-    "noNotifications": "暂无通知"
+    "noNotifications": "暂无通知",
+    "notif": {
+      "comment": "{name}评论了你的帖子",
+      "like": "{name}赞了你的帖子",
+      "follow": "{name}关注了你",
+      "message": "{name}发来了消息"
+    }
   }
 }

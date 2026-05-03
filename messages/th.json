@@ -205,6 +205,12 @@
     "hoursAgo": "{count} ชั่วโมงที่แล้ว",
     "daysAgo": "{count} วันที่แล้ว",
     "notifications": "การแจ้งเตือน",
-    "noNotifications": "ไม่มีการแจ้งเตือน"
+    "noNotifications": "ไม่มีการแจ้งเตือน",
+    "notif": {
+      "comment": "{name}แสดงความคิดเห็นในโพสต์ของคุณ",
+      "like": "{name}ถูกใจโพสต์ของคุณ",
+      "follow": "{name}ติดตามคุณ",
+      "message": "{name}ส่งข้อความถึงคุณ"
+    }
   }
 }

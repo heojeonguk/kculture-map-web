@@ -205,6 +205,12 @@
     "hoursAgo": "منذ {count} ساعة",
     "daysAgo": "منذ {count} يوم",
     "notifications": "الإشعارات",
-    "noNotifications": "لا توجد إشعارات"
+    "noNotifications": "لا توجد إشعارات",
+    "notif": {
+      "comment": "{name} علّق على منشورك",
+      "like": "{name} أعجب بمنشورك",
+      "follow": "{name} بدأ بمتابعتك",
+      "message": "{name} أرسل لك رسالة"
+    }
   }
 }

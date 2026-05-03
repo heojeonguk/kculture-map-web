@@ -8,7 +8,7 @@ import { api } from '@/lib/api'
 
 interface Notification {
   id: string
-  type: 'comment' | 'like'
+  type: 'comment' | 'like' | 'follow' | 'message'
   post_id: string
   from_user_name: string
   from_avatar_url: string | null
@@ -123,10 +123,12 @@ export default function NotificationBell() {
                 >
                   <div className="flex items-start gap-3">
                     <span className="text-lg mt-0.5">
-                      {n.type === 'comment' ? '💬' : '🔥'}
+                      {n.type === 'comment' ? '💬' : n.type === 'like' ? '🔥' : n.type === 'follow' ? '➕' : '✉️'}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-800 leading-snug">{n.message}</p>
+                      <p className="text-sm text-gray-800 leading-snug">
+                        {t(`notif.${n.type}`, { name: n.from_user_name })}
+                      </p>
                       <p className="text-xs text-gray-400 mt-1" suppressHydrationWarning>
                         {formatTime(n.created_at)}
                       </p>
