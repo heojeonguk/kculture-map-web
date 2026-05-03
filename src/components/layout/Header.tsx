@@ -1,22 +1,50 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
 import NotificationBell from '@/components/common/NotificationBell'
 
 interface HeaderProps {
   locale: string
 }
 
+const languages = [
+  { code: 'ko', label: '한국어' },
+  { code: 'en', label: 'English' },
+  { code: 'zh-CN', label: '简体中文' },
+  { code: 'ja', label: '日本語' },
+  { code: 'zh-TW', label: '繁體中文' },
+  { code: 'th', label: 'ภาษาไทย' },
+  { code: 'vi', label: 'Tiếng Việt' },
+  { code: 'id', label: 'Bahasa Indonesia' },
+  { code: 'ms', label: 'Bahasa Melayu' },
+  { code: 'es', label: 'Español' },
+  { code: 'fr', label: 'Français' },
+  { code: 'de', label: 'Deutsch' },
+  { code: 'pt', label: 'Português' },
+  { code: 'ru', label: 'Русский' },
+  { code: 'ar', label: 'العربية' },
+]
+
+function localeDisplayCode(locale: string): string {
+  if (locale === 'zh-CN') return 'CN'
+  if (locale === 'zh-TW') return 'TW'
+  return locale.slice(0, 2).toUpperCase()
+}
+
 export default function Header({ locale }: HeaderProps) {
   const t = useTranslations('nav')
   const router = useRouter()
+  const pathname = usePathname()
   const [user, setUser] = useState<any>(null)
   const [nickname, setNickname] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
+  const [langOpen, setLangOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+  const langRef = useRef<HTMLDivElement>(null)
 
   const navItems = [
     { href: '/places', label: t('explore') },
@@ -26,14 +54,12 @@ export default function Header({ locale }: HeaderProps) {
 
   useEffect(() => {
     const supabase = createClient()
-
     supabase.auth.getUser().then(({ data }) => {
       if (data.user) {
         setUser(data.user)
         setNickname(data.user.user_metadata?.nickname ?? data.user.email?.split('@')[0] ?? '')
       }
     })
-
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         setUser(session.user)
@@ -43,18 +69,24 @@ export default function Header({ locale }: HeaderProps) {
         setNickname('')
       }
     })
-
     return () => listener.subscription.unsubscribe()
   }, [])
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      if (!target.closest('.header-user-menu')) setMenuOpen(false)
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false)
+      if (langRef.current && !langRef.current.contains(e.target as Node)) setLangOpen(false)
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  const handleLocaleChange = (newLocale: string) => {
+    const segments = pathname.split('/')
+    segments[1] = newLocale
+    router.push(segments.join('/'))
+    setLangOpen(false)
+  }
 
   const handleLogout = async () => {
     const supabase = createClient()
@@ -88,6 +120,35 @@ export default function Header({ locale }: HeaderProps) {
           ))}
         </nav>
 
+        {/* 언어 선택 */}
+        <div className="relative shrink-0" ref={langRef}>
+          <button
+            onClick={() => setLangOpen(prev => !prev)}
+            className="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-sky-500 border border-gray-200 hover:border-sky-300 px-2.5 py-1.5 rounded-lg transition-colors"
+          >
+            🌐 {localeDisplayCode(locale)}
+          </button>
+
+          {langOpen && (
+            <div className="absolute right-0 top-10 bg-white border border-gray-200 rounded-xl shadow-lg z-50 w-44 max-h-64 overflow-y-auto py-1">
+              {languages.map(lang => (
+                <button
+                  key={lang.code}
+                  onClick={() => handleLocaleChange(lang.code)}
+                  className={`w-full text-left px-4 py-2 text-sm transition-colors flex items-center justify-between ${
+                    locale === lang.code
+                      ? 'text-sky-600 bg-sky-50 font-medium'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <span>{lang.label}</span>
+                  {locale === lang.code && <span className="text-sky-500 text-xs">✓</span>}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         {user ? (
           <div className="flex items-center gap-2">
             <NotificationBell />
@@ -100,7 +161,7 @@ export default function Header({ locale }: HeaderProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </Link>
-            <div className="relative header-user-menu">
+            <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-sky-500 transition-colors"
