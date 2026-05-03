@@ -120,7 +120,7 @@ export default async function HomePage({
           <div className="flex flex-col gap-6 min-w-0">
             <SearchZone locale={locale} />
             <PlaceGrid places={popularPlaces ?? []} locale={locale} />
-            <BannerAd />
+            {/* <BannerAd /> */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <BestPhotos photos={bestPhotos ?? []} locale={locale} />
               <BestReviews posts={bestPosts ?? []} locale={locale} />
