@@ -48,12 +48,12 @@ export default async function AIRecommendPage({ params }: AIPageProps) {
     <>
       <Header locale={locale} />
       <main className="max-w-[1200px] mx-auto px-4 py-6">
-        <div className="grid grid-cols-[160px_1fr_160px] gap-6">
-          <Sidebar position="left" />
+        <div className="grid grid-cols-1 md:grid-cols-[160px_1fr_160px] gap-6">
+          <Sidebar position="left" className="hidden md:block" />
           <div className="min-w-0">
             <AIRecommendForm locale={locale} />
           </div>
-          <Sidebar position="right" />
+          <Sidebar position="right" className="hidden md:block" />
         </div>
       </main>
       <Footer locale={locale} />

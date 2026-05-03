@@ -92,8 +92,8 @@ export default async function CommunityPage({ params, searchParams }: CommunityP
     <>
       <Header locale={locale} />
       <main className="max-w-[1200px] mx-auto px-4 py-6">
-        <div className="grid grid-cols-[160px_1fr_160px] gap-6">
-          <Sidebar position="left" />
+        <div className="grid grid-cols-1 md:grid-cols-[160px_1fr_160px] gap-6">
+          <Sidebar position="left" className="hidden md:block" />
           <div className="flex flex-col gap-5 min-w-0">
             {author ? (
               <div className="flex items-center gap-3">
@@ -131,7 +131,7 @@ export default async function CommunityPage({ params, searchParams }: CommunityP
               totalCount={count ?? 0}
             />
           </div>
-          <Sidebar position="right" />
+          <Sidebar position="right" className="hidden md:block" />
         </div>
       </main>
       <Footer locale={locale} />
