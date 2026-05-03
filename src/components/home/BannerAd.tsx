@@ -1,10 +1,12 @@
+'use client'
+
 export default function BannerAd() {
-  return null
-  /* 광고 배너 임시 숨김 (애드센스 승인 전)
   return (
-    <div className="w-full h-[90px] bg-gray-50 border border-dashed border-gray-200 rounded-xl flex items-center justify-center">
-      <span className="text-xs text-gray-400">광고 배너 728×90</span>
+    <div className="w-full flex justify-center my-4">
+      <script src="https://ads-partners.coupang.com/g.js"></script>
+      <script dangerouslySetInnerHTML={{__html: `
+        new PartnersCoupang.G({"id":985823,"template":"carousel","trackingCode":"AF8718289","width":"680","height":"140","tsource":""});
+      `}} />
     </div>
   )
-  */
 }
