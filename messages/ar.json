@@ -189,7 +189,16 @@
     "viewProfile": "عرض الملف الشخصي",
     "sendMessage": "إرسال رسالة",
     "follow": "متابعة",
-    "noneYet": "لا يوجد بعد"
+    "noneYet": "لا يوجد بعد",
+    "myPostsCount": "منشوراتي ({count})",
+    "noPostsYet": "لا توجد منشورات بعد",
+    "writeFirstPost": "اكتب أول منشور →",
+    "savedPlacesCount": "الأماكن المحفوظة ({count})",
+    "noSavedPlaces": "لا توجد أماكن محفوظة",
+    "explorePlaces": "استكشاف الأماكن →",
+    "addPhoto": "إضافة صورة",
+    "noPhotosYet": "لا توجد صور بعد",
+    "deletePhotoConfirm": "حذف هذه الصورة؟"
   },
   "common": {
     "loading": "جارٍ التحميل...",

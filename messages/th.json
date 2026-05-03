@@ -189,7 +189,16 @@
     "viewProfile": "ดูโปรไฟล์",
     "sendMessage": "ส่งข้อความ",
     "follow": "ติดตาม",
-    "noneYet": "ยังไม่มี"
+    "noneYet": "ยังไม่มี",
+    "myPostsCount": "โพสต์ของฉัน ({count})",
+    "noPostsYet": "ยังไม่มีโพสต์",
+    "writeFirstPost": "เขียนโพสต์แรก →",
+    "savedPlacesCount": "สถานที่บันทึก ({count})",
+    "noSavedPlaces": "ยังไม่มีสถานที่บันทึก",
+    "explorePlaces": "สำรวจสถานที่ →",
+    "addPhoto": "เพิ่มรูปภาพ",
+    "noPhotosYet": "ยังไม่มีรูปภาพ",
+    "deletePhotoConfirm": "ลบรูปภาพนี้ใช่ไหม？"
   },
   "common": {
     "loading": "กำลังโหลด...",

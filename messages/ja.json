@@ -189,7 +189,16 @@
     "viewProfile": "プロフィールを見る",
     "sendMessage": "メッセージを送る",
     "follow": "フォロー",
-    "noneYet": "まだいません"
+    "noneYet": "まだいません",
+    "myPostsCount": "投稿{count}件",
+    "noPostsYet": "まだ投稿がありません",
+    "writeFirstPost": "最初の投稿を書く →",
+    "savedPlacesCount": "お気に入り{count}件",
+    "noSavedPlaces": "保存した場所がありません",
+    "explorePlaces": "場所を探す →",
+    "addPhoto": "写真を追加",
+    "noPhotosYet": "まだ写真がありません",
+    "deletePhotoConfirm": "この写真を削除しますか？"
   },
   "common": {
     "loading": "読み込み中...",

@@ -189,7 +189,16 @@
     "viewProfile": "查看資料",
     "sendMessage": "傳送訊息",
     "follow": "追蹤",
-    "noneYet": "目前沒有"
+    "noneYet": "目前沒有",
+    "myPostsCount": "我的文章（{count}）",
+    "noPostsYet": "還沒有文章",
+    "writeFirstPost": "寫第一篇文章 →",
+    "savedPlacesCount": "收藏地點（{count}）",
+    "noSavedPlaces": "沒有儲存的地點",
+    "explorePlaces": "探索地點 →",
+    "addPhoto": "新增照片",
+    "noPhotosYet": "還沒有照片",
+    "deletePhotoConfirm": "確定刪除這張照片嗎？"
   },
   "common": {
     "loading": "載入中...",

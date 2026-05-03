@@ -189,7 +189,16 @@
     "viewProfile": "프로필 보기",
     "sendMessage": "메시지 보내기",
     "follow": "팔로우",
-    "noneYet": "없습니다"
+    "noneYet": "없습니다",
+    "myPostsCount": "내 게시글 {count}개",
+    "noPostsYet": "아직 작성한 게시글이 없습니다",
+    "writeFirstPost": "첫 게시글 작성하기 →",
+    "savedPlacesCount": "가고싶은 장소 {count}곳",
+    "noSavedPlaces": "저장한 장소가 없습니다",
+    "explorePlaces": "장소 둘러보기 →",
+    "addPhoto": "사진 추가",
+    "noPhotosYet": "아직 사진이 없습니다",
+    "deletePhotoConfirm": "이 사진을 삭제하시겠습니까?"
   },
   "common": {
     "loading": "로딩 중...",

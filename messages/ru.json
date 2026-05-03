@@ -189,7 +189,16 @@
     "viewProfile": "Посмотреть профиль",
     "sendMessage": "Отправить сообщение",
     "follow": "Подписаться",
-    "noneYet": "Пока никого"
+    "noneYet": "Пока никого",
+    "myPostsCount": "Мои публикации ({count})",
+    "noPostsYet": "Публикаций пока нет",
+    "writeFirstPost": "Написать первую публикацию →",
+    "savedPlacesCount": "Сохранённые места ({count})",
+    "noSavedPlaces": "Нет сохранённых мест",
+    "explorePlaces": "Исследовать места →",
+    "addPhoto": "Добавить фото",
+    "noPhotosYet": "Фотографий пока нет",
+    "deletePhotoConfirm": "Удалить это фото?"
   },
   "common": {
     "loading": "Загрузка...",

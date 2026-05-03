@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import FollowModal from './FollowModal'
 
 interface MyPageClientProps {
@@ -11,29 +12,27 @@ interface MyPageClientProps {
 }
 
 export default function MyPageClient({ userId, locale, followerCount, followingCount }: MyPageClientProps) {
-  const isKo = locale === 'ko'
+  const t = useTranslations('mypage')
   const [followModal, setFollowModal] = useState<'followers' | 'following' | null>(null)
 
   return (
     <>
-      {/* 팔로워/팔로잉 */}
       <div className="flex items-center gap-4 px-1 text-sm text-gray-500">
         <button
           onClick={() => setFollowModal('followers')}
           className="hover:text-sky-500 transition-colors"
         >
-          👥 <span className="font-semibold text-gray-700">{followerCount}</span> {isKo ? '팔로워' : 'followers'}
+          👥 <span className="font-semibold text-gray-700">{followerCount}</span> {t('followers')}
         </button>
         <span className="text-gray-300">·</span>
         <button
           onClick={() => setFollowModal('following')}
           className="hover:text-sky-500 transition-colors"
         >
-          <span className="font-semibold text-gray-700">{followingCount}</span> {isKo ? '팔로잉' : 'following'}
+          <span className="font-semibold text-gray-700">{followingCount}</span> {t('following')}
         </button>
       </div>
 
-      {/* 팔로워/팔로잉 모달 */}
       {followModal && (
         <FollowModal
           userId={userId}

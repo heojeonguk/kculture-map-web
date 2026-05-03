@@ -189,7 +189,16 @@
     "viewProfile": "查看资料",
     "sendMessage": "发送消息",
     "follow": "关注",
-    "noneYet": "暂无"
+    "noneYet": "暂无",
+    "myPostsCount": "我的帖子（{count}）",
+    "noPostsYet": "还没有帖子",
+    "writeFirstPost": "写第一篇帖子 →",
+    "savedPlacesCount": "收藏地点（{count}）",
+    "noSavedPlaces": "没有保存的地点",
+    "explorePlaces": "探索地点 →",
+    "addPhoto": "添加照片",
+    "noPhotosYet": "还没有照片",
+    "deletePhotoConfirm": "确定删除这张照片吗？"
   },
   "common": {
     "loading": "加载中...",

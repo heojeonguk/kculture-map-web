@@ -189,7 +189,16 @@
     "viewProfile": "Profil anzeigen",
     "sendMessage": "Nachricht senden",
     "follow": "Folgen",
-    "noneYet": "Noch keine"
+    "noneYet": "Noch keine",
+    "myPostsCount": "Meine Beiträge ({count})",
+    "noPostsYet": "Noch keine Beiträge",
+    "writeFirstPost": "Ersten Beitrag schreiben →",
+    "savedPlacesCount": "Gespeicherte Orte ({count})",
+    "noSavedPlaces": "Keine gespeicherten Orte",
+    "explorePlaces": "Orte erkunden →",
+    "addPhoto": "Foto hinzufügen",
+    "noPhotosYet": "Noch keine Fotos",
+    "deletePhotoConfirm": "Dieses Foto löschen?"
   },
   "common": {
     "loading": "Lädt...",

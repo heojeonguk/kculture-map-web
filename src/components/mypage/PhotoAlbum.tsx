@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
 
 interface Photo {
@@ -18,9 +18,8 @@ interface PhotoAlbumProps {
   locale: string
 }
 
-export default function PhotoAlbum({ userId, isOwner, locale }: PhotoAlbumProps) {
-  const isKo = locale === 'ko'
-  const router = useRouter()
+export default function PhotoAlbum({ userId, isOwner, locale: _locale }: PhotoAlbumProps) {
+  const t = useTranslations('mypage')
   const [photos, setPhotos] = useState<Photo[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
@@ -74,7 +73,7 @@ export default function PhotoAlbum({ userId, isOwner, locale }: PhotoAlbumProps)
 
   const handleDelete = async (photoId: string, e: React.MouseEvent) => {
     e.stopPropagation()
-    if (!window.confirm(isKo ? '이 사진을 삭제하시겠습니까?' : 'Delete this photo?')) return
+    if (!window.confirm(t('deletePhotoConfirm'))) return
     const supabase = createClient()
     await supabase.from('user_photos').delete().eq('id', photoId)
     setPhotos(prev => prev.filter(p => p.id !== photoId))
@@ -104,9 +103,7 @@ export default function PhotoAlbum({ userId, isOwner, locale }: PhotoAlbumProps)
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-5">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base font-bold text-gray-800">
-          📸 {isKo ? '사진첩' : 'Photos'}
-        </h2>
+        <h2 className="text-base font-bold text-gray-800">📸 {t('photos')}</h2>
         {isOwner && (
           <>
             <button
@@ -114,18 +111,12 @@ export default function PhotoAlbum({ userId, isOwner, locale }: PhotoAlbumProps)
               disabled={uploading}
               className="flex items-center gap-1 text-xs text-sky-500 hover:text-sky-600 border border-sky-200 hover:border-sky-400 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
             >
-              {uploading ? (
-                <span className="w-3 h-3 border border-sky-400 border-t-transparent rounded-full animate-spin" />
-              ) : '📷'}
-              {isKo ? '사진 추가' : 'Add photo'}
+              {uploading
+                ? <span className="w-3 h-3 border border-sky-400 border-t-transparent rounded-full animate-spin" />
+                : '📷'}
+              {t('addPhoto')}
             </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleUpload}
-            />
+            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
           </>
         )}
       </div>
@@ -135,9 +126,7 @@ export default function PhotoAlbum({ userId, isOwner, locale }: PhotoAlbumProps)
           <span className="w-6 h-6 border-2 border-sky-400 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : photos.length === 0 ? (
-        <p className="text-sm text-gray-400 text-center py-6">
-          {isKo ? '아직 사진이 없습니다' : 'No photos yet'}
-        </p>
+        <p className="text-sm text-gray-400 text-center py-6">{t('noPhotosYet')}</p>
       ) : (
         <div className="grid grid-cols-3 gap-2">
           {photos.map(photo => (
@@ -176,7 +165,6 @@ export default function PhotoAlbum({ userId, isOwner, locale }: PhotoAlbumProps)
         </div>
       )}
 
-      {/* 사진 모달 */}
       {modalPhoto && (
         <div
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
@@ -186,16 +174,8 @@ export default function PhotoAlbum({ userId, isOwner, locale }: PhotoAlbumProps)
             onClick={() => setModalPhoto(null)}
             className="absolute top-4 right-4 text-white/80 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full bg-black/30"
           >✕</button>
-          <div
-            className="flex flex-col items-center gap-3 max-w-2xl w-full"
-            onClick={e => e.stopPropagation()}
-          >
-            <img
-              src={modalPhoto.photo_url}
-              alt=""
-              className="max-w-full max-h-[75vh] object-contain rounded-lg"
-            />
-            {/* 좋아요 버튼 */}
+          <div className="flex flex-col items-center gap-3 max-w-2xl w-full" onClick={e => e.stopPropagation()}>
+            <img src={modalPhoto.photo_url} alt="" className="max-w-full max-h-[75vh] object-contain rounded-lg" />
             <div className="flex items-center gap-3">
               <button
                 onClick={(e) => handleLike(modalPhoto.id, e)}

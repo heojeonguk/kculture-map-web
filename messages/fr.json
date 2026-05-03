@@ -189,7 +189,16 @@
     "viewProfile": "Voir le profil",
     "sendMessage": "Envoyer un message",
     "follow": "Suivre",
-    "noneYet": "Aucun pour l'instant"
+    "noneYet": "Aucun pour l'instant",
+    "myPostsCount": "Mes publications ({count})",
+    "noPostsYet": "Aucune publication pour l'instant",
+    "writeFirstPost": "Écrire votre première publication →",
+    "savedPlacesCount": "Lieux sauvegardés ({count})",
+    "noSavedPlaces": "Aucun lieu sauvegardé",
+    "explorePlaces": "Explorer les lieux →",
+    "addPhoto": "Ajouter une photo",
+    "noPhotosYet": "Aucune photo pour l'instant",
+    "deletePhotoConfirm": "Supprimer cette photo ?"
   },
   "common": {
     "loading": "Chargement...",

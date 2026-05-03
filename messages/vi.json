@@ -189,7 +189,16 @@
     "viewProfile": "Xem hồ sơ",
     "sendMessage": "Gửi tin nhắn",
     "follow": "Theo dõi",
-    "noneYet": "Chưa có"
+    "noneYet": "Chưa có",
+    "myPostsCount": "Bài viết của tôi ({count})",
+    "noPostsYet": "Chưa có bài viết",
+    "writeFirstPost": "Viết bài đầu tiên →",
+    "savedPlacesCount": "Địa điểm đã lưu ({count})",
+    "noSavedPlaces": "Chưa có địa điểm nào được lưu",
+    "explorePlaces": "Khám phá địa điểm →",
+    "addPhoto": "Thêm ảnh",
+    "noPhotosYet": "Chưa có ảnh",
+    "deletePhotoConfirm": "Xóa ảnh này?"
   },
   "common": {
     "loading": "Đang tải...",

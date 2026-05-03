@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 
 interface BookmarkedPlace {
   place_id: string
@@ -20,24 +21,21 @@ interface MyBookmarksProps {
 }
 
 export default function MyBookmarks({ bookmarks, locale }: MyBookmarksProps) {
-  const isKo = locale === 'ko'
+  const t = useTranslations('mypage')
   const places = bookmarks.map(b => b.places).filter(Boolean) as NonNullable<BookmarkedPlace['places']>[]
 
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-5">
       <h2 className="text-base font-bold text-gray-800 mb-4">
-        🔖 {isKo ? `가고싶은 장소 ${places.length}곳` : `Saved Places (${places.length})`}
+        🔖 {t('savedPlacesCount', { count: places.length })}
       </h2>
 
       {places.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-10 text-gray-400">
           <span className="text-4xl mb-3">📭</span>
-          <p className="text-sm">{isKo ? '저장한 장소가 없습니다' : 'No saved places yet'}</p>
-          <Link
-            href={`/${locale}/places`}
-            className="mt-3 text-xs text-sky-500 hover:text-sky-600"
-          >
-            {isKo ? '장소 둘러보기 →' : 'Explore places →'}
+          <p className="text-sm">{t('noSavedPlaces')}</p>
+          <Link href={`/${locale}/places`} className="mt-3 text-xs text-sky-500 hover:text-sky-600">
+            {t('explorePlaces')}
           </Link>
         </div>
       ) : (
@@ -51,7 +49,7 @@ export default function MyBookmarks({ bookmarks, locale }: MyBookmarksProps) {
               <span className="text-xl shrink-0">{place.emoji ?? '📍'}</span>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-700 truncate">
-                  {isKo ? place.name : (place.name_en ?? place.name)}
+                  {locale === 'ko' ? place.name : (place.name_en ?? place.name)}
                 </p>
                 <p className="text-xs text-gray-400">{place.category} · {place.city}</p>
               </div>

@@ -189,7 +189,16 @@
     "viewProfile": "Lihat profil",
     "sendMessage": "Hantar mesej",
     "follow": "Ikuti",
-    "noneYet": "Tiada lagi"
+    "noneYet": "Tiada lagi",
+    "myPostsCount": "Catatan Saya ({count})",
+    "noPostsYet": "Belum ada catatan",
+    "writeFirstPost": "Tulis catatan pertama →",
+    "savedPlacesCount": "Tempat Tersimpan ({count})",
+    "noSavedPlaces": "Tiada tempat tersimpan",
+    "explorePlaces": "Jelajahi tempat →",
+    "addPhoto": "Tambah foto",
+    "noPhotosYet": "Tiada foto lagi",
+    "deletePhotoConfirm": "Padam foto ini?"
   },
   "common": {
     "loading": "Memuatkan...",

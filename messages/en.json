@@ -189,7 +189,16 @@
     "viewProfile": "View profile",
     "sendMessage": "Send message",
     "follow": "Follow",
-    "noneYet": "None yet"
+    "noneYet": "None yet",
+    "myPostsCount": "My Posts ({count})",
+    "noPostsYet": "No posts yet",
+    "writeFirstPost": "Write your first post →",
+    "savedPlacesCount": "Saved Places ({count})",
+    "noSavedPlaces": "No saved places yet",
+    "explorePlaces": "Explore places →",
+    "addPhoto": "Add photo",
+    "noPhotosYet": "No photos yet",
+    "deletePhotoConfirm": "Delete this photo?"
   },
   "common": {
     "loading": "Loading...",

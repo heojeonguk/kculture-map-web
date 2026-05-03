@@ -189,7 +189,16 @@
     "viewProfile": "Lihat profil",
     "sendMessage": "Kirim pesan",
     "follow": "Ikuti",
-    "noneYet": "Belum ada"
+    "noneYet": "Belum ada",
+    "myPostsCount": "Postingan Saya ({count})",
+    "noPostsYet": "Belum ada postingan",
+    "writeFirstPost": "Tulis postingan pertama →",
+    "savedPlacesCount": "Tempat Tersimpan ({count})",
+    "noSavedPlaces": "Belum ada tempat tersimpan",
+    "explorePlaces": "Jelajahi tempat →",
+    "addPhoto": "Tambah foto",
+    "noPhotosYet": "Belum ada foto",
+    "deletePhotoConfirm": "Hapus foto ini?"
   },
   "common": {
     "loading": "Memuat...",
