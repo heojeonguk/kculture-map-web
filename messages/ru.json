@@ -171,7 +171,21 @@
     "following": "Подписки",
     "followers": "Подписчики",
     "level": "Уровень",
-    "editProfile": "Редактировать профиль"
+    "editProfile": "Редактировать профиль",
+    "joined": "Дата регистрации",
+    "profilePhoto": "Фото профиля",
+    "changePhoto": "Изменить фото",
+    "viewLevelConditions": "Посмотреть условия уровня",
+    "level1Desc": "Lv.1 Sprout Traveler — 0 постов",
+    "level2Desc": "Lv.2 Novice Traveler — 1~9 постов",
+    "level3Desc": "Lv.3 Travel Maniac — 10 постов + 50 комментариев",
+    "level4Desc": "Lv.4 Travel Expert — 100 постов + 100 комментариев",
+    "level5Desc": "Lv.5 Travel Master — 500 постов + 100 комментариев + 100 подписчиков",
+    "postCount": "{count} постов",
+    "postsToReach": "постов до Lv.{lv}",
+    "needComments": "Нужно ещё {count} комментариев",
+    "needFollowers": "Нужно ещё {count} подписчиков",
+    "level1Next": "Напишите 10 постов для повышения уровня"
   },
   "common": {
     "loading": "Загрузка...",

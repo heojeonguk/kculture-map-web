@@ -171,7 +171,21 @@
     "following": "المتابَعون",
     "followers": "المتابعون",
     "level": "المستوى",
-    "editProfile": "تعديل الملف الشخصي"
+    "editProfile": "تعديل الملف الشخصي",
+    "joined": "تاريخ الانضمام",
+    "profilePhoto": "صورة الملف الشخصي",
+    "changePhoto": "تغيير الصورة",
+    "viewLevelConditions": "عرض شروط المستوى",
+    "level1Desc": "Lv.1 Sprout Traveler — 0 منشورات",
+    "level2Desc": "Lv.2 Novice Traveler — 1~9 منشورات",
+    "level3Desc": "Lv.3 Travel Maniac — 10 منشورات + 50 تعليقات",
+    "level4Desc": "Lv.4 Travel Expert — 100 منشورات + 100 تعليقات",
+    "level5Desc": "Lv.5 Travel Master — 500 منشورات + 100 تعليقات + 100 متابع",
+    "postCount": "{count} منشورات",
+    "postsToReach": "منشورات للوصول إلى Lv.{lv}",
+    "needComments": "تحتاج {count} تعليقات أخرى",
+    "needFollowers": "تحتاج {count} متابعين أخرى",
+    "level1Next": "اكتب 10 منشورات للترقية"
   },
   "common": {
     "loading": "جارٍ التحميل...",

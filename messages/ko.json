@@ -171,7 +171,21 @@
     "following": "팔로잉",
     "followers": "팔로워",
     "level": "레벨",
-    "editProfile": "프로필 수정"
+    "editProfile": "프로필 수정",
+    "joined": "가입일",
+    "profilePhoto": "프로필 사진",
+    "changePhoto": "프로필 사진 변경",
+    "viewLevelConditions": "레벨 달성 조건 보기",
+    "level1Desc": "Lv.1 Sprout Traveler — 게시글 0개",
+    "level2Desc": "Lv.2 Novice Traveler — 게시글 1~9개",
+    "level3Desc": "Lv.3 Travel Maniac — 게시글 10개 + 댓글 50개",
+    "level4Desc": "Lv.4 Travel Expert — 게시글 100개 + 댓글 100개",
+    "level5Desc": "Lv.5 Travel Master — 게시글 500개 + 댓글 100개 + 팔로워 100명",
+    "postCount": "게시글 {count}개",
+    "postsToReach": "Lv.{lv} 달성까지",
+    "needComments": "댓글 {count}개 더 필요",
+    "needFollowers": "팔로워 {count}명 더 필요",
+    "level1Next": "게시글 10개 작성 시 레벨업"
   },
   "common": {
     "loading": "로딩 중...",

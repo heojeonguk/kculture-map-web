@@ -171,7 +171,21 @@
     "following": "關注中",
     "followers": "粉絲",
     "level": "等級",
-    "editProfile": "編輯資料"
+    "editProfile": "編輯資料",
+    "joined": "加入日期",
+    "profilePhoto": "頭貼",
+    "changePhoto": "更換頭貼",
+    "viewLevelConditions": "查看升級條件",
+    "level1Desc": "Lv.1 Sprout Traveler — 0篇文章",
+    "level2Desc": "Lv.2 Novice Traveler — 1~9篇文章",
+    "level3Desc": "Lv.3 Travel Maniac — 10篇文章 + 50則留言",
+    "level4Desc": "Lv.4 Travel Expert — 100篇文章 + 100則留言",
+    "level5Desc": "Lv.5 Travel Master — 500篇文章 + 100則留言 + 100位粉絲",
+    "postCount": "{count}篇文章",
+    "postsToReach": "升至Lv.{lv}還需",
+    "needComments": "還需{count}則留言",
+    "needFollowers": "還需{count}位粉絲",
+    "level1Next": "發布10篇文章可升級"
   },
   "common": {
     "loading": "載入中...",

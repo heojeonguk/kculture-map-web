@@ -171,7 +171,21 @@
     "following": "Abonnements",
     "followers": "Abonnés",
     "level": "Niveau",
-    "editProfile": "Modifier le profil"
+    "editProfile": "Modifier le profil",
+    "joined": "Date d'inscription",
+    "profilePhoto": "Photo de profil",
+    "changePhoto": "Changer la photo",
+    "viewLevelConditions": "Voir les conditions de niveau",
+    "level1Desc": "Lv.1 Sprout Traveler — 0 publication",
+    "level2Desc": "Lv.2 Novice Traveler — 1~9 publications",
+    "level3Desc": "Lv.3 Travel Maniac — 10 publications + 50 commentaires",
+    "level4Desc": "Lv.4 Travel Expert — 100 publications + 100 commentaires",
+    "level5Desc": "Lv.5 Travel Master — 500 publications + 100 commentaires + 100 abonnés",
+    "postCount": "{count} publications",
+    "postsToReach": "publications pour atteindre le Lv.{lv}",
+    "needComments": "Besoin de {count} commentaires de plus",
+    "needFollowers": "Besoin de {count} abonnés de plus",
+    "level1Next": "Écrivez 10 publications pour monter de niveau"
   },
   "common": {
     "loading": "Chargement...",

@@ -171,7 +171,21 @@
     "following": "关注中",
     "followers": "粉丝",
     "level": "等级",
-    "editProfile": "编辑资料"
+    "editProfile": "编辑资料",
+    "joined": "注册日期",
+    "profilePhoto": "头像",
+    "changePhoto": "更换头像",
+    "viewLevelConditions": "查看升级条件",
+    "level1Desc": "Lv.1 Sprout Traveler — 0篇帖子",
+    "level2Desc": "Lv.2 Novice Traveler — 1~9篇帖子",
+    "level3Desc": "Lv.3 Travel Maniac — 10篇帖子 + 50条评论",
+    "level4Desc": "Lv.4 Travel Expert — 100篇帖子 + 100条评论",
+    "level5Desc": "Lv.5 Travel Master — 500篇帖子 + 100条评论 + 100位粉丝",
+    "postCount": "{count}篇帖子",
+    "postsToReach": "升至Lv.{lv}还需",
+    "needComments": "还需{count}条评论",
+    "needFollowers": "还需{count}位粉丝",
+    "level1Next": "发布10篇帖子可升级"
   },
   "common": {
     "loading": "加载中...",

@@ -171,7 +171,21 @@
     "following": "Mengikuti",
     "followers": "Pengikut",
     "level": "Tahap",
-    "editProfile": "Edit Profil"
+    "editProfile": "Edit Profil",
+    "joined": "Tarikh Daftar",
+    "profilePhoto": "Gambar Profil",
+    "changePhoto": "Tukar gambar",
+    "viewLevelConditions": "Lihat syarat tahap",
+    "level1Desc": "Lv.1 Sprout Traveler — 0 catatan",
+    "level2Desc": "Lv.2 Novice Traveler — 1~9 catatan",
+    "level3Desc": "Lv.3 Travel Maniac — 10 catatan + 50 ulasan",
+    "level4Desc": "Lv.4 Travel Expert — 100 catatan + 100 ulasan",
+    "level5Desc": "Lv.5 Travel Master — 500 catatan + 100 ulasan + 100 pengikut",
+    "postCount": "{count} catatan",
+    "postsToReach": "untuk capai Lv.{lv}",
+    "needComments": "Perlu {count} ulasan lagi",
+    "needFollowers": "Perlu {count} pengikut lagi",
+    "level1Next": "Tulis 10 catatan untuk naik tahap"
   },
   "common": {
     "loading": "Memuatkan...",

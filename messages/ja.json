@@ -171,7 +171,21 @@
     "following": "フォロー中",
     "followers": "フォロワー",
     "level": "レベル",
-    "editProfile": "プロフィール編集"
+    "editProfile": "プロフィール編集",
+    "joined": "登録日",
+    "profilePhoto": "プロフィール写真",
+    "changePhoto": "写真を変更",
+    "viewLevelConditions": "レベル達成条件を見る",
+    "level1Desc": "Lv.1 Sprout Traveler — 投稿0件",
+    "level2Desc": "Lv.2 Novice Traveler — 投稿1~9件",
+    "level3Desc": "Lv.3 Travel Maniac — 投稿10件 + コメント50件",
+    "level4Desc": "Lv.4 Travel Expert — 投稿100件 + コメント100件",
+    "level5Desc": "Lv.5 Travel Master — 投稿500件 + コメント100件 + フォロワー100名",
+    "postCount": "投稿{count}件",
+    "postsToReach": "Lv.{lv}達成まで",
+    "needComments": "コメントがあと{count}件必要",
+    "needFollowers": "フォロワーがあと{count}人必要",
+    "level1Next": "投稿10件でレベルアップ"
   },
   "common": {
     "loading": "読み込み中...",

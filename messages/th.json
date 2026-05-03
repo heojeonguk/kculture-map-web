@@ -171,7 +171,21 @@
     "following": "กำลังติดตาม",
     "followers": "ผู้ติดตาม",
     "level": "ระดับ",
-    "editProfile": "แก้ไขโปรไฟล์"
+    "editProfile": "แก้ไขโปรไฟล์",
+    "joined": "วันที่สมัคร",
+    "profilePhoto": "รูปโปรไฟล์",
+    "changePhoto": "เปลี่ยนรูปโปรไฟล์",
+    "viewLevelConditions": "ดูเงื่อนไขระดับ",
+    "level1Desc": "Lv.1 Sprout Traveler — 0 โพสต์",
+    "level2Desc": "Lv.2 Novice Traveler — 1~9 โพสต์",
+    "level3Desc": "Lv.3 Travel Maniac — 10 โพสต์ + 50 ความคิดเห็น",
+    "level4Desc": "Lv.4 Travel Expert — 100 โพสต์ + 100 ความคิดเห็น",
+    "level5Desc": "Lv.5 Travel Master — 500 โพสต์ + 100 ความคิดเห็น + 100 ผู้ติดตาม",
+    "postCount": "{count} โพสต์",
+    "postsToReach": "ถึง Lv.{lv}",
+    "needComments": "ต้องการอีก {count} ความคิดเห็น",
+    "needFollowers": "ต้องการอีก {count} ผู้ติดตาม",
+    "level1Next": "โพสต์ 10 ครั้งเพื่ออัปเลเวล"
   },
   "common": {
     "loading": "กำลังโหลด...",

@@ -171,7 +171,21 @@
     "following": "Đang theo dõi",
     "followers": "Người theo dõi",
     "level": "Cấp độ",
-    "editProfile": "Chỉnh sửa hồ sơ"
+    "editProfile": "Chỉnh sửa hồ sơ",
+    "joined": "Ngày tham gia",
+    "profilePhoto": "Ảnh đại diện",
+    "changePhoto": "Đổi ảnh đại diện",
+    "viewLevelConditions": "Xem điều kiện cấp độ",
+    "level1Desc": "Lv.1 Sprout Traveler — 0 bài viết",
+    "level2Desc": "Lv.2 Novice Traveler — 1~9 bài viết",
+    "level3Desc": "Lv.3 Travel Maniac — 10 bài viết + 50 bình luận",
+    "level4Desc": "Lv.4 Travel Expert — 100 bài viết + 100 bình luận",
+    "level5Desc": "Lv.5 Travel Master — 500 bài viết + 100 bình luận + 100 người theo dõi",
+    "postCount": "{count} bài viết",
+    "postsToReach": "để đạt Lv.{lv}",
+    "needComments": "Cần thêm {count} bình luận",
+    "needFollowers": "Cần thêm {count} người theo dõi",
+    "level1Next": "Viết 10 bài để lên cấp"
   },
   "common": {
     "loading": "Đang tải...",

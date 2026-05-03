@@ -171,7 +171,21 @@
     "following": "Following",
     "followers": "Followers",
     "level": "Level",
-    "editProfile": "Edit Profile"
+    "editProfile": "Edit Profile",
+    "joined": "Joined",
+    "profilePhoto": "Profile photo",
+    "changePhoto": "Change photo",
+    "viewLevelConditions": "View level conditions",
+    "level1Desc": "Lv.1 Sprout Traveler — 0 posts",
+    "level2Desc": "Lv.2 Novice Traveler — 1~9 posts",
+    "level3Desc": "Lv.3 Travel Maniac — 10 posts + 50 comments",
+    "level4Desc": "Lv.4 Travel Expert — 100 posts + 100 comments",
+    "level5Desc": "Lv.5 Travel Master — 500 posts + 100 comments + 100 followers",
+    "postCount": "{count} posts",
+    "postsToReach": "posts to reach Lv.{lv}",
+    "needComments": "Need {count} more comments",
+    "needFollowers": "Need {count} more followers",
+    "level1Next": "Write 10 posts to level up"
   },
   "common": {
     "loading": "Loading...",
