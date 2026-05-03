@@ -20,37 +20,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/${locale}/ai-recommend`,  changeFrequency: 'weekly', priority: 0.7 },
   ])
 
-  // 동적 장소 페이지
+  // 동적 장소 페이지 (en 로케일, 최신순 1000개)
   const { data: places } = await supabase
     .from('places')
-    .select('id, updated_at')
-
-  const placeUrls: MetadataRoute.Sitemap = (places ?? []).flatMap(place =>
-    locales.map(locale => ({
-      url: `${BASE_URL}/${locale}/places/${place.id}`,
-      lastModified: place.updated_at ? new Date(place.updated_at) : new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    }))
-  )
-
-  // 동적 게시글 페이지 (최근 500개)
-  const { data: posts } = await supabase
-    .from('posts')
-    .select('id, created_at, updated_at')
+    .select('id, created_at')
     .order('created_at', { ascending: false })
-    .limit(500)
+    .limit(1000)
 
-  const postUrls: MetadataRoute.Sitemap = (posts ?? []).flatMap(post =>
-    locales.map(locale => ({
-      url: `${BASE_URL}/${locale}/community/${post.id}`,
-      lastModified: post.updated_at
-        ? new Date(post.updated_at)
-        : new Date(post.created_at),
-      changeFrequency: 'weekly' as const,
-      priority: 0.6,
-    }))
-  )
+  const placeUrls: MetadataRoute.Sitemap = (places ?? []).map(place => ({
+    url: `${BASE_URL}/en/places/${place.id}`,
+    lastModified: place.created_at,
+    changeFrequency: 'weekly' as const,
+    priority: 0.6,
+  }))
 
-  return [...staticPages, ...placeUrls, ...postUrls]
+  return [...staticPages, ...placeUrls]
 }
