@@ -1,16 +1,16 @@
-// collect-places.mjs
-// 실행: node collect-places.mjs
-// 필요: GOOGLE_PLACES_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY 환경변수
+// collect-places-new.mjs
+// 실행: node collect-places-new.mjs
+// 필요: GOOGLE_PLACES_API_KEY, NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY 환경변수
+// Google Places API New (v1) 사용
 
 import { createClient } from '@supabase/supabase-js'
 
 const GOOGLE_API_KEY = process.env.GOOGLE_PLACES_API_KEY
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY // service role key 필요 (RLS 우회)
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
-// 카테고리 매핑 (Google type → our category)
 const TYPE_MAP = {
   restaurant: 'food',
   food: 'food',
@@ -39,7 +39,6 @@ const EMOJI_MAP = {
   activity: '🎯',
 }
 
-// 수집할 도시 + 검색 키워드 목록
 const SEARCH_TARGETS = [
   // 서울
   { city: '서울', query: '서울 맛집 홍대', category: 'food' },
@@ -109,30 +108,25 @@ const SEARCH_TARGETS = [
   { city: '충청', query: '공주 부여 관광지', category: 'spot' },
 ]
 
-// Google Places Text Search API 호출
 async function searchPlaces(query) {
-  const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&language=ko&region=kr&key=${GOOGLE_API_KEY}`
-  const res = await fetch(url)
+  const res = await fetch('https://places.googleapis.com/v1/places:searchText', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Goog-Api-Key': GOOGLE_API_KEY,
+      'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.rating,places.photos,places.types,places.regularOpeningHours,places.location',
+    },
+    body: JSON.stringify({
+      textQuery: query,
+      languageCode: 'ko',
+      maxResultCount: 20,
+    }),
+  })
   const data = await res.json()
-  return data.results || []
+  if (data.error) throw new Error(data.error.message)
+  return data.places || []
 }
 
-// Place Detail 가져오기 (사진, 전화번호 등)
-async function getPlaceDetail(placeId) {
-  const fields = 'name,rating,formatted_address,geometry,photos,types,opening_hours,price_level,editorial_summary'
-  const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=${fields}&language=ko&key=${GOOGLE_API_KEY}`
-  const res = await fetch(url)
-  const data = await res.json()
-  return data.result || null
-}
-
-// 사진 URL 생성
-function getPhotoUrl(photoReference) {
-  if (!photoReference) return null
-  return `https://places.googleapis.com/v1/${photoReference}/media?maxWidthPx=800&key=${GOOGLE_API_KEY}`
-}
-
-// Google types → our category 변환
 function mapCategory(types, defaultCategory) {
   for (const type of types) {
     if (TYPE_MAP[type]) return TYPE_MAP[type]
@@ -140,83 +134,82 @@ function mapCategory(types, defaultCategory) {
   return defaultCategory
 }
 
-// 이미 DB에 있는 장소 이름 목록 가져오기
 async function getExistingPlaceNames() {
   const { data } = await supabase.from('places').select('name')
   return new Set(data?.map(p => p.name) || [])
 }
 
-// Supabase에 저장
-async function savePlaces(places) {
+async function upsertPlaces(places) {
   if (places.length === 0) return
-  const { error } = await supabase.from('places').insert(places)
-  if (error) console.error('Insert error:', error.message)
-  else console.log(`  ✅ ${places.length}개 저장 완료`)
+  const { error } = await supabase.from('places').upsert(places, { onConflict: 'name' })
+  if (error) console.error('Upsert error:', error.message)
+  else console.log(`  ✅ ${places.length}개 upsert 완료`)
 }
 
-// 메인 실행
 async function main() {
-  console.log('🚀 Google Places 데이터 수집 시작\n')
+  console.log('🚀 Google Places New API (v1) 데이터 수집 시작\n')
 
   const existingNames = await getExistingPlaceNames()
   console.log(`기존 장소 수: ${existingNames.size}개\n`)
 
-  let totalSaved = 0
+  let totalProcessed = 0
 
   for (const target of SEARCH_TARGETS) {
     console.log(`🔍 검색: ${target.query}`)
 
     try {
       const results = await searchPlaces(target.query)
-      const toInsert = []
+      const toUpsert = []
 
       for (const place of results) {
-        // 중복 체크
-        if (existingNames.has(place.name)) {
-          console.log(`  ⏭️  중복 스킵: ${place.name}`)
-          continue
+        const name = place.displayName?.text
+        if (!name) continue
+
+        // photo name 형식: "places/ChIJ.../photos/AfFOh..."
+        const photoName = place.photos?.[0]?.name || null
+        const isExisting = existingNames.has(name)
+
+        if (isExisting) {
+          // 기존 장소: photo_url만 업데이트
+          if (photoName) {
+            toUpsert.push({ name, photo_url: photoName })
+            console.log(`  🔄 photo 업데이트: ${name}`)
+          } else {
+            console.log(`  ⏭️  스킵 (사진 없음): ${name}`)
+          }
+        } else {
+          // 신규 장소: 전체 데이터 insert
+          const category = mapCategory(place.types || [], target.category)
+          toUpsert.push({
+            name,
+            name_en: null,
+            name_zh: null,
+            name_ja: null,
+            city: target.city,
+            category,
+            rating: place.rating || null,
+            address: place.formattedAddress || null,
+            lat: place.location?.latitude || null,
+            lng: place.location?.longitude || null,
+            is_open: null,
+            hours: null,
+            price_range: null,
+            emoji: EMOJI_MAP[category],
+            featured: false,
+            district: null,
+            neighborhood: null,
+            photo_url: photoName,
+          })
+          existingNames.add(name)
+          console.log(`  ➕ ${name} (${category})`)
         }
 
-        // 상세 정보 가져오기
-        const detail = await getPlaceDetail(place.place_id)
-        if (!detail) continue
-
-        const photoRef = detail.photos?.[0]?.photo_reference
-        const category = mapCategory(detail.types || [], target.category)
-
-        const newPlace = {
-          name: detail.name,
-          name_en: null, // 추후 번역
-          name_zh: null,
-          name_ja: null,
-          city: target.city,
-          category,
-          rating: detail.rating || null,
-          address: detail.formatted_address || null,
-          lat: detail.geometry?.location?.lat || null,
-          lng: detail.geometry?.location?.lng || null,
-          is_open: null,
-          hours: null,
-          price_range: detail.price_level ? '💰'.repeat(detail.price_level) : null,
-          emoji: EMOJI_MAP[category],
-          featured: false,
-          district: null,
-          neighborhood: null,
-          photo_url: photoRef ? getPhotoUrl(photoRef) : null,
-        }
-
-        toInsert.push(newPlace)
-        existingNames.add(detail.name) // 이번 배치 내 중복 방지
-        console.log(`  ➕ ${detail.name} (${category})`)
-
-        // API 요청 제한 방지
         await new Promise(r => setTimeout(r, 200))
       }
 
-      await savePlaces(toInsert)
-      totalSaved += toInsert.length
+      await upsertPlaces(toUpsert)
+      totalProcessed += toUpsert.length
 
-      // 검색 간 딜레이
       await new Promise(r => setTimeout(r, 500))
 
     } catch (err) {
@@ -224,8 +217,8 @@ async function main() {
     }
   }
 
-  console.log(`\n✅ 수집 완료! 총 ${totalSaved}개 장소 추가됨`)
-  console.log(`📊 현재 총 장소 수: ${existingNames.size}개`)
+  console.log(`\n✅ 수집 완료! 총 ${totalProcessed}개 장소 처리됨`)
+  console.log(`📊 현재 총 장소 수 (추정): ${existingNames.size}개`)
 }
 
 main()
