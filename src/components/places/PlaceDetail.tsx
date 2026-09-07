@@ -117,6 +117,7 @@ export default function PlaceDetail({ place, locale }: PlaceDetailProps) {
           <img
             src={`/api/place-photo?ref=${place.photo_url}`}
             alt={displayName}
+            referrerPolicy="no-referrer"
             className="absolute inset-0 w-full h-full object-cover"
           />
         ) : (

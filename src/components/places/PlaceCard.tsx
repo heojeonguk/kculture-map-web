@@ -45,6 +45,7 @@ export default function PlaceCard({ place, locale }: PlaceCardProps) {
           <img
             src={`/api/place-photo?ref=${place.photo_url}`}
             alt={place.name}
+            referrerPolicy="no-referrer"
             className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
           />
         ) : (

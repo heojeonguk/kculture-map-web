@@ -1,12 +1,28 @@
+// 외부 URL 프록시를 허용할 호스트 (오픈 프록시 방지)
+const ALLOWED_HOSTS = ['tong.visitkorea.or.kr']
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const ref = searchParams.get('ref')
   if (!ref) return new Response('Missing ref', { status: 400 })
 
-  // 신버전 API (places/xxx/photos/xxx 형식)
+  // TourAPI 등 외부 이미지 URL (http/https 전체 URL 형식)
+  // → 서버에서 그대로 프록시 (referrer 헤더 없이 요청되므로 핫링크 차단도 우회)
+  // 신버전 Google API (places/xxx/photos/xxx 형식)
   // 구버전 photo_reference도 호환 처리
   let url: string
-  if (ref.startsWith('places/')) {
+  if (ref.startsWith('http://') || ref.startsWith('https://')) {
+    let host: string
+    try {
+      host = new URL(ref).hostname
+    } catch {
+      return new Response('Invalid ref', { status: 400 })
+    }
+    if (!ALLOWED_HOSTS.includes(host)) {
+      return new Response('Host not allowed', { status: 403 })
+    }
+    url = ref
+  } else if (ref.startsWith('places/')) {
     url = `https://places.googleapis.com/v1/${ref}/media?maxWidthPx=800&key=${process.env.GOOGLE_PLACES_API_KEY}`
   } else {
     url = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photo_reference=${ref}&key=${process.env.GOOGLE_PLACES_API_KEY}`
