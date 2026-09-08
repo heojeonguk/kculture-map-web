@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import { placePhotoSrc } from '@/lib/placePhoto'
 
 type Category = 'food' | 'cafe' | 'spot' | 'shopping' | 'activity'
 
@@ -61,7 +62,7 @@ export default function PlaceGrid({ places, locale }: PlaceGridProps) {
               <div className={`h-24 ${config.bg} flex items-center justify-center relative`}>
                 {place.photo_url ? (
                   <img
-                    src={`/api/place-photo?ref=${place.photo_url}`}
+                    src={placePhotoSrc(place.photo_url)}
                     alt={place.name}
                     referrerPolicy="no-referrer"
                     className="object-cover w-full h-full"

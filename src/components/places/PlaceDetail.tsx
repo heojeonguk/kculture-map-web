@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
+import { placePhotoSrc } from '@/lib/placePhoto'
 
 type Category = 'food' | 'cafe' | 'spot' | 'shopping' | 'activity'
 
@@ -115,7 +116,7 @@ export default function PlaceDetail({ place, locale }: PlaceDetailProps) {
       <div className={`relative w-full h-72 rounded-2xl overflow-hidden ${config.bg} flex items-center justify-center`}>
         {place.photo_url ? (
           <img
-            src={`/api/place-photo?ref=${place.photo_url}`}
+            src={placePhotoSrc(place.photo_url)}
             alt={displayName}
             referrerPolicy="no-referrer"
             className="absolute inset-0 w-full h-full object-cover"

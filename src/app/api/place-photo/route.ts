@@ -1,5 +1,16 @@
 // 외부 URL 프록시를 허용할 호스트 (오픈 프록시 방지)
-const ALLOWED_HOSTS = ['tong.visitkorea.or.kr']
+// 현재 컴포넌트는 전체 URL을 프록시 없이 직접 <img src>로 쓴다(@/lib/placePhoto).
+// 이 분기는 배포 전 HTML이 캐시된 클라이언트를 위한 하위 호환용이다.
+const ALLOWED_HOSTS = [
+  'tong.visitkorea.or.kr',
+  ...(() => {
+    try {
+      return [new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!).hostname]
+    } catch {
+      return []
+    }
+  })(),
+]
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
