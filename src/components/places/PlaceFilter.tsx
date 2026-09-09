@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 
 interface PlaceFilterProps {
@@ -42,6 +43,7 @@ export default function PlaceFilter({
   const t = useTranslations('places')
   const tCategory = useTranslations('category')
   const tAi = useTranslations('ai')
+  const tPlaceRequest = useTranslations('placeRequest')
   const router = useRouter()
   const [query, setQuery] = useState(searchQuery ?? '')
 
@@ -134,6 +136,17 @@ export default function PlaceFilter({
             </button>
           ))}
         </div>
+      </div>
+
+      {/* 장소 등록 요청 진입점 */}
+      <div className="border-t border-gray-100 pt-4 flex items-center justify-between gap-3 flex-wrap">
+        <p className="text-xs text-gray-400">{tPlaceRequest('ctaHint')}</p>
+        <Link
+          href={`/${locale}/places/request`}
+          className="px-4 py-2 rounded-xl text-xs font-medium bg-sky-50 text-sky-600 border border-sky-100 hover:bg-sky-100 transition-colors shrink-0"
+        >
+          ➕ {tPlaceRequest('ctaButton')}
+        </Link>
       </div>
     </div>
   )

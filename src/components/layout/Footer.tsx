@@ -7,12 +7,16 @@ interface FooterProps {
 
 export default function Footer({ locale }: FooterProps) {
   const t = useTranslations('common')
+  const tPlaceRequest = useTranslations('placeRequest')
 
   return (
     <footer className="border-t border-gray-100 mt-12 py-6">
       <div className="max-w-[1200px] mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
         <p className="text-xs text-gray-400">{t('copyright')}</p>
-        <div className="flex gap-4">
+        <div className="flex gap-4 flex-wrap justify-center">
+          <Link href={`/${locale}/places/request`} className="text-xs text-gray-400 hover:text-sky-500 transition-colors">
+            {tPlaceRequest('footerLink')}
+          </Link>
           <Link href={`/${locale}/terms`} className="text-xs text-gray-400 hover:text-sky-500 transition-colors">
             {t('terms')}
           </Link>
