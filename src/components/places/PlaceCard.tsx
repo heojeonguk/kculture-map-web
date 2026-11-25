@@ -34,6 +34,7 @@ const categoryConfig: Record<Category, { bg: string }> = {
 export default function PlaceCard({ place, locale }: PlaceCardProps) {
   const t = useTranslations('category')
   const config = categoryConfig[place.category] ?? categoryConfig.spot
+  const photoSrc = placePhotoSrc(place.photo_url)
 
   return (
     <Link
@@ -42,9 +43,9 @@ export default function PlaceCard({ place, locale }: PlaceCardProps) {
     >
       {/* 이미지 */}
       <div className={`h-40 ${config.bg} flex items-center justify-center relative overflow-hidden`}>
-        {place.photo_url ? (
+        {photoSrc ? (
           <img
-            src={placePhotoSrc(place.photo_url)}
+            src={photoSrc}
             alt={place.name}
             referrerPolicy="no-referrer"
             className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"

@@ -10,6 +10,8 @@ interface PlaceListProps {
   currentPage: number
   totalPages: number
   totalCount: number
+  /** page를 제외한 현재 쿼리 파라미터. 페이지네이션 링크에서 필터를 유지한다. */
+  filterQuery?: string
 }
 
 export default function PlaceList({
@@ -18,8 +20,11 @@ export default function PlaceList({
   currentPage,
   totalPages,
   totalCount,
+  filterQuery = '',
 }: PlaceListProps) {
   const t = useTranslations('places')
+  const pageHref = (p: number) =>
+    `/${locale}/places?${filterQuery ? `${filterQuery}&` : ''}page=${p}`
 
   if (places.length === 0) {
     return (
@@ -50,7 +55,7 @@ export default function PlaceList({
         <div className="flex items-center justify-center gap-2 mt-8">
           {currentPage > 1 && (
             <Link
-              href={`/${locale}/places?page=${currentPage - 1}`}
+              href={pageHref(currentPage - 1)}
               className="px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 hover:border-sky-300 hover:text-sky-600 transition-colors"
             >
               ← {t('prev')}
@@ -62,7 +67,7 @@ export default function PlaceList({
             .map((p) => (
               <Link
                 key={p}
-                href={`/${locale}/places?page=${p}`}
+                href={pageHref(p)}
                 className={`w-9 h-9 flex items-center justify-center rounded-xl text-sm border transition-colors ${
                   p === currentPage
                     ? 'bg-sky-500 text-white border-sky-500'
@@ -75,7 +80,7 @@ export default function PlaceList({
 
           {currentPage < totalPages && (
             <Link
-              href={`/${locale}/places?page=${currentPage + 1}`}
+              href={pageHref(currentPage + 1)}
               className="px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 hover:border-sky-300 hover:text-sky-600 transition-colors"
             >
               {t('next')} →

@@ -9,18 +9,20 @@ interface PostFilterProps {
   locale: string
   activeCategory?: string
   activeSort: string
+  /** URL의 현재 검색어. 입력창 초기값으로 쓴다. */
+  searchQuery?: string
 }
 
 const tabs = ['all', 'free', 'food', 'spot', 'cafe', 'activity']
 const sorts = ['latest', 'best']
 
-export default function PostFilter({ locale, activeCategory, activeSort }: PostFilterProps) {
+export default function PostFilter({ locale, activeCategory, activeSort, searchQuery: initialQuery }: PostFilterProps) {
   const t = useTranslations('community')
   const tCategory = useTranslations('category')
   const tPlaces = useTranslations('places')
   const router = useRouter()
   const currentCategory = activeCategory ?? 'all'
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState(initialQuery ?? '')
 
   const handleSearch = () => {
     const params = new URLSearchParams()

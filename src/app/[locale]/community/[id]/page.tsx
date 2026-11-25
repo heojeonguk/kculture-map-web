@@ -1,12 +1,25 @@
 import type { Metadata } from 'next'
-import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
+import { setRequestLocale } from 'next-intl/server'
+import { createPublicClient } from '@/lib/supabase/public'
+import { BASE_URL, alternatesFor } from '@/lib/seo'
 import Header from '@/components/layout/Header'
 import Sidebar from '@/components/layout/Sidebar'
 import PostDetail from '@/components/community/PostDetail'
 import CommentSectionWrapper from '@/components/community/CommentSectionWrapper'
 
-const BASE_URL = 'https://www.kculture-map.com'
+// 5분 ISR. 좋아요·북마크 등 사용자별 상태는 client에서 따로 불러온다.
+export const revalidate = 300
+
+/**
+ * 빌드 시에는 한 페이지도 만들지 않는다 (수만 페이지 생성 방지).
+ * 다만 빈 배열이라도 선언해야 Next.js 16이 이 라우트를 ISR로 등록한다.
+ * 선언이 없으면 revalidate가 무시되고 요청마다 서버 렌더링된다.
+ * 실제 페이지는 첫 요청 때 생성되어 이후 revalidate 기간 동안 캐시된다.
+ */
+export function generateStaticParams(): { locale: string; id: string }[] {
+  return []
+}
 
 interface PostPageProps {
   params: Promise<{ locale: string; id: string }>
@@ -14,7 +27,7 @@ interface PostPageProps {
 
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
   const { locale, id } = await params
-  const supabase = await createClient()
+  const supabase = createPublicClient()
   const { data: post } = await supabase
     .from('posts')
     .select('title, content')
@@ -27,7 +40,7 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
     title,
     description,
     robots: { index: true, follow: true },
-    alternates: { canonical: `${BASE_URL}/${locale}/community/${id}` },
+    alternates: alternatesFor(locale, `/community/${id}`),
     openGraph: {
       title,
       description,
@@ -41,7 +54,9 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
 
 export default async function PostPage({ params }: PostPageProps) {
   const { locale, id } = await params
-  const supabase = await createClient()
+  setRequestLocale(locale)
+
+  const supabase = createPublicClient()
 
   const { data: post } = await supabase
     .from('posts')

@@ -1,7 +1,10 @@
 import type { Metadata } from 'next'
+import { setRequestLocale } from 'next-intl/server'
+import { BASE_URL, alternatesFor } from '@/lib/seo'
 import Header from '@/components/layout/Header'
 
-const BASE_URL = 'https://www.kculture-map.com'
+// 정적 문서 — 24시간 ISR.
+export const revalidate = 86400
 
 interface TermsPageProps {
   params: Promise<{ locale: string }>
@@ -15,7 +18,7 @@ export async function generateMetadata({ params }: TermsPageProps): Promise<Meta
     title,
     description,
     robots: { index: true, follow: true },
-    alternates: { canonical: `${BASE_URL}/${locale}/terms` },
+    alternates: alternatesFor(locale, '/terms'),
     openGraph: {
       title,
       description,
@@ -29,6 +32,7 @@ export async function generateMetadata({ params }: TermsPageProps): Promise<Meta
 
 export default async function TermsPage({ params }: TermsPageProps) {
   const { locale } = await params
+  setRequestLocale(locale)
   const isKo = locale === 'ko'
 
   return (

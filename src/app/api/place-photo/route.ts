@@ -1,51 +1,19 @@
-// 외부 URL 프록시를 허용할 호스트 (오픈 프록시 방지)
-// 현재 컴포넌트는 전체 URL을 프록시 없이 직접 <img src>로 쓴다(@/lib/placePhoto).
-// 이 분기는 배포 전 HTML이 캐시된 클라이언트를 위한 하위 호환용이다.
-const ALLOWED_HOSTS = [
-  'tong.visitkorea.or.kr',
-  ...(() => {
-    try {
-      return [new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!).hostname]
-    } catch {
-      return []
-    }
-  })(),
-]
-
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const ref = searchParams.get('ref')
-  if (!ref) return new Response('Missing ref', { status: 400 })
-
-  // TourAPI 등 외부 이미지 URL (http/https 전체 URL 형식)
-  // → 서버에서 그대로 프록시 (referrer 헤더 없이 요청되므로 핫링크 차단도 우회)
-  // 신버전 Google API (places/xxx/photos/xxx 형식)
-  // 구버전 photo_reference도 호환 처리
-  let url: string
-  if (ref.startsWith('http://') || ref.startsWith('https://')) {
-    let host: string
-    try {
-      host = new URL(ref).hostname
-    } catch {
-      return new Response('Invalid ref', { status: 400 })
-    }
-    if (!ALLOWED_HOSTS.includes(host)) {
-      return new Response('Host not allowed', { status: 403 })
-    }
-    url = ref
-  } else if (ref.startsWith('places/')) {
-    url = `https://places.googleapis.com/v1/${ref}/media?maxWidthPx=800&key=${process.env.GOOGLE_PLACES_API_KEY}`
-  } else {
-    url = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photo_reference=${ref}&key=${process.env.GOOGLE_PLACES_API_KEY}`
-  }
-
-  const res = await fetch(url)
-  const buffer = await res.arrayBuffer()
-
-  return new Response(buffer, {
+/**
+ * 사진 프록시 제거됨.
+ *
+ * 외부 이미지를 서버에서 받아 되보내는 구조는 봇이 장소 카드를 긁을 때마다
+ * Fluid Active CPU와 대역폭을 소모했다. 지금은 photo_url이 전체 URL일 때만
+ * <img src>에 직접 넣고(@/lib/placePhoto), 그 밖에는 이모지로 표시한다.
+ *
+ * 배포 전 HTML이 캐시된 클라이언트가 이 경로를 계속 호출할 수 있으므로
+ * 라우트 자체는 남겨두되, 외부 fetch 없이 즉시 404로 응답한다.
+ */
+export function GET() {
+  return new Response(null, {
+    status: 404,
     headers: {
-      'Content-Type': res.headers.get('content-type') || 'image/jpeg',
-      'Cache-Control': 'public, max-age=86400',
+      // 재호출을 줄이기 위해 404도 길게 캐시한다.
+      'Cache-Control': 'public, max-age=86400, immutable',
     },
   })
 }

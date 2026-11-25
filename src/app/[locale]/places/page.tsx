@@ -1,12 +1,19 @@
 import type { Metadata } from 'next'
-import { createClient } from '@/lib/supabase/server'
+import { Suspense } from 'react'
+import { setRequestLocale } from 'next-intl/server'
+import { createPublicClient } from '@/lib/supabase/public'
+import { BASE_URL, alternatesFor } from '@/lib/seo'
+import { PLACES_PAGE_SIZE } from '@/lib/pagination'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import Sidebar from '@/components/layout/Sidebar'
 import PlaceFilter from '@/components/places/PlaceFilter'
 import PlaceList from '@/components/places/PlaceList'
+import PlacesBrowser from '@/components/places/PlacesBrowser'
 
-const BASE_URL = 'https://www.kculture-map.com'
+// 1시간 ISR. searchParams를 서버에서 읽지 않으므로 쿼리 파라미터가 붙어도
+// 같은 캐시 HTML로 응답되고, 필터/페이지네이션은 client에서 처리한다.
+export const revalidate = 3600
 
 export async function generateMetadata({
   params,
@@ -23,7 +30,7 @@ export async function generateMetadata({
     title,
     description,
     robots: { index: true, follow: true },
-    alternates: { canonical: `${BASE_URL}/${locale}/places` },
+    alternates: alternatesFor(locale, '/places'),
     openGraph: {
       title,
       description,
@@ -35,39 +42,46 @@ export async function generateMetadata({
   }
 }
 
-interface PlacesPageProps {
+export default async function PlacesPage({
+  params,
+}: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{
-    category?: string
-    city?: string
-    q?: string
-    page?: string
-  }>
-}
-
-const PAGE_SIZE = 12
-
-export default async function PlacesPage({ params, searchParams }: PlacesPageProps) {
+}) {
   const { locale } = await params
-  const { category, city, q, page } = await searchParams
-  const currentPage = Number(page ?? 1)
-  const offset = (currentPage - 1) * PAGE_SIZE
+  setRequestLocale(locale)
 
-  const supabase = await createClient()
+  const supabase = createPublicClient()
 
-  let query = supabase
+  // 필터 없는 1페이지만 서버에서 렌더해 ISR로 캐시한다.
+  const { data: places, count } = await supabase
     .from('places')
-    .select('id, name, category, city, district, photo_url, emoji, rating, address', { count: 'exact' })
-
-  if (category) query = query.eq('category', category)
-  if (city) query = query.eq('city', city)
-  if (q) query = query.ilike('name', `%${q}%`)
-
-  const { data: places, count } = await query
+    .select(
+      'id, name, category, city, district, photo_url, emoji, rating, address',
+      { count: 'exact' }
+    )
     .order('created_at', { ascending: false })
-    .range(offset, offset + PAGE_SIZE - 1)
+    .range(0, PLACES_PAGE_SIZE - 1)
 
-  const totalPages = Math.ceil((count ?? 0) / PAGE_SIZE)
+  const totalPages = Math.ceil((count ?? 0) / PLACES_PAGE_SIZE)
+
+  /*
+   * PlacesBrowser는 useSearchParams를 쓰므로 프리렌더 시 Suspense fallback으로
+   * 대체된다. fallback에 서버에서 조회한 1페이지를 그대로 넣어, 정적 HTML에
+   * 실제 장소 목록과 상세 페이지 링크가 담기도록 한다(SEO + 크롤링 경로 확보).
+   * 하이드레이션 후에는 PlacesBrowser가 같은 데이터로 이어받는다.
+   */
+  const defaultView = (
+    <>
+      <PlaceFilter locale={locale} />
+      <PlaceList
+        places={places ?? []}
+        locale={locale}
+        currentPage={1}
+        totalPages={totalPages}
+        totalCount={count ?? 0}
+      />
+    </>
+  )
 
   return (
     <>
@@ -77,19 +91,13 @@ export default async function PlacesPage({ params, searchParams }: PlacesPagePro
           <Sidebar position="left" className="hidden md:block" />
 
           <div className="flex flex-col gap-5 min-w-0">
-            <PlaceFilter
-              locale={locale}
-              activeCategory={category}
-              activeCity={city}
-              searchQuery={q}
-            />
-            <PlaceList
-              places={places ?? []}
-              locale={locale}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalCount={count ?? 0}
-            />
+            <Suspense fallback={defaultView}>
+              <PlacesBrowser
+                locale={locale}
+                initialPlaces={places ?? []}
+                initialCount={count ?? 0}
+              />
+            </Suspense>
           </div>
 
           <Sidebar position="right" className="hidden md:block" />

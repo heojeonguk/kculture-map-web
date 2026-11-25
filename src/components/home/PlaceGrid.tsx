@@ -52,6 +52,7 @@ export default function PlaceGrid({ places, locale }: PlaceGridProps) {
       <div className="grid grid-cols-4 gap-3">
         {places.map((place) => {
           const config = categoryConfig[place.category] ?? categoryConfig.spot
+          const photoSrc = placePhotoSrc(place.photo_url)
           return (
             <Link
               key={place.id}
@@ -60,9 +61,9 @@ export default function PlaceGrid({ places, locale }: PlaceGridProps) {
             >
               {/* 이미지 영역 */}
               <div className={`h-24 ${config.bg} flex items-center justify-center relative`}>
-                {place.photo_url ? (
+                {photoSrc ? (
                   <img
-                    src={placePhotoSrc(place.photo_url)}
+                    src={photoSrc}
                     alt={place.name}
                     referrerPolicy="no-referrer"
                     className="object-cover w-full h-full"

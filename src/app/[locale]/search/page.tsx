@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import Header from '@/components/layout/Header'
 import Sidebar from '@/components/layout/Sidebar'
 import Link from 'next/link'
@@ -35,7 +35,7 @@ export default async function SearchPage({ params, searchParams }: SearchPagePro
     )
   }
 
-  const supabase = await createClient()
+  const supabase = createPublicClient()
 
   // 장소 검색
   const { data: places } = await supabase

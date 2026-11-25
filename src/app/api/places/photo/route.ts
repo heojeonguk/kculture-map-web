@@ -1,16 +1,12 @@
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const ref = searchParams.get('ref')
-  if (!ref) return new Response('Missing ref', { status: 400 })
-
-  const url = `https://places.googleapis.com/v1/${ref}/media?maxWidthPx=800&key=${process.env.GOOGLE_PLACES_API_KEY}`
-  const res = await fetch(url)
-  const buffer = await res.arrayBuffer()
-
-  return new Response(buffer, {
+/**
+ * 사진 프록시 제거됨. /api/place-photo와 동일하게 즉시 404로 응답한다.
+ * 자세한 배경은 src/app/api/place-photo/route.ts 주석 참고.
+ */
+export function GET() {
+  return new Response(null, {
+    status: 404,
     headers: {
-      'Content-Type': res.headers.get('content-type') || 'image/jpeg',
-      'Cache-Control': 'public, max-age=86400', // 1일 캐시
+      'Cache-Control': 'public, max-age=86400, immutable',
     },
   })
 }

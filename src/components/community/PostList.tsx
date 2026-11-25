@@ -23,11 +23,15 @@ interface PostListProps {
   currentPage: number
   totalPages: number
   totalCount: number
+  /** page를 제외한 현재 쿼리 파라미터. 페이지네이션 링크에서 필터를 유지한다. */
+  filterQuery?: string
 }
 
-export default function PostList({ posts, locale, currentPage, totalPages, totalCount }: PostListProps) {
+export default function PostList({ posts, locale, currentPage, totalPages, totalCount, filterQuery = '' }: PostListProps) {
   const t = useTranslations('community')
   const tPlaces = useTranslations('places')
+  const pageHref = (p: number) =>
+    `/${locale}/community?${filterQuery ? `${filterQuery}&` : ''}page=${p}`
 
   if (posts.length === 0) {
     return (
@@ -54,7 +58,7 @@ export default function PostList({ posts, locale, currentPage, totalPages, total
         <div className="flex items-center justify-center gap-2 mt-6">
           {currentPage > 1 && (
             <Link
-              href={`/${locale}/community?page=${currentPage - 1}`}
+              href={pageHref(currentPage - 1)}
               className="px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 hover:border-sky-300 hover:text-sky-600 transition-colors"
             >
               ← {tPlaces('prev')}
@@ -65,7 +69,7 @@ export default function PostList({ posts, locale, currentPage, totalPages, total
             .map((p) => (
               <Link
                 key={p}
-                href={`/${locale}/community?page=${p}`}
+                href={pageHref(p)}
                 className={`w-9 h-9 flex items-center justify-center rounded-xl text-sm border transition-colors ${
                   p === currentPage
                     ? 'bg-sky-500 text-white border-sky-500'
@@ -77,7 +81,7 @@ export default function PostList({ posts, locale, currentPage, totalPages, total
             ))}
           {currentPage < totalPages && (
             <Link
-              href={`/${locale}/community?page=${currentPage + 1}`}
+              href={pageHref(currentPage + 1)}
               className="px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 hover:border-sky-300 hover:text-sky-600 transition-colors"
             >
               {tPlaces('next')} →

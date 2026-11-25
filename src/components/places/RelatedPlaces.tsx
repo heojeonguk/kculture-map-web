@@ -41,16 +41,18 @@ export default function RelatedPlaces({ places, locale, category }: RelatedPlace
         {t('similarPlaces')}
       </h2>
       <div className="grid grid-cols-4 gap-3">
-        {places.map((place) => (
+        {places.map((place) => {
+          const photoSrc = placePhotoSrc(place.photo_url)
+          return (
           <Link
             key={place.id}
             href={`/${locale}/places/${place.id}`}
             className="group"
           >
             <div className={`h-20 ${config.bg} rounded-xl flex items-center justify-center mb-2 overflow-hidden relative`}>
-              {place.photo_url ? (
+              {photoSrc ? (
                 <img
-                  src={placePhotoSrc(place.photo_url)}
+                  src={photoSrc}
                   alt={place.name}
                   referrerPolicy="no-referrer"
                   className="object-cover w-full h-full group-hover:scale-105 transition-transform"
@@ -65,7 +67,8 @@ export default function RelatedPlaces({ places, locale, category }: RelatedPlace
               {place.rating && ` · ⭐${place.rating.toFixed(1)}`}
             </p>
           </Link>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

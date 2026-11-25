@@ -1,13 +1,19 @@
 import type { Metadata } from 'next'
-import { createClient } from '@/lib/supabase/server'
+import { Suspense } from 'react'
+import { setRequestLocale } from 'next-intl/server'
+import { createPublicClient } from '@/lib/supabase/public'
+import { BASE_URL, alternatesFor } from '@/lib/seo'
+import { POSTS_PAGE_SIZE } from '@/lib/pagination'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import Sidebar from '@/components/layout/Sidebar'
 import PostFilter from '@/components/community/PostFilter'
 import PostList from '@/components/community/PostList'
-import Link from 'next/link'
+import CommunityBrowser from '@/components/community/CommunityBrowser'
 
-const BASE_URL = 'https://www.kculture-map.com'
+// 5분 ISR. searchParams를 서버에서 읽지 않으므로 필터/검색/페이지네이션이
+// 붙어도 같은 캐시 HTML로 응답되고, 조회는 client에서 처리한다.
+export const revalidate = 300
 
 export async function generateMetadata({
   params,
@@ -24,7 +30,7 @@ export async function generateMetadata({
     title,
     description,
     robots: { index: true, follow: true },
-    alternates: { canonical: `${BASE_URL}/${locale}/community` },
+    alternates: alternatesFor(locale, '/community'),
     openGraph: {
       title,
       description,
@@ -36,57 +42,45 @@ export async function generateMetadata({
   }
 }
 
-interface CommunityPageProps {
+export default async function CommunityPage({
+  params,
+}: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{
-    category?: string
-    sort?: string
-    page?: string
-    q?: string
-    author?: string
-    tag?: string
-  }>
-}
-
-const PAGE_SIZE = 10
-
-export default async function CommunityPage({ params, searchParams }: CommunityPageProps) {
+}) {
   const { locale } = await params
-  const { category, sort = 'latest', page, q, author, tag } = await searchParams
-  const currentPage = Number(page ?? 1)
-  const offset = (currentPage - 1) * PAGE_SIZE
+  setRequestLocale(locale)
 
-  const supabase = await createClient()
+  const supabase = createPublicClient()
 
-  let query = supabase
+  // 필터 없는 최신순 1페이지만 서버에서 렌더해 ISR로 캐시한다.
+  const { data: posts, count } = await supabase
     .from('posts')
-    .select('id, title, category, city, likes, created_at, user_name, nation, photo_url, post_comments(count)', { count: 'exact' })
+    .select(
+      'id, title, category, city, likes, created_at, user_name, nation, photo_url, post_comments(count)',
+      { count: 'exact' }
+    )
+    .order('created_at', { ascending: false })
+    .range(0, POSTS_PAGE_SIZE - 1)
 
-  if (author) {
-    query = query.eq('user_id', author)
-  } else if (tag) {
-    query = query.contains('tags', [tag])
-  } else {
-    if (category && category !== 'all') {
-      query = query.eq('category', category)
-    }
-    if (q) {
-      query = query.or(`title.ilike.%${q}%,content.ilike.%${q}%`)
-    }
-  }
+  const totalPages = Math.ceil((count ?? 0) / POSTS_PAGE_SIZE)
 
-  if (sort === 'best') {
-    query = query.order('likes', { ascending: false })
-  } else {
-    query = query.order('created_at', { ascending: false })
-  }
-
-  const { data: posts, count } = await query
-    .range(offset, offset + PAGE_SIZE - 1)
-
-  const totalPages = Math.ceil((count ?? 0) / PAGE_SIZE)
-  const authorName = author ? (posts?.[0]?.user_name ?? author) : null
-  const isKo = locale === 'ko'
+  /*
+   * CommunityBrowser는 useSearchParams를 쓰므로 프리렌더 시 Suspense fallback으로
+   * 대체된다. fallback에 서버에서 조회한 최신순 1페이지를 넣어 정적 HTML에
+   * 실제 게시글 목록과 링크가 담기도록 한다(SEO + 크롤링 경로 확보).
+   */
+  const defaultView = (
+    <>
+      <PostFilter locale={locale} activeSort="latest" />
+      <PostList
+        posts={posts ?? []}
+        locale={locale}
+        currentPage={1}
+        totalPages={totalPages}
+        totalCount={count ?? 0}
+      />
+    </>
+  )
 
   return (
     <>
@@ -95,41 +89,13 @@ export default async function CommunityPage({ params, searchParams }: CommunityP
         <div className="grid grid-cols-1 md:grid-cols-[160px_1fr_160px] gap-6">
           <Sidebar position="left" className="hidden md:block" />
           <div className="flex flex-col gap-5 min-w-0">
-            {author ? (
-              <div className="flex items-center gap-3">
-                <Link
-                  href={`/${locale}/community`}
-                  className="text-sm text-gray-400 hover:text-sky-500 transition-colors flex items-center gap-1"
-                >
-                  ← {isKo ? '전체 게시글' : 'All posts'}
-                </Link>
-                <span className="text-gray-300">·</span>
-                <h2 className="text-sm font-semibold text-gray-700">
-                  {authorName}{isKo ? '님의 게시글' : "'s posts"}
-                </h2>
-              </div>
-            ) : tag ? (
-              <div className="flex items-center gap-3">
-                <Link
-                  href={`/${locale}/community`}
-                  className="text-sm text-gray-400 hover:text-sky-500 transition-colors flex items-center gap-1"
-                >
-                  ← {isKo ? '전체 게시글' : 'All posts'}
-                </Link>
-                <span className="text-gray-300">·</span>
-                <h2 className="text-sm font-semibold text-blue-600">#{tag}</h2>
-                <span className="text-xs text-gray-400">{isKo ? '로 검색 중' : 'results'}</span>
-              </div>
-            ) : (
-              <PostFilter locale={locale} activeCategory={category} activeSort={sort} />
-            )}
-            <PostList
-              posts={posts ?? []}
-              locale={locale}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalCount={count ?? 0}
-            />
+            <Suspense fallback={defaultView}>
+              <CommunityBrowser
+                locale={locale}
+                initialPosts={posts ?? []}
+                initialCount={count ?? 0}
+              />
+            </Suspense>
           </div>
           <Sidebar position="right" className="hidden md:block" />
         </div>

@@ -153,22 +153,26 @@ export default function PlaceRequests({ locale }: PlaceRequestsProps) {
 
               {req.photo_urls && req.photo_urls.length > 0 && (
                 <div className="grid grid-cols-5 gap-2 mb-3">
-                  {req.photo_urls.map((url) => (
-                    <a
-                      key={url}
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="aspect-square rounded-lg overflow-hidden bg-gray-50 block"
-                    >
-                      <img
-                        src={placePhotoSrc(url)}
-                        alt=""
-                        referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover"
-                      />
-                    </a>
-                  ))}
+                  {req.photo_urls.map((url) => {
+                    const photoSrc = placePhotoSrc(url)
+                    if (!photoSrc) return null
+                    return (
+                      <a
+                        key={url}
+                        href={photoSrc}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="aspect-square rounded-lg overflow-hidden bg-gray-50 block"
+                      >
+                        <img
+                          src={photoSrc}
+                          alt=""
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover"
+                        />
+                      </a>
+                    )
+                  })}
                 </div>
               )}
 

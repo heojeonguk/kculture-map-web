@@ -1,16 +1,18 @@
 import type { Metadata } from 'next'
-import { createClient } from '@/lib/supabase/server'
+import { setRequestLocale } from 'next-intl/server'
+import { createPublicClient } from '@/lib/supabase/public'
+import { BASE_URL, alternatesFor } from '@/lib/seo'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import Sidebar from '@/components/layout/Sidebar'
 import SearchZone from '@/components/home/SearchZone'
 import PlaceGrid from '@/components/home/PlaceGrid'
-import BannerAd from '@/components/home/BannerAd'
 import BestReviews from '@/components/home/BestReviews'
 import BestPhotos from '@/components/home/BestPhotos'
 import CommunityGrid from '@/components/home/CommunityGrid'
 
-const BASE_URL = 'https://www.kculture-map.com'
+// 1시간 ISR — 봇 트래픽이 매번 서버 렌더링을 일으키지 않게 한다.
+export const revalidate = 3600
 
 export async function generateMetadata({
   params,
@@ -36,7 +38,7 @@ export async function generateMetadata({
     title,
     description,
     robots: { index: true, follow: true },
-    alternates: { canonical: `${BASE_URL}/${locale}` },
+    alternates: alternatesFor(locale),
     openGraph: {
       title,
       description,
@@ -54,25 +56,22 @@ export default async function HomePage({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-  const supabase = await createClient()
+  setRequestLocale(locale)
 
-  const { data: popularPlaces, error: placesError } = await supabase
+  // 쿠키를 읽지 않는 public 클라이언트 → 페이지가 ISR로 캐시된다.
+  const supabase = createPublicClient()
+
+  const { data: popularPlaces } = await supabase
     .from('places')
     .select('id, name, category, city, district, photo_url, emoji')
     .order('rating', { ascending: false })
     .limit(8)
 
-  console.log('places data:', popularPlaces)
-  console.log('places error:', placesError)
-
-  const { data: bestPosts, error: postsError } = await supabase
+  const { data: bestPosts } = await supabase
     .from('posts')
     .select('id, title, category, city, likes')
     .order('likes', { ascending: false })
     .limit(5)
-
-  console.log('posts data:', bestPosts)
-  console.log('posts error:', postsError)
 
   const { data: photosRaw } = await supabase
     .from('user_photos')

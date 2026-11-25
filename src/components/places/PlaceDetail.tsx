@@ -98,6 +98,8 @@ export default function PlaceDetail({ place, locale }: PlaceDetailProps) {
     setBookmarkLoading(false)
   }
 
+  const photoSrc = placePhotoSrc(place.photo_url)
+
   const googleMapsUrl = place.lat && place.lng
     ? `https://www.google.com/maps?q=${place.lat},${place.lng}`
     : `https://www.google.com/maps/search/${encodeURIComponent(place.name + ' ' + (place.address ?? ''))}`
@@ -114,9 +116,9 @@ export default function PlaceDetail({ place, locale }: PlaceDetailProps) {
 
       {/* 이미지 헤더 */}
       <div className={`relative w-full h-72 rounded-2xl overflow-hidden ${config.bg} flex items-center justify-center`}>
-        {place.photo_url ? (
+        {photoSrc ? (
           <img
-            src={placePhotoSrc(place.photo_url)}
+            src={photoSrc}
             alt={displayName}
             referrerPolicy="no-referrer"
             className="absolute inset-0 w-full h-full object-cover"

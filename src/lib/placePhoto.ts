@@ -1,15 +1,15 @@
 /**
  * places.photo_url 값을 <img src>로 변환한다.
  *
- * photo_url에는 세 가지 형식이 섞여 있다:
- *  1. 전체 URL (TourAPI `tong.visitkorea.or.kr`, Supabase Storage 등)
- *     → 그대로 사용. 프록시를 태우면 서버 대역폭만 쓰고 이득이 없다.
- *  2. Google Places API (신버전) `places/xxx/photos/xxx`
- *     → API 키가 필요하므로 /api/place-photo 프록시 경유.
- *  3. Google Places API (구버전) 순수 photo_reference 문자열
- *     → 동일하게 프록시 경유.
+ * 전체 URL(http/https)만 그대로 사용하고, 그 밖의 값은 null을 돌려준다.
+ * 호출하는 쪽은 null이면 이모지 fallback을 보여준다.
+ *
+ * 과거에는 Google Places의 photo_reference를 /api/place-photo 프록시로
+ * 중계했지만, 봇이 장소 카드를 긁을 때마다 서버가 외부 이미지를
+ * 받아서 되보내는 구조라 CPU·대역폭을 크게 소모했다.
+ * 프록시를 제거하는 대신 사진이 없는 장소는 이모지로 표시한다.
  */
-export function placePhotoSrc(photoUrl: string): string {
-  if (/^https?:\/\//i.test(photoUrl)) return photoUrl
-  return `/api/place-photo?ref=${encodeURIComponent(photoUrl)}`
+export function placePhotoSrc(photoUrl: string | null | undefined): string | null {
+  if (!photoUrl) return null
+  return /^https?:\/\//i.test(photoUrl) ? photoUrl : null
 }
